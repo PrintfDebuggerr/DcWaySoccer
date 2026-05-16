@@ -158,15 +158,11 @@
           });
         });
 
-        // Sticky behavior on scroll
-        if (this.dataset.sticky === 'true') {
-          this.classList.add('is-sticky');
-          let last = window.scrollY;
+        // Drop-shadow when scrolled past header (sticky pos handled by CSS).
+        if (this.dataset.sticky !== 'false') {
           window.addEventListener('scroll', () => {
-            const y = window.scrollY;
-            if (y > 60) this.classList.add('is-scrolled');
+            if (window.scrollY > 60) this.classList.add('is-scrolled');
             else this.classList.remove('is-scrolled');
-            last = y;
           }, { passive: true });
         }
       }
@@ -191,11 +187,13 @@
     background: var(--dcway-orange, #FF7200);
     color: #fff;
     width: 100%;
-    z-index: 50;
-  }
-  .dcway-header.is-sticky {
+    /* Sticky by default; opt-out via data-sticky="false". */
     position: sticky;
     top: 0;
+    z-index: 100;
+  }
+  .dcway-header[data-sticky="false"] {
+    position: static;
   }
   .dcway-header.is-scrolled {
     box-shadow: 0 2px 12px rgba(0,0,0,0.18);
