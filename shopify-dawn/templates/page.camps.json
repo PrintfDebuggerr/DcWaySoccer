@@ -1,0 +1,206 @@
+{
+  "sections": {
+    "hero_intro": {
+      "type": "rich-text",
+      "blocks": {
+        "eyebrow": {
+          "type": "caption",
+          "settings": {
+            "caption": "Weekly camps · Mon–Fri",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "title": {
+          "type": "heading",
+          "settings": {
+            "heading": "CAMP SCHEDULE",
+            "heading_size": "h0"
+          }
+        },
+        "dates": {
+          "type": "heading",
+          "settings": {
+            "heading": "June 17 – August 23",
+            "heading_size": "h2"
+          }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Boys and girls ages 4–13. Pick a week and lock in your spot — we teach fundamental soccer skills in a fun, positive, non-competitive environment so kids stay active all summer long.</p>"
+          }
+        },
+        "cta": {
+          "type": "button",
+          "settings": {
+            "button_label": "Register now",
+            "button_link": "/pages/Registration",
+            "button_style_secondary": false
+          }
+        }
+      },
+      "block_order": [
+        "eyebrow",
+        "title",
+        "dates",
+        "body",
+        "cta"
+      ],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-1",
+        "full_width": true,
+        "padding_top": 56,
+        "padding_bottom": 32
+      }
+    },
+    "summer_camps_grid": {
+      "type": "camps-grid",
+      "settings": {
+        "heading": "Summer Camps",
+        "intro_text": "<p>Choose a week — each runs Monday through Friday.</p>",
+        "collection": "camps-summer",
+        "product_limit": 12,
+        "columns_desktop": 4,
+        "cta_label": "View camp",
+        "show_price": true,
+        "show_meta": true,
+        "show_view_all": false,
+        "view_all_label": "View all camps",
+        "empty_state_text": "Summer camps coming soon.",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "one_day_camps_grid": {
+      "type": "camps-grid",
+      "settings": {
+        "heading": "One-Day Camps",
+        "intro_text": "<p>School-year single-session camps for days off and holidays.</p>",
+        "collection": "camps-one-day",
+        "product_limit": 12,
+        "columns_desktop": 3,
+        "cta_label": "View camp",
+        "show_price": true,
+        "show_meta": true,
+        "show_view_all": false,
+        "view_all_label": "View all one-day camps",
+        "empty_state_text": "No one-day camps scheduled yet — check back soon.",
+        "color_scheme": "scheme-2"
+      }
+    },
+    "faq": {
+      "type": "collapsible-content",
+      "blocks": {
+        "q_offer": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What do we offer at Summer Camp?",
+            "icon": "question_mark",
+            "row_content": "<p>We offer weekly soccer camps for children Monday through Friday. We teach fundamental soccer skills in a fun, positive, non-competitive, and safe environment where children can grow, develop new skills, and stay active while having fun in the summer.</p>"
+          }
+        },
+        "q_ages": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What ages can attend?",
+            "icon": "question_mark",
+            "row_content": "<p>Boys and girls ages 4–13. We split campers into age- and skill-appropriate groups. Please note that 4-year-old children must be potty trained and able to follow directions.</p>"
+          }
+        },
+        "q_bring": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What should my child bring?",
+            "icon": "question_mark",
+            "row_content": "<p>Soccer cleats or sneakers, shin guards, a refillable water bottle, sunscreen, a hat, and a packed lunch. We provide soccer balls and all equipment.</p>"
+          }
+        },
+        "q_options": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What are the camp options and pricing?",
+            "icon": "question_mark",
+            "row_content": "<p><strong>Full Week</strong> — 9:00 am to 3:00 pm.<br><strong>Extended Full Week</strong> — 9:00 am to 5:30 pm with before- and after-care available.<br>Exact pricing is listed on each camp page.</p>"
+          }
+        },
+        "q_refund": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What is the refund and transfer policy?",
+            "icon": "question_mark",
+            "row_content": "<p>Cancellations made at least 14 days before the camp start date are eligible for a full refund less a processing fee. Within 14 days, we can transfer your spot to another week if availability allows. Reach out to us at <a href=\"/pages/contact\">our contact page</a> for details.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q_offer",
+        "q_ages",
+        "q_bring",
+        "q_options",
+        "q_refund"
+      ],
+      "settings": {
+        "caption": "",
+        "heading": "Frequently asked questions",
+        "heading_size": "h1",
+        "heading_alignment": "center",
+        "layout": "none",
+        "color_scheme": "scheme-1",
+        "open_first_collapsible_row": true,
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    },
+    "register_cta": {
+      "type": "rich-text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Ready to lock in your week?",
+            "heading_size": "h1"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Spots fill quickly. Pick your week and register today.</p>"
+          }
+        },
+        "cta": {
+          "type": "button",
+          "settings": {
+            "button_label": "Go to registration",
+            "button_link": "/pages/Registration",
+            "button_style_secondary": false,
+            "button_label_2": "Contact us",
+            "button_link_2": "/pages/contact",
+            "button_style_secondary_2": true
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "text",
+        "cta"
+      ],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-2",
+        "full_width": true,
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    }
+  },
+  "order": [
+    "hero_intro",
+    "summer_camps_grid",
+    "one_day_camps_grid",
+    "faq",
+    "register_cta"
+  ]
+}

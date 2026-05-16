@@ -1,0 +1,219 @@
+{%- comment -%}
+  Renders FAQ accordion from product.metafields.dcway.faq (multi-line text).
+
+  Format: each Q/A pair separated by a blank line. First line = question,
+  remaining lines (until next blank line) = answer. Example:
+
+    What ages can attend?
+    Ages 5–8. We split into two skill groups.
+
+    What should my child bring?
+    Cleats or sneakers, water bottle, sunscreen.
+
+  Uses native <details>/<summary> for accessibility — no JS required.
+  A small enhancer ensures only one item is open at a time when
+  `single_open` is enabled.
+{%- endcomment -%}
+
+{%- liquid
+  assign raw = product.metafields.dcway.faq | default: ''
+  assign blocks = raw | strip | replace: "\r\n", "\n" | split: "\n\n"
+  assign single_open = section.settings.single_open
+-%}
+
+<div class="dcway-camp-faq color-{{ section.settings.color_scheme }} gradient">
+  <div class="dcway-container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="dcway-camp-faq__heading dcway-uppercase">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+    {%- if section.settings.intro_text != blank -%}
+      <p class="dcway-camp-faq__sub">{{ section.settings.intro_text }}</p>
+    {%- endif -%}
+
+    {%- assign rendered = 0 -%}
+    {%- if blocks.size > 0 -%}
+      <div class="dcway-camp-faq__list">
+        {%- for block in blocks -%}
+          {%- assign block_clean = block | strip -%}
+          {%- if block_clean != blank -%}
+            {%- assign lines = block_clean | split: "\n" -%}
+            {%- assign question = lines[0] | strip -%}
+            {%- assign answer_parts = '' -%}
+            {%- for line in lines -%}
+              {%- if forloop.first -%}{%- continue -%}{%- endif -%}
+              {%- assign trimmed = line | strip -%}
+              {%- if trimmed != blank -%}
+                {%- if answer_parts == '' -%}
+                  {%- assign answer_parts = trimmed -%}
+                {%- else -%}
+                  {%- assign answer_parts = answer_parts | append: ' ' | append: trimmed -%}
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- if question != blank -%}
+              <details class="dcway-camp-faq__item" data-faq-item>
+                <summary class="dcway-camp-faq__summary">
+                  <span class="dcway-camp-faq__q">{{ question }}</span>
+                  <span class="dcway-camp-faq__icon" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" width="14" height="14" focusable="false">
+                      <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                </summary>
+                {%- if answer_parts != blank -%}
+                  <div class="dcway-camp-faq__a">{{ answer_parts }}</div>
+                {%- endif -%}
+              </details>
+              {%- assign rendered = rendered | plus: 1 -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- if rendered == 0 -%}
+      <p class="dcway-camp-faq__empty">{{ section.settings.empty_state_text }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- if single_open -%}
+  <script>
+    (function () {
+      var section = document.getElementById('shopify-section-{{ section.id }}');
+      if (!section) return;
+      var items = section.querySelectorAll('[data-faq-item]');
+      items.forEach(function (item) {
+        item.addEventListener('toggle', function () {
+          if (!item.open) return;
+          items.forEach(function (other) {
+            if (other !== item) other.open = false;
+          });
+        });
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-camp-faq {
+    padding-block: 56px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__heading {
+    margin: 0 0 8px;
+    font-size: 1.875rem;
+    line-height: 1.1;
+    font-weight: 700;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__sub {
+    margin: 0 auto 32px;
+    max-width: 640px;
+    text-align: center;
+    color: var(--dcway-muted);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__list {
+    max-width: 720px;
+    margin-inline: auto;
+    border-top: 1px solid var(--dcway-muted-bg-2);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__item {
+    border-bottom: 1px solid var(--dcway-muted-bg-2);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 4px;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--dcway-dark);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__summary::-webkit-details-marker {
+    display: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__summary:hover .dcway-camp-faq__q {
+    color: var(--dcway-orange);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__q {
+    flex: 1;
+    line-height: 1.35;
+    transition: color 0.15s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__icon {
+    color: var(--dcway-orange);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    display: inline-flex;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__item[open] .dcway-camp-faq__icon {
+    transform: rotate(180deg);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__a {
+    padding: 0 4px 18px;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--dcway-text);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-faq__empty {
+    text-align: center;
+    color: var(--dcway-muted);
+    font-style: italic;
+    margin: 0;
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Camp FAQ (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Frequently asked questions"
+    },
+    {
+      "type": "text",
+      "id": "intro_text",
+      "label": "Intro text"
+    },
+    {
+      "type": "checkbox",
+      "id": "single_open",
+      "label": "Only one question open at a time",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty-state text",
+      "default": "More info coming soon."
+    },
+    {
+      "type": "paragraph",
+      "content": "Source: product metafield `dcway.faq` (multi-line text). Each Q/A pair separated by a blank line. First line of each pair = question, the rest = answer."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Camp FAQ (DC Way)"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

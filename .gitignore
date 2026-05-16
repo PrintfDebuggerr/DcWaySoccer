@@ -1,0 +1,53 @@
+# ──────────────────────────────────────────────
+# Secrets / credentials — NEVER commit
+# ──────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ──────────────────────────────────────────────
+# WP reference dump (344MB, build artifact / reference only)
+# ──────────────────────────────────────────────
+wordpress-reference/
+
+# ──────────────────────────────────────────────
+# Local tooling / agent state
+# ──────────────────────────────────────────────
+.claude/
+.playwright-mcp/
+
+# ──────────────────────────────────────────────
+# Node / npm
+# ──────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ──────────────────────────────────────────────
+# Shopify CLI local state
+# ──────────────────────────────────────────────
+.shopify/
+shopify-dawn/.shopify/
+
+# ──────────────────────────────────────────────
+# Root-level transient screenshots
+# ──────────────────────────────────────────────
+/camp-cart-after-add.png
+/camp-notification-success.png
+/*.tmp.png
+/*.scratch.png
+
+# ──────────────────────────────────────────────
+# OS / editors
+# ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo

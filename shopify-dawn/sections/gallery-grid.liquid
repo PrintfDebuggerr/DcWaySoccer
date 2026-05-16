@@ -1,0 +1,384 @@
+{%- liquid
+  assign entries = shop.metaobjects['gallery_image'].values | sort: 'sort_order'
+  assign count = entries.size
+  assign visible_desktop = section.settings.cards_visible_desktop | default: 3
+-%}
+
+<section
+  class="dcway-gallery color-{{ section.settings.color_scheme }}"
+  data-dcway-gallery
+  data-count="{{ count }}"
+  data-visible="{{ visible_desktop }}"
+  style="--dcway-gallery-visible:{{ visible_desktop }};"
+>
+  <div class="dcway-gallery__inner">
+    <div class="dcway-gallery__header">
+      <div class="dcway-gallery__heading-block">
+        <h2 class="dcway-gallery__title">
+          {%- if section.settings.heading_lead != blank -%}
+            <span class="dcway-gallery__title-lead">{{ section.settings.heading_lead }}</span>
+          {%- endif -%}
+          {%- if section.settings.heading_accent != blank -%}
+            <span class="dcway-gallery__title-accent">{{ section.settings.heading_accent }}</span>
+          {%- endif -%}
+        </h2>
+
+        <div class="dcway-gallery__meta">
+          {%- if section.settings.subtitle != blank -%}
+            <p class="dcway-gallery__subtitle">{{ section.settings.subtitle }}</p>
+          {%- endif -%}
+
+          {%- if section.settings.view_all_url != blank and section.settings.view_all_label != blank -%}
+            <a class="dcway-gallery__view-all" href="{{ section.settings.view_all_url }}">
+              {{ section.settings.view_all_label }}
+              <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                <path d="M10.94 9L5.69 14.25l1.06 1.06L13.06 9 6.75 2.69 5.69 3.76z" fill="currentColor"/>
+              </svg>
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- if count > visible_desktop -%}
+        <div class="dcway-gallery__controls">
+          <button type="button" class="dcway-gallery__arrow" data-dcway-gallery-prev aria-label="Previous gallery photos">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4L7 10l5.5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="dcway-gallery__arrow" data-dcway-gallery-next aria-label="Next gallery photos">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4l5.5 6-5.5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="dcway-gallery__carousel">
+      {%- if count > 0 -%}
+        <div class="dcway-gallery__viewport">
+          <div class="dcway-gallery__track" data-dcway-gallery-track>
+            {%- for entry in entries -%}
+              <figure class="dcway-gallery__card" data-index="{{ forloop.index0 }}">
+                <div class="dcway-gallery__photo-wrap">
+                  {%- if entry.photo != blank -%}
+                    {{ entry.photo
+                      | image_url: width: 1200
+                      | image_tag:
+                        loading: 'lazy',
+                        widths: '480, 700, 900, 1200',
+                        sizes: '(max-width: 749px) 90vw, (max-width: 989px) 48vw, 32vw',
+                        class: 'dcway-gallery__photo',
+                        alt: entry.alt
+                    }}
+                  {%- else -%}
+                    {{ 'collection-2' | placeholder_svg_tag: 'placeholder-svg dcway-gallery__photo' }}
+                  {%- endif -%}
+                </div>
+              </figure>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- else -%}
+        <p class="dcway-gallery__empty">{{ section.settings.empty_state_text }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var root = document.currentScript.previousElementSibling;
+    if (!root || !root.matches('[data-dcway-gallery]')) return;
+    var track = root.querySelector('[data-dcway-gallery-track]');
+    if (!track) return;
+
+    var cards = Array.prototype.slice.call(track.querySelectorAll('.dcway-gallery__card'));
+    var count = cards.length;
+
+    function visibleCount() {
+      var w = window.innerWidth;
+      if (w < 750) return 1;
+      if (w < 990) return 2;
+      return parseInt(root.getAttribute('data-visible'), 10) || 3;
+    }
+
+    var index = 0;
+    function maxIndex() { return Math.max(0, count - visibleCount()); }
+
+    function apply() {
+      if (index > maxIndex()) index = maxIndex();
+      var card = cards[0];
+      if (!card) return;
+      var cardWidth = card.getBoundingClientRect().width;
+      var styles = window.getComputedStyle(track);
+      var gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+      var offset = (cardWidth + gap) * index;
+      track.style.transform = 'translate3d(' + (-offset) + 'px, 0, 0)';
+    }
+
+    var prevBtn = root.querySelector('[data-dcway-gallery-prev]');
+    var nextBtn = root.querySelector('[data-dcway-gallery-next]');
+    if (prevBtn) prevBtn.addEventListener('click', function () {
+      var m = maxIndex();
+      index = index <= 0 ? m : index - 1;
+      apply();
+    });
+    if (nextBtn) nextBtn.addEventListener('click', function () {
+      var m = maxIndex();
+      index = index >= m ? 0 : index + 1;
+      apply();
+    });
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(apply, 120);
+    });
+
+    apply();
+  })();
+</script>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-gallery {
+    background: #ffffff;
+    color: #1a1a1a;
+    padding: clamp(48px, 6vw, 80px) clamp(24px, 4vw, 64px);
+    position: relative;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-gallery__inner {
+    max-width: 1320px;
+    margin: 0 auto;
+  }
+
+  /* ---------- HEADER ---------- */
+  #shopify-section-{{ section.id }} .dcway-gallery__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: clamp(24px, 4vw, 56px);
+    margin-bottom: clamp(28px, 3.5vw, 48px);
+    flex-wrap: wrap;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-gallery__heading-block {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-gallery__title {
+    margin: 0 0 12px;
+    font-family: var(--font-heading-family), 'Barlow Condensed', 'Oswald', sans-serif;
+    font-weight: 800;
+    font-size: clamp(38px, 4.4vw, 64px);
+    line-height: 0.98;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.22em;
+  }
+  #shopify-section-{{ section.id }} .dcway-gallery__title-lead   { color: #1a1a1a; }
+  #shopify-section-{{ section.id }} .dcway-gallery__title-accent { color: var(--dcway-orange, #FF7200); }
+
+  #shopify-section-{{ section.id }} .dcway-gallery__meta {
+    display: flex;
+    align-items: center;
+    gap: clamp(20px, 3vw, 36px);
+    flex-wrap: wrap;
+  }
+  #shopify-section-{{ section.id }} .dcway-gallery__subtitle {
+    margin: 0;
+    font-size: clamp(14px, 1.05vw, 17px);
+    line-height: 1.45;
+    color: #2a2a2a;
+    max-width: 420px;
+  }
+  #shopify-section-{{ section.id }} .dcway-gallery__view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: #1a1a1a;
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: clamp(15px, 1.1vw, 18px);
+    text-transform: none;
+    transition: color 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-gallery__view-all svg {
+    width: 14px;
+    height: 14px;
+  }
+  #shopify-section-{{ section.id }} .dcway-gallery__view-all:hover {
+    color: var(--dcway-orange, #FF7200);
+  }
+
+  /* ---------- CONTROLS (orange square arrows) ---------- */
+  #shopify-section-{{ section.id }} .dcway-gallery__controls {
+    display: flex;
+    gap: 6px;
+    flex: 0 0 auto;
+    align-self: flex-start;
+    padding-top: 4px;
+  }
+  #shopify-section-{{ section.id }} .dcway-gallery__arrow {
+    width: 42px;
+    height: 42px;
+    background: var(--dcway-orange, #FF7200);
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-gallery__arrow:hover  { background: #ff8a26; }
+  #shopify-section-{{ section.id }} .dcway-gallery__arrow:active { transform: scale(0.95); }
+  #shopify-section-{{ section.id }} .dcway-gallery__arrow svg    { width: 18px; height: 18px; }
+
+  /* ---------- CAROUSEL ---------- */
+  #shopify-section-{{ section.id }} .dcway-gallery__viewport {
+    overflow: hidden;
+    position: relative;
+  }
+  #shopify-section-{{ section.id }} .dcway-gallery__track {
+    display: flex;
+    flex-wrap: nowrap;
+    column-gap: clamp(16px, 2vw, 30px);
+    transition: transform 0.55s cubic-bezier(.22,.61,.36,1);
+    will-change: transform;
+  }
+  #shopify-section-{{ section.id }} .dcway-gallery__card {
+    flex: 0 0 calc((100% - (var(--dcway-gallery-visible, 3) - 1) * clamp(16px, 2vw, 30px)) / var(--dcway-gallery-visible, 3));
+    margin: 0;
+  }
+  /* Fixed landscape 3:2 frame; image fills and crops via object-fit. */
+  #shopify-section-{{ section.id }} .dcway-gallery__photo-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: rgba(0,0,0,0.04);
+  }
+  #shopify-section-{{ section.id }} .dcway-gallery__photo,
+  #shopify-section-{{ section.id }} .dcway-gallery__photo-wrap > img,
+  #shopify-section-{{ section.id }} .dcway-gallery__photo-wrap > svg {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-gallery__empty {
+    margin: 0;
+    padding: 48px 0;
+    color: rgba(0,0,0,0.55);
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* ---------- TABLET ---------- */
+  @media (max-width: 989px) {
+    #shopify-section-{{ section.id }} .dcway-gallery__header {
+      flex-direction: column;
+    }
+    #shopify-section-{{ section.id }} .dcway-gallery__controls {
+      align-self: flex-end;
+    }
+    #shopify-section-{{ section.id }} .dcway-gallery__card {
+      flex-basis: calc((100% - clamp(16px, 2vw, 30px)) / 2);
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-gallery {
+      padding: clamp(36px, 8vw, 56px) clamp(20px, 5vw, 32px);
+    }
+    #shopify-section-{{ section.id }} .dcway-gallery__title {
+      font-size: clamp(34px, 9vw, 48px);
+    }
+    #shopify-section-{{ section.id }} .dcway-gallery__meta {
+      gap: 14px;
+    }
+    #shopify-section-{{ section.id }} .dcway-gallery__card {
+      flex-basis: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .dcway-gallery__track {
+      transition: transform 0.2s linear;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Gallery (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_lead",
+      "label": "Heading (left, dark)",
+      "default": "OUR"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading (right, orange)",
+      "default": "GALLERY"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Explore the excitement and joy that fills every moment at DC Way!"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "View all link"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View all label",
+      "default": "View all"
+    },
+    {
+      "type": "range",
+      "id": "cards_visible_desktop",
+      "label": "Photos visible (desktop)",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty-state text",
+      "default": "Photo highlights coming soon."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gallery (DC Way)"
+    }
+  ]
+}
+{% endschema %}

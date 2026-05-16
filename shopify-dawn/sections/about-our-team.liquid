@@ -1,0 +1,469 @@
+{%- liquid
+  assign members = shop.metaobjects.team_member.values | sort: 'position'
+  assign count = members.size
+-%}
+
+<section class="dcway-team color-{{ section.settings.color_scheme }}" data-dcway-team data-count="{{ count }}">
+  <h2 class="dcway-team__title">
+    {%- if section.settings.heading_lead != blank -%}
+      <span class="dcway-team__title-lead">{{ section.settings.heading_lead }}</span>
+    {%- endif -%}
+    {%- if section.settings.heading_accent != blank -%}
+      <span class="dcway-team__title-accent">{{ section.settings.heading_accent }}</span>
+    {%- endif -%}
+  </h2>
+
+  <div class="dcway-team__stage">
+    {%- if count > 0 -%}
+      <div class="dcway-team__viewport">
+        {%- for m in members -%}
+          <article
+            class="dcway-team__slide"
+            data-index="{{ forloop.index0 }}"
+            {% if forloop.first %}data-state="active"{% elsif forloop.index0 == 1 %}data-state="next"{% elsif forloop.last and count > 2 %}data-state="prev"{% else %}data-state="hidden"{% endif %}
+            aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
+          >
+            <div class="dcway-team__photo-col">
+              <div class="dcway-team__photo-wrap">
+                {%- if m.photo.value -%}
+                  {{ m.photo.value
+                    | image_url: width: 900
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '300, 500, 700, 900',
+                      sizes: '(max-width: 749px) 80vw, 360px',
+                      class: 'dcway-team__photo',
+                      alt: m.name.value
+                  }}
+                {%- else -%}
+                  <div class="dcway-team__photo dcway-team__photo--placeholder">
+                    {{ 'collection-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                {%- endif -%}
+              </div>
+              <div class="dcway-team__info">
+                <div class="dcway-team__name">{{ m.name.value }}</div>
+                {%- if m.role.value != blank -%}
+                  <div class="dcway-team__role">{{ m.role.value }}</div>
+                {%- endif -%}
+              </div>
+            </div>
+
+            <div class="dcway-team__bio">
+              {%- if m.bio.value != blank -%}
+                {%- assign paragraphs = m.bio.value | newline_to_br | split: '<br />' -%}
+                {%- for p in paragraphs -%}
+                  {%- assign trimmed = p | strip -%}
+                  {%- if trimmed != blank -%}
+                    <p>{{ trimmed }}</p>
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endif -%}
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+
+      {%- if count > 1 -%}
+        <div class="dcway-team__controls">
+          <button type="button" class="dcway-team__arrow" data-dcway-team-prev aria-label="Previous team member">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4L7 10l5.5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="dcway-team__arrow" data-dcway-team-next aria-label="Next team member">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4l5.5 6-5.5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      <div class="dcway-team__empty">{{ section.settings.empty_state_text | escape }}</div>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  (function () {
+    var root = document.currentScript.previousElementSibling;
+    if (!root || !root.matches('[data-dcway-team]')) return;
+    var slides = Array.prototype.slice.call(root.querySelectorAll('.dcway-team__slide'));
+    var count = slides.length;
+    if (count < 2) return;
+
+    var current = 0;
+
+    function update(next) {
+      next = ((next % count) + count) % count;
+      var prevIdx = (next - 1 + count) % count;
+      var nextIdx = (next + 1) % count;
+
+      slides.forEach(function (s, i) {
+        var state = 'hidden';
+        if (i === next) state = 'active';
+        else if (i === prevIdx && count > 2) state = 'prev';
+        else if (i === nextIdx) state = 'next';
+        else if (i === prevIdx) state = 'prev';
+        s.setAttribute('data-state', state);
+        s.setAttribute('aria-hidden', state === 'active' ? 'false' : 'true');
+      });
+      current = next;
+    }
+
+    var prevBtn = root.querySelector('[data-dcway-team-prev]');
+    var nextBtn = root.querySelector('[data-dcway-team-next]');
+    if (prevBtn) prevBtn.addEventListener('click', function () { update(current - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { update(current + 1); });
+    update(0);
+  })();
+</script>
+
+<style>
+  /* Orange "panel" is painted directly onto the section background as a hard-stop gradient,
+     so it always renders regardless of color-scheme / Dawn padding context. */
+  #shopify-section-{{ section.id }} .dcway-team {
+    position: relative;
+    background: linear-gradient(
+      to right,
+      #FF7200 0%,
+      #FF7200 35%,
+      #262626 35%,
+      #262626 100%
+    );
+    color: #fff;
+    overflow: hidden;
+    min-height: 720px;
+    isolation: isolate;
+  }
+
+  /* OUR TEAM heading sits at top-left, big and commanding, on top of orange. */
+  #shopify-section-{{ section.id }} .dcway-team__title {
+    position: absolute;
+    top: clamp(36px, 4.5vw, 64px);
+    left: clamp(28px, 3.5vw, 56px);
+    margin: 0;
+    z-index: 3;
+    font-family: var(--font-heading-family), 'Barlow Condensed', 'Oswald', sans-serif;
+    font-weight: 800;
+    font-size: clamp(54px, 6.8vw, 104px);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.25em;
+    row-gap: 0;
+    max-width: 34%;
+    pointer-events: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-team__title-lead { color: #1a1a1a; }
+  #shopify-section-{{ section.id }} .dcway-team__title-accent { color: #ffffff; }
+
+  /* Stage spans full width above the orange panel; slides position inside it. */
+  #shopify-section-{{ section.id }} .dcway-team__stage {
+    position: relative;
+    z-index: 2;
+    padding: clamp(180px, 18vw, 240px) 0 clamp(110px, 11vw, 160px);
+    min-height: 720px;
+  }
+  #shopify-section-{{ section.id }} .dcway-team__viewport {
+    position: relative;
+    width: 100%;
+    min-height: 480px;
+  }
+
+  /* Each slide is absolutely stacked. Default = hidden. State drives the rest. */
+  #shopify-section-{{ section.id }} .dcway-team__slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(28px, 3.5vw, 64px);
+    padding-left: clamp(40px, 22%, 380px);
+    padding-right: clamp(32px, 5vw, 80px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(0) scale(1);
+    transform-origin: center center;
+    transition:
+      opacity 0.55s cubic-bezier(.22,.61,.36,1),
+      transform 0.55s cubic-bezier(.22,.61,.36,1),
+      filter 0.55s ease,
+      visibility 0s linear 0.55s;
+    will-change: transform, opacity;
+  }
+
+  /* Active slide: photo column lands across the orange/dark boundary, bio reads on the dark side. */
+  #shopify-section-{{ section.id }} .dcway-team__slide[data-state="active"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 4;
+    transform: translateX(0) scale(1);
+    filter: none;
+    transition:
+      opacity 0.55s cubic-bezier(.22,.61,.36,1),
+      transform 0.55s cubic-bezier(.22,.61,.36,1),
+      filter 0.55s ease,
+      visibility 0s;
+  }
+
+  /* Prev slide peeks into the orange panel on the left — heavily dimmed. */
+  #shopify-section-{{ section.id }} .dcway-team__slide[data-state="prev"] {
+    opacity: 0.42;
+    visibility: visible;
+    z-index: 2;
+    transform: translateX(-20%) scale(0.9);
+    transform-origin: left top;
+    filter: saturate(0.55) brightness(0.95);
+    transition:
+      opacity 0.55s cubic-bezier(.22,.61,.36,1),
+      transform 0.55s cubic-bezier(.22,.61,.36,1),
+      filter 0.55s ease,
+      visibility 0s;
+  }
+
+  /* Next slide peeks off the right edge — clipped by section overflow. */
+  #shopify-section-{{ section.id }} .dcway-team__slide[data-state="next"] {
+    opacity: 0.42;
+    visibility: visible;
+    z-index: 2;
+    transform: translateX(56%) scale(0.9);
+    transform-origin: right top;
+    filter: brightness(0.7);
+    transition:
+      opacity 0.55s cubic-bezier(.22,.61,.36,1),
+      transform 0.55s cubic-bezier(.22,.61,.36,1),
+      filter 0.55s ease,
+      visibility 0s;
+  }
+
+  /* Photo column — fixed visual width regardless of state. */
+  #shopify-section-{{ section.id }} .dcway-team__photo-col {
+    flex: 0 0 auto;
+    width: clamp(260px, 24vw, 340px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #shopify-section-{{ section.id }} .dcway-team__photo-wrap { width: 100%; }
+  #shopify-section-{{ section.id }} .dcway-team__photo {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    display: block;
+    background: rgba(255,255,255,0.05);
+  }
+  #shopify-section-{{ section.id }} .dcway-team__photo--placeholder svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-team__info { padding-top: 2px; }
+  #shopify-section-{{ section.id }} .dcway-team__name {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 2.4vw, 40px);
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 4px;
+    text-transform: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-team__role {
+    font-size: clamp(15px, 1.15vw, 19px);
+    color: rgba(255,255,255,0.78);
+    line-height: 1.3;
+  }
+
+  /* Bio sits to the right of the photo column on active; not rendered on peeks. */
+  #shopify-section-{{ section.id }} .dcway-team__bio {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 560px;
+    padding-top: 8px;
+    font-size: clamp(15px, 1.1vw, 18px);
+    line-height: 1.6;
+    color: rgba(255,255,255,0.92);
+  }
+  #shopify-section-{{ section.id }} .dcway-team__bio p { margin: 0 0 14px; }
+  #shopify-section-{{ section.id }} .dcway-team__bio p:last-child { margin-bottom: 0; }
+  #shopify-section-{{ section.id }} .dcway-team__slide[data-state="prev"] .dcway-team__bio,
+  #shopify-section-{{ section.id }} .dcway-team__slide[data-state="next"] .dcway-team__bio,
+  #shopify-section-{{ section.id }} .dcway-team__slide[data-state="hidden"] .dcway-team__bio {
+    display: none;
+  }
+
+  /* Arrows: small orange squares, sit under the active photo column. */
+  #shopify-section-{{ section.id }} .dcway-team__controls {
+    position: absolute;
+    bottom: clamp(40px, 5vw, 64px);
+    left: clamp(40px, 22%, 380px);
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+  }
+  #shopify-section-{{ section.id }} .dcway-team__arrow {
+    width: 42px;
+    height: 42px;
+    background: var(--dcway-orange, #FF7200);
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-team__arrow:hover { background: #ff8a26; }
+  #shopify-section-{{ section.id }} .dcway-team__arrow:active { transform: scale(0.95); }
+  #shopify-section-{{ section.id }} .dcway-team__arrow svg { width: 18px; height: 18px; }
+
+  #shopify-section-{{ section.id }} .dcway-team__empty {
+    padding: 80px 40px;
+    text-align: center;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* ---------- TABLET ---------- */
+  @media (max-width: 989px) {
+    #shopify-section-{{ section.id }} .dcway-team {
+      min-height: auto;
+      /* Stack: orange band on top, dark below. Hard stop based on title block height. */
+      background: linear-gradient(
+        to bottom,
+        #FF7200 0,
+        #FF7200 clamp(180px, 22vw, 240px),
+        #262626 clamp(180px, 22vw, 240px),
+        #262626 100%
+      );
+    }
+    #shopify-section-{{ section.id }} .dcway-team__title {
+      position: relative;
+      top: auto;
+      left: auto;
+      max-width: 100%;
+      padding: clamp(28px, 4vw, 48px) clamp(24px, 4vw, 48px) clamp(20px, 3vw, 32px);
+      font-size: clamp(48px, 7vw, 80px);
+    }
+    #shopify-section-{{ section.id }} .dcway-team__stage {
+      padding: clamp(28px, 4vw, 48px) clamp(24px, 4vw, 48px) clamp(80px, 10vw, 120px);
+      min-height: auto;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__viewport {
+      min-height: 560px;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__slide {
+      padding: 0;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__slide[data-state="prev"],
+    #shopify-section-{{ section.id }} .dcway-team__slide[data-state="next"] {
+      display: none;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__slide[data-state="active"] {
+      transform: none;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__controls {
+      left: 0;
+      bottom: clamp(28px, 4vw, 40px);
+      padding: 0 clamp(24px, 4vw, 48px);
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 749px) {
+    /* Active slide must be relative so its natural height pushes the viewport.
+       Peek slides are already display:none above, so only the active is in flow. */
+    #shopify-section-{{ section.id }} .dcway-team__slide {
+      position: relative;
+      width: 100%;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__slide[data-state="active"] {
+      flex-direction: column;
+      gap: 20px;
+      align-items: flex-start;
+      transform: none;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__slide[data-state="hidden"] {
+      display: none;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__photo-col {
+      width: 100%;
+      max-width: 320px;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__bio {
+      max-width: 100%;
+      padding-top: 0;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    /* Viewport now grows to content. */
+    #shopify-section-{{ section.id }} .dcway-team__viewport {
+      min-height: auto;
+      padding-bottom: 24px;
+      position: relative;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__stage {
+      padding-bottom: 96px;
+    }
+    /* Controls back into normal flow under the slide. */
+    #shopify-section-{{ section.id }} .dcway-team__controls {
+      position: relative;
+      left: auto;
+      right: auto;
+      bottom: auto;
+      margin-top: 16px;
+      padding: 0;
+      justify-content: flex-start;
+    }
+  }
+
+  /* Respect reduced motion. */
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .dcway-team__slide {
+      transition: opacity 0.2s linear, visibility 0s linear 0.2s;
+    }
+    #shopify-section-{{ section.id }} .dcway-team__slide[data-state="active"] {
+      transition: opacity 0.2s linear, visibility 0s;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Our Team (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_lead",
+      "label": "Heading (left)",
+      "default": "OUR"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading (right)",
+      "default": "TEAM"
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty-state text",
+      "default": "Team bios coming soon."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Our Team (DC Way)"
+    }
+  ]
+}
+{% endschema %}

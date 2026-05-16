@@ -1,0 +1,105 @@
+{%- liquid
+  assign height_d = section.settings.height_desktop | default: 480
+  assign height_m = section.settings.height_mobile | default: 240
+-%}
+
+<div class="dcway-photo-banner color-{{ section.settings.color_scheme }}">
+  {%- if section.settings.image != blank -%}
+    {{ section.settings.image
+      | image_url: width: 3000
+      | image_tag:
+        loading: 'eager',
+        fetchpriority: 'high',
+        widths: '600, 900, 1200, 1600, 2000, 2600, 3000',
+        sizes: '100vw',
+        class: 'dcway-photo-banner__img',
+        alt: section.settings.image.alt | default: 'DC Way Soccer'
+    }}
+  {%- else -%}
+    <div class="dcway-photo-banner__placeholder">
+      {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-photo-banner {
+    width: 100%;
+    height: {{ height_d }}px;
+    overflow: hidden;
+    position: relative;
+  }
+  #shopify-section-{{ section.id }} .dcway-photo-banner__img,
+  #shopify-section-{{ section.id }} .dcway-photo-banner__placeholder svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: {{ section.settings.focal_point }};
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-photo-banner__placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--dcway-muted-bg, #f2f2f2);
+  }
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-photo-banner {
+      height: {{ height_m }}px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Photo banner (About)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner image"
+    },
+    {
+      "type": "select",
+      "id": "focal_point",
+      "label": "Focal point",
+      "options": [
+        { "value": "center top", "label": "Top" },
+        { "value": "center center", "label": "Center" },
+        { "value": "center bottom", "label": "Bottom" }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Desktop height (px)",
+      "min": 280,
+      "max": 720,
+      "step": 20,
+      "default": 480
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Mobile height (px)",
+      "min": 160,
+      "max": 480,
+      "step": 20,
+      "default": 240
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Photo banner (About)"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,466 @@
+{%- comment -%}
+  Renders a single camp/program/registrable product card.
+
+  Inputs:
+    product       — Shopify product (required)
+    cta_label     — string (optional; default "Register")
+    show_price    — boolean (optional; default true)
+    show_meta     — boolean (optional; default true)
+    style         — 'default' (image card) or 'compact' (WP registration card)
+
+  Reads these product metafields (namespace `dcway`):
+    product_kind, age_range, season, date_range_label
+    location  (metaobject reference -> location.name)
+
+  Falls back gracefully when metafields are blank — the card still
+  renders title + image + price + CTA.
+{%- endcomment -%}
+
+{%- liquid
+  if cta_label == blank
+    assign cta_label = 'Register'
+  endif
+  if show_price == nil
+    assign show_price = true
+  endif
+  if show_meta == nil
+    assign show_meta = true
+  endif
+  if style == blank
+    assign style = 'default'
+  endif
+
+  assign mf_age = product.metafields.dcway.age_range
+  assign mf_season = product.metafields.dcway.season
+  assign mf_date_label = product.metafields.dcway.date_range_label
+  assign mf_location = product.metafields.dcway.location.value
+  assign mf_kind = product.metafields.dcway.product_kind
+
+  assign featured = product.featured_media
+  assign price_min = product.price_min
+  assign price_max = product.price_max
+-%}
+
+{%- if style == 'compact' -%}
+  {%- liquid
+    assign has_variants = false
+    if product.has_only_default_variant == false
+      assign has_variants = true
+    endif
+    assign first_available = product.selected_or_first_available_variant
+    assign sold_out = false
+    if product.available == false
+      assign sold_out = true
+    endif
+  -%}
+  <article class="dcway-card-camp dcway-card-camp--compact">
+    <div class="dcway-card-camp__header">
+      <h3 class="dcway-card-camp__duration">
+        <a href="{{ product.url }}">{{ product.title }}</a>
+      </h3>
+      {%- if show_price -%}
+        <span class="dcway-card-camp__from">from</span>
+        <span class="dcway-card-camp__price-big" data-base-price="{{ first_available.price }}">
+          {%- if price_min == 0 and price_max == 0 -%}
+            Free
+          {%- else -%}
+            {{ price_min | money_without_trailing_zeros | remove: '.00' }}
+          {%- endif -%}
+        </span>
+      {%- endif -%}
+    </div>
+
+    <div class="dcway-card-camp__info">
+      {%- if mf_date_label != blank -%}
+        <p>{{ mf_date_label }}</p>
+      {%- endif -%}
+      {%- if mf_location.name != blank -%}
+        <p>{{ mf_location.name }}</p>
+      {%- endif -%}
+      {%- if mf_age != blank -%}
+        <p>Ages {{ mf_age }}</p>
+      {%- endif -%}
+      {%- if mf_season != blank and mf_date_label == blank -%}
+        <p>{{ mf_season }}</p>
+      {%- endif -%}
+    </div>
+
+    <form
+      action="{{ routes.cart_add_url }}"
+      method="post"
+      enctype="multipart/form-data"
+      class="dcway-card-camp__form"
+      data-currency="{{ cart.currency.iso_code }}"
+      data-money-format="{{ shop.money_format }}"
+    >
+      <input type="hidden" name="form_type" value="product">
+      <input type="hidden" name="utf8" value="✓">
+
+      <div class="dcway-card-camp__options">
+        {%- if has_variants -%}
+          <select
+            class="dcway-card-camp__select"
+            name="id"
+            aria-label="{{ product.options.first | default: 'Option' }}"
+            data-variant-select
+          >
+            {%- for variant in product.variants -%}
+              <option
+                value="{{ variant.id }}"
+                data-price="{{ variant.price }}"
+                {% unless variant.available %}disabled{% endunless %}
+                {% if variant.id == first_available.id %}selected{% endif %}
+              >
+                {{ variant.title }}{% unless variant.available %} — Sold out{% endunless %}
+              </option>
+            {%- endfor -%}
+          </select>
+        {%- else -%}
+          <input type="hidden" name="id" value="{{ first_available.id }}">
+          <div class="dcway-card-camp__select dcway-card-camp__select--static" aria-hidden="true">
+            Single session
+          </div>
+        {%- endif -%}
+
+        <select class="dcway-card-camp__select" name="quantity" aria-label="Quantity" data-qty-select>
+          {%- for n in (1..5) -%}
+            <option value="{{ n }}"{% if n == 1 %} selected{% endif %}>Qty: {{ n }}</option>
+          {%- endfor -%}
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        class="dcway-card-camp__purchase dcway-uppercase"
+        {% if sold_out %}disabled{% endif %}
+        data-cta-label="{{ cta_label }}"
+      >
+        {%- if sold_out -%}Sold out{%- else -%}{{ cta_label }}{%- endif -%}
+      </button>
+    </form>
+  </article>
+{%- else -%}
+<article class="dcway-card-camp">
+  <a class="dcway-card-camp__media-link" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+    <div class="dcway-card-camp__media">
+      {%- if featured != blank -%}
+        {{ featured | image_url: width: 800 | image_tag: loading: 'lazy', alt: product.title, width: 400, height: 300 }}
+      {%- else -%}
+        <div class="dcway-card-camp__media-placeholder" aria-hidden="true"></div>
+      {%- endif -%}
+      {%- if mf_kind != blank -%}
+        <span class="dcway-card-camp__kind dcway-uppercase">{{ mf_kind }}</span>
+      {%- endif -%}
+    </div>
+  </a>
+
+  <div class="dcway-card-camp__body">
+    <h3 class="dcway-card-camp__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    {%- if show_meta -%}
+      {%- assign meta_parts = '' -%}
+      {%- if mf_age != blank -%}
+        {%- assign meta_parts = meta_parts | append: '<span>' | append: mf_age | append: '</span>' -%}
+      {%- endif -%}
+      {%- if mf_season != blank -%}
+        {%- if meta_parts != '' -%}{%- assign meta_parts = meta_parts | append: '<span aria-hidden="true">·</span>' -%}{%- endif -%}
+        {%- assign meta_parts = meta_parts | append: '<span>' | append: mf_season | append: '</span>' -%}
+      {%- endif -%}
+      {%- if mf_location.name != blank -%}
+        {%- if meta_parts != '' -%}{%- assign meta_parts = meta_parts | append: '<span aria-hidden="true">·</span>' -%}{%- endif -%}
+        {%- assign meta_parts = meta_parts | append: '<span>' | append: mf_location.name | append: '</span>' -%}
+      {%- endif -%}
+      {%- if meta_parts != '' -%}
+        <p class="dcway-card-camp__meta">{{ meta_parts }}</p>
+      {%- endif -%}
+
+      {%- if mf_date_label != blank -%}
+        <p class="dcway-card-camp__dates">{{ mf_date_label }}</p>
+      {%- endif -%}
+    {%- endif -%}
+
+    <div class="dcway-card-camp__footer">
+      {%- if show_price -%}
+        <p class="dcway-card-camp__price">
+          {%- if price_min == 0 and price_max == 0 -%}
+            <span class="dcway-card-camp__price-free">Free</span>
+          {%- elsif product.price_varies -%}
+            <span class="dcway-card-camp__price-prefix">From</span>
+            <span class="dcway-card-camp__price-value">{{ price_min | money_without_trailing_zeros }}</span>
+          {%- else -%}
+            <span class="dcway-card-camp__price-value">{{ price_min | money_without_trailing_zeros }}</span>
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+
+      <a class="dcway-card-camp__cta button button--primary dcway-uppercase" href="{{ product.url }}">
+        {{ cta_label }}
+      </a>
+    </div>
+  </div>
+</article>
+{%- endif -%}
+
+<style>
+  .dcway-card-camp {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--dcway-muted-bg);
+    color: var(--dcway-text);
+  }
+  .dcway-card-camp__media-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .dcway-card-camp__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--dcway-muted-bg);
+  }
+  .dcway-card-camp__media img,
+  .dcway-card-camp__media-placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .dcway-card-camp__media-placeholder {
+    background: linear-gradient(135deg, var(--dcway-muted-bg) 0%, var(--dcway-muted-bg-2) 100%);
+  }
+  .dcway-card-camp__kind {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--dcway-orange);
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    letter-spacing: 0.06em;
+  }
+  .dcway-card-camp__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 16px 18px 20px;
+    gap: 6px;
+  }
+  .dcway-card-camp__title {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+  .dcway-card-camp__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .dcway-card-camp__title a:hover {
+    color: var(--dcway-orange);
+  }
+  .dcway-card-camp__meta {
+    margin: 2px 0 0;
+    font-size: 0.8125rem;
+    color: var(--dcway-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .dcway-card-camp__dates {
+    margin: 2px 0 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--dcway-text);
+  }
+  .dcway-card-camp__footer {
+    margin-top: auto;
+    padding-top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .dcway-card-camp__price {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dcway-orange);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+  .dcway-card-camp__price-prefix {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--dcway-muted);
+  }
+  .dcway-card-camp__price-free {
+    color: var(--dcway-blue);
+  }
+  .dcway-card-camp__cta {
+    font-size: 0.8125rem;
+    padding: 10px 18px;
+    min-height: 0;
+  }
+
+  /* Compact (WP registration) card */
+  .dcway-card-camp--compact {
+    width: 270px;
+    background-color: #f7f4f2;
+    border: 0;
+    border-radius: 5px;
+    padding: 20px 20px 60px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    margin-bottom: 30px;
+    color: #212121;
+    transition: box-shadow 0.2s ease;
+  }
+  .dcway-card-camp--compact:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+  .dcway-card-camp__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 0 0 auto;
+    width: 100%;
+  }
+  .dcway-card-camp__duration {
+    margin: 0 0 5px;
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.2;
+    color: #212121;
+  }
+  .dcway-card-camp__duration a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .dcway-card-camp__duration a:hover {
+    color: var(--dcway-orange, #ff7200);
+  }
+  .dcway-card-camp__from {
+    font-family: Arial, sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #212121;
+    margin-bottom: 5px;
+  }
+  .dcway-card-camp__price-big {
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--dcway-orange, #ff7200);
+    margin-bottom: 15px;
+  }
+  .dcway-card-camp__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1 0 auto;
+    margin-bottom: 15px;
+    width: 100%;
+  }
+  .dcway-card-camp__info p {
+    font-family: Arial, sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #212121;
+    margin: 5px 0;
+  }
+  .dcway-card-camp__form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .dcway-card-camp__options {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    flex: 0 0 auto;
+  }
+  .dcway-card-camp__select {
+    width: 230px;
+    height: 51px;
+    margin: 5px 0;
+    padding: 0 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #212121;
+  }
+  .dcway-card-camp__select--static {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fafafa;
+    color: #666;
+    font-style: italic;
+  }
+  .dcway-card-camp__purchase {
+    width: 230px;
+    height: 57px;
+    background-color: var(--dcway-orange, #ff7200);
+    color: #fff;
+    border: 2px solid transparent;
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: -28.5px;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .dcway-card-camp__purchase:hover,
+  .dcway-card-camp__purchase:focus {
+    background-color: #fff;
+    color: var(--dcway-orange, #ff7200);
+    border-color: var(--dcway-orange, #ff7200);
+  }
+  .dcway-card-camp__purchase:disabled,
+  .dcway-card-camp__purchase.is-loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #999;
+    color: #fff;
+    border-color: #999;
+  }
+  .dcway-card-camp__purchase.is-success {
+    background-color: #2c8a3a;
+    color: #fff;
+    border-color: #2c8a3a;
+  }
+  @media (max-width: 768px) {
+    .dcway-card-camp--compact {
+      width: 100%;
+      max-width: 320px;
+    }
+  }
+</style>

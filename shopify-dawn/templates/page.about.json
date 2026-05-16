@@ -1,0 +1,185 @@
+{
+  "sections": {
+    "photo_banner": {
+      "type": "about-photo-banner",
+      "settings": {
+        "focal_point": "center center",
+        "height_desktop": 480,
+        "height_mobile": 240,
+        "color_scheme": "scheme-1",
+        "image": "shopify://shop_images/about-photo-banner.jpg"
+      }
+    },
+    "intro": {
+      "type": "about-intro",
+      "settings": {
+        "heading": "ABOUT DC WAY",
+        "body": "<p>DC Way is a Capitol Hill-based, award-winning recreational soccer club that was created with a clear mission and aligned core values in order to teach more than just the fundamentals of soccer while having an absolute blast. Founded in 2013, we have more than a decade of experience sharing our love of sports with children.</p><p>The goal of our club is to teach children how fun soccer can be! DC Way's passionate and qualified coaches provide the perfect pressure-free environment for covering all aspects of children's development including physical, mental, social-emotional, and communication. As we constantly evolve, our program adapts to ensure that the magic of the beautiful game never fades for our young players.</p><p>But wait, there's more! We started as an after-school soccer program, but our journey didn't stop there. Thanks to the overwhelming support and enthusiasm from parents who witnessed their children's incredible progress, we've expanded to offer an impressive lineup of soccer programs for children aged 3–14.</p><p>Ready to join the DC Way fun? Our programs run all year round, including weekdays and weekends. We've got you covered during the school year and even offer mind-blowing holiday programs that'll leave you wanting more.</p><p>DC Way is where soccer dreams come true, where skills soar, and where unforgettable memories are made!</p>",
+        "padding_top": 64,
+        "padding_bottom": 32,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "why_soccer": {
+      "type": "about-why-soccer",
+      "blocks": {
+        "new_skills": {
+          "type": "feature",
+          "settings": {
+            "title": "NEW SKILLS",
+            "body": "<p>By choosing soccer, your child sets foot on a path that cultivates self-confidence, nurtures lifelong friendships, and instills invaluable life and physical skills.</p>"
+          }
+        },
+        "affordability": {
+          "type": "feature",
+          "settings": {
+            "title": "AFFORDABILITY",
+            "body": "<p>Soccer is a sport that's both exciting and accessible. With just a ball and minimal gear, it's easy for families to join in without a big expense.</p>"
+          }
+        },
+        "culture": {
+          "type": "feature",
+          "settings": {
+            "title": "CULTURE",
+            "body": "<p>Soccer is a sport with universal appeal — a game that connects communities, builds friendships, and teaches valuable life skills.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "new_skills",
+        "affordability",
+        "culture"
+      ],
+      "settings": {
+        "heading": "WHY SOCCER?",
+        "padding_top": 48,
+        "padding_bottom": 64,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "what_makes": {
+      "type": "about-what-makes",
+      "blocks": {
+        "coaches": {
+          "type": "item",
+          "settings": {
+            "title": "Exceptional Coaches",
+            "body": "<p>We go above and beyond to provide our coaches with top-notch training and resources, ensuring they deliver nothing but the best. Each class is approached with the same passion and enthusiasm as if it were their very first!</p>"
+          }
+        },
+        "excellence": {
+          "type": "item",
+          "settings": {
+            "title": "Culture of Excellence",
+            "body": "<p>We prioritize sportsmanship and put our players first, creating a positive learning environment where every child can thrive. We genuinely care about each and every student in our programs and are committed to their success.</p>"
+          }
+        },
+        "connections": {
+          "type": "item",
+          "settings": {
+            "title": "Building Strong Connections",
+            "body": "<p>Our relationships extend beyond the game. We work closely with parents and families to ensure that everyone feels welcomed and valued. By cultivating a supportive culture, we're creating a community where your child can feel safe, motivated, and empowered to reach new heights.</p>"
+          }
+        },
+        "curriculum": {
+          "type": "item",
+          "settings": {
+            "title": "Dynamic Training Curriculum",
+            "body": "<p>Each session at DC Way is an adventure in learning, filled with engaging drills, fun games, and invaluable life lessons. Our curriculum is designed to help players of all levels progress steadily, with a focus on fundamentals, teamwork, and skill development.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "coaches",
+        "excellence",
+        "connections",
+        "curriculum"
+      ],
+      "settings": {
+        "heading_lead": "WHAT MAKES DC WAY",
+        "heading_accent": "DIFFERENT?",
+        "padding_top": 64,
+        "padding_bottom": 80,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "mission_vision": {
+      "type": "about-mission-vision",
+      "settings": {
+        "mission_heading": "MISSION",
+        "mission_body": "<p>DC Way's mission is to help develop the game of soccer in the DC area and bring opportunities for all children to play and enjoy the beautiful game of soccer. We want to develop bright young athletes and help children be active and play, all at an affordable cost.</p>",
+        "vision_heading": "VISION",
+        "vision_body": "<p>To become the preliminary soccer education company in the DC area, and grow as a company to have a wide variety of programming throughout the entire year. Be the best community-enriching youth sports club by cultivating player and life skills through the beautiful game of soccer.</p>",
+        "padding_top": 48,
+        "padding_bottom": 80,
+        "color_scheme": "scheme-1",
+        "main_image": "shopify://shop_images/about-mission-photo.jpg"
+      }
+    },
+    "our_team": {
+      "type": "about-our-team",
+      "settings": {
+        "heading_lead": "OUR",
+        "heading_accent": "TEAM",
+        "empty_state_text": "Team bios coming soon.",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "coaches": {
+      "type": "coaches-grid",
+      "settings": {
+        "heading_lead": "OUR",
+        "heading_accent": "COACHES",
+        "description": "<p>We're not just any team — we're a dream team! Our extraordinary team of coaches is dedicated to creating a fun and enriching soccer experience for children of all ages and skill levels. With each member bringing their unique talents and infectious energy, our coaching squad forms the heart and soul of DC Way's vibrant culture!</p>",
+        "cards_visible_desktop": 3,
+        "empty_state_text": "Coach bios coming soon.",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "gallery_preview": {
+      "type": "gallery-grid",
+      "settings": {
+        "heading_lead": "OUR",
+        "heading_accent": "GALLERY",
+        "subtitle": "Explore the excitement and joy that fills every moment at DC Way!",
+        "view_all_url": "/pages/gallery",
+        "view_all_label": "View all",
+        "cards_visible_desktop": 3,
+        "empty_state_text": "Photo highlights coming soon.",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "contact_cta": {
+      "type": "about-contact-cta",
+      "settings": {
+        "message": "If you have specific questions not addressed here or on our website, please feel free to reach out to us at",
+        "email": "contact@dcway.com",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "locations": {
+      "type": "locations-list",
+      "settings": {
+        "heading_lead": "OUR",
+        "heading_accent": "LOCATIONS",
+        "subtitle": "Your child's next soccer journey is closer than you think—explore our locations!",
+        "map_embed_url": "https://maps.google.com/maps?q=Shirley+Chisholm+Elementary+School+1001+G+Street+SE+Washington+DC+20003&output=embed",
+        "map_title": "DC Way locations map",
+        "empty_state_text": "Locations coming soon.",
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "photo_banner",
+    "intro",
+    "why_soccer",
+    "what_makes",
+    "mission_vision",
+    "our_team",
+    "coaches",
+    "gallery_preview",
+    "contact_cta",
+    "locations"
+  ]
+}

@@ -1,0 +1,526 @@
+{%- comment -%}
+  Registration page conversion surface.
+
+  Blocks-based: each `group` block renders one collection (e.g. "Summer Camps",
+  "School-Year Camps", "Programs", "Membership") with its own heading + cards.
+  This lets the merchant stack everything register-able on one page from the
+  theme editor without authoring extra sections.
+{%- endcomment -%}
+
+{%- liquid
+  assign cols = section.settings.columns_desktop | default: 4
+-%}
+
+<div class="dcway-registration-grid color-{{ section.settings.color_scheme }} gradient">
+  <div class="dcway-container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="dcway-registration-grid__heading dcway-uppercase">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.intro_text != blank -%}
+      <div class="dcway-registration-grid__intro rte">{{ section.settings.intro_text }}</div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign source = block.settings.collection
+          assign limit = block.settings.product_limit | default: 12
+          assign block_cols = block.settings.columns_desktop | default: cols
+          assign cta = block.settings.cta_label | default: 'Register'
+          assign reg_category = block.settings.reg_category | default: 'camps'
+          assign anchor_id = block.settings.anchor_id
+          if anchor_id == blank
+            if source != blank
+              assign anchor_id = 'reg-group-' | append: source.handle
+            else
+              assign anchor_id = 'reg-group-' | append: block.id
+            endif
+          endif
+        -%}
+        <section
+          class="dcway-registration-grid__group"
+          id="{{ anchor_id }}"
+          data-reg-category="{{ reg_category }}"
+          {{ block.shopify_attributes }}
+        >
+          {%- if block.settings.group_heading != blank -%}
+            <h3 class="dcway-registration-grid__group-heading dcway-uppercase">
+              {{ block.settings.group_heading }}
+            </h3>
+          {%- endif -%}
+
+          {%- if block.settings.group_subheading != blank -%}
+            <p class="dcway-registration-grid__group-sub">{{ block.settings.group_subheading }}</p>
+          {%- endif -%}
+
+          {%- if source != blank and source.products_count > 0 -%}
+            {%- if block.settings.show_location_filter -%}
+              {%- assign loc_handles = '' -%}
+              {%- assign loc_labels = '' -%}
+              {%- for product in source.products limit: limit -%}
+                {%- assign loc = product.metafields.dcway.location.value -%}
+                {%- if loc != blank and loc.name != blank -%}
+                  {%- assign loc_handle = loc.name | handle -%}
+                  {%- unless loc_handles contains loc_handle -%}
+                    {%- if loc_handles != '' -%}
+                      {%- assign loc_handles = loc_handles | append: '|' -%}
+                      {%- assign loc_labels = loc_labels | append: '|' -%}
+                    {%- endif -%}
+                    {%- assign loc_handles = loc_handles | append: loc_handle -%}
+                    {%- assign loc_labels = loc_labels | append: loc.name -%}
+                  {%- endunless -%}
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if loc_handles != '' -%}
+                {%- assign loc_handle_arr = loc_handles | split: '|' -%}
+                {%- assign loc_label_arr = loc_labels | split: '|' -%}
+                <div class="dcway-registration-grid__locations" role="tablist" aria-label="Filter by location">
+                  <button type="button" class="dcway-registration-grid__loc-btn is-active" data-location="" aria-pressed="true">All Locations</button>
+                  {%- for h in loc_handle_arr -%}
+                    <button type="button" class="dcway-registration-grid__loc-btn" data-location="{{ h }}" aria-pressed="false">{{ loc_label_arr[forloop.index0] }}</button>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            {%- endif -%}
+
+            <ul class="dcway-registration-grid__grid" role="list" data-cols="{{ block_cols }}">
+              {%- for product in source.products limit: limit -%}
+                {%- assign card_loc = product.metafields.dcway.location.value -%}
+                {%- assign card_loc_handle = '' -%}
+                {%- if card_loc != blank and card_loc.name != blank -%}
+                  {%- assign card_loc_handle = card_loc.name | handle -%}
+                {%- endif -%}
+                <li class="dcway-registration-grid__item" data-location="{{ card_loc_handle }}">
+                  {%- render 'card-camp',
+                    product: product,
+                    cta_label: cta,
+                    show_price: block.settings.show_price,
+                    show_meta: block.settings.show_meta,
+                    style: 'compact'
+                  -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+
+            {%- if block.settings.show_view_all and source.url != blank -%}
+              <div class="dcway-registration-grid__more">
+                <a class="button dcway-uppercase" href="{{ source.url }}">
+                  {{ block.settings.view_all_label | default: 'View all' }}
+                </a>
+              </div>
+            {%- endif -%}
+          {%- else -%}
+            <p class="dcway-registration-grid__empty">{{ block.settings.empty_state_text }}</p>
+          {%- endif -%}
+        </section>
+      {%- endfor -%}
+    {%- else -%}
+      <p class="dcway-registration-grid__empty">
+        Add a “Collection group” block from the theme editor to start listing camps and programs here.
+      </p>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-registration-grid {
+    padding-block: 56px;
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__heading {
+    margin: 0 0 12px;
+    font-size: 2.25rem;
+    line-height: 1.1;
+    font-weight: 700;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__intro {
+    margin: 0 auto 40px;
+    max-width: 760px;
+    text-align: center;
+    color: var(--dcway-muted);
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__group {
+    margin-top: 48px;
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__group:first-of-type {
+    margin-top: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__group-heading {
+    margin: 0 0 6px;
+    font-size: 1.5rem;
+    line-height: 1.15;
+    font-weight: 700;
+    color: var(--dcway-orange);
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__group-sub {
+    margin: 0 0 20px;
+    font-size: 0.9375rem;
+    color: var(--dcway-muted);
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__locations {
+    position: sticky;
+    top: 100px;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 0;
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__loc-btn {
+    flex: 1 1 150px;
+    min-width: 120px;
+    max-width: 200px;
+    min-height: 45px;
+    background-color: #fff;
+    border: 0;
+    color: #212121;
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
+    font-weight: 700;
+    font-size: clamp(14px, 1.5vw, 18px);
+    line-height: 1.2;
+    cursor: pointer;
+    padding: 10px 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__loc-btn:hover,
+  #shopify-section-{{ section.id }} .dcway-registration-grid__loc-btn.is-active {
+    background-color: var(--dcway-orange, #ff7200);
+    color: #fff;
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__item[hidden] {
+    display: none !important;
+  }
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .dcway-registration-grid__locations {
+      position: static;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    #shopify-section-{{ section.id }} .dcway-registration-grid__loc-btn {
+      flex: none;
+      width: 100%;
+      max-width: none;
+    }
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__grid {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px 30px;
+    /* row-gap larger to accommodate the bottom-overflow purchase button */
+    row-gap: 50px;
+    width: 100%;
+    max-width: calc(270px * 4 + 30px * 3);
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__item {
+    display: flex;
+    list-style: none;
+    width: 270px;
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__item > * {
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__empty {
+    text-align: center;
+    color: var(--dcway-muted);
+    font-style: italic;
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-registration-grid__more {
+    margin-top: 24px;
+    text-align: center;
+  }
+
+  @media (max-width: 1200px) {
+    #shopify-section-{{ section.id }} .dcway-registration-grid__grid[data-cols='4'],
+    #shopify-section-{{ section.id }} .dcway-registration-grid__grid {
+      max-width: calc(270px * 3 + 30px * 2);
+    }
+  }
+  @media (max-width: 900px) {
+    #shopify-section-{{ section.id }} .dcway-registration-grid__grid {
+      max-width: calc(270px * 2 + 30px);
+    }
+  }
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .dcway-registration-grid__grid {
+      max-width: 100%;
+      gap: 50px 15px;
+    }
+    #shopify-section-{{ section.id }} .dcway-registration-grid__item {
+      width: 100%;
+      max-width: 320px;
+      justify-content: center;
+    }
+  }
+{%- endstyle -%}
+
+<script>
+  (function () {
+    var root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
+
+    // Location filter buttons
+    root.querySelectorAll('.dcway-registration-grid__group').forEach(function (group) {
+      var buttons = group.querySelectorAll('.dcway-registration-grid__loc-btn');
+      if (!buttons.length) return;
+      var items = group.querySelectorAll('.dcway-registration-grid__item');
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var target = btn.getAttribute('data-location') || '';
+          buttons.forEach(function (b) {
+            var active = b === btn;
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-pressed', active ? 'true' : 'false');
+          });
+          items.forEach(function (item) {
+            var loc = item.getAttribute('data-location') || '';
+            item.hidden = target !== '' && loc !== target;
+          });
+        });
+      });
+    });
+
+    // Variant change → update displayed price
+    function formatMoney(cents, currency) {
+      try {
+        return new Intl.NumberFormat(undefined, {
+          style: 'currency',
+          currency: currency || 'USD',
+          maximumFractionDigits: 0
+        }).format(cents / 100);
+      } catch (e) {
+        return '$' + (cents / 100).toFixed(0);
+      }
+    }
+    root.querySelectorAll('.dcway-card-camp__form').forEach(function (form) {
+      var variantSelect = form.querySelector('[data-variant-select]');
+      var priceEl = form.closest('.dcway-card-camp').querySelector('.dcway-card-camp__price-big');
+      if (!variantSelect || !priceEl) return;
+      var currency = form.getAttribute('data-currency') || 'USD';
+      variantSelect.addEventListener('change', function () {
+        var opt = variantSelect.options[variantSelect.selectedIndex];
+        var cents = parseInt(opt.getAttribute('data-price'), 10);
+        if (!isNaN(cents)) priceEl.textContent = formatMoney(cents, currency);
+      });
+    });
+
+    // Inline add-to-cart
+    root.addEventListener('submit', function (e) {
+      var form = e.target.closest('.dcway-card-camp__form');
+      if (!form) return;
+      e.preventDefault();
+      var btn = form.querySelector('.dcway-card-camp__purchase');
+      if (!btn || btn.disabled) return;
+      var originalLabel = btn.getAttribute('data-cta-label') || btn.textContent;
+      btn.disabled = true;
+      btn.classList.add('is-loading');
+      btn.textContent = 'Adding…';
+
+      var formData = new FormData(form);
+      fetch(window.Shopify && window.Shopify.routes && window.Shopify.routes.root
+              ? window.Shopify.routes.root + 'cart/add.js'
+              : '/cart/add.js',
+            { method: 'POST', body: formData, credentials: 'same-origin' })
+        .then(function (r) {
+          if (!r.ok) return r.json().then(function (j) { throw new Error(j.description || j.message || 'Add to cart failed'); });
+          return r.json();
+        })
+        .then(function () {
+          btn.classList.remove('is-loading');
+          btn.classList.add('is-success');
+          btn.textContent = 'Added ✓';
+          // Trigger native Dawn cart refresh if available, else dispatch a generic event
+          document.dispatchEvent(new CustomEvent('cart:refresh'));
+          if (window.PUB_SUB_EVENTS && window.publish) {
+            window.publish(window.PUB_SUB_EVENTS.cartUpdate, { source: 'dcway-card-camp' });
+          }
+          setTimeout(function () {
+            btn.classList.remove('is-success');
+            btn.disabled = false;
+            btn.textContent = originalLabel;
+          }, 1800);
+        })
+        .catch(function (err) {
+          btn.classList.remove('is-loading');
+          btn.textContent = (err && err.message) ? 'Error' : 'Error';
+          setTimeout(function () {
+            btn.disabled = false;
+            btn.textContent = originalLabel;
+          }, 2000);
+          console.error('[card-camp] add-to-cart failed:', err);
+        });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Registration (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Page heading",
+      "default": "Registration"
+    },
+    {
+      "type": "richtext",
+      "id": "intro_text",
+      "label": "Intro text",
+      "default": "<p>Sign up for camps, programs, leagues, and memberships below.</p>"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Default columns on desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4,
+      "info": "Each block can override this."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "group",
+      "name": "Collection group",
+      "settings": [
+        {
+          "type": "text",
+          "id": "group_heading",
+          "label": "Group heading",
+          "default": "Summer Camps"
+        },
+        {
+          "type": "text",
+          "id": "group_subheading",
+          "label": "Group subheading",
+          "default": "Weekly camps June through August."
+        },
+        {
+          "type": "select",
+          "id": "reg_category",
+          "label": "Category (for tab filtering)",
+          "options": [
+            { "value": "camps", "label": "Camps" },
+            { "value": "programs", "label": "Programs" }
+          ],
+          "default": "camps"
+        },
+        {
+          "type": "text",
+          "id": "anchor_id",
+          "label": "Anchor ID (optional)",
+          "info": "Leave blank to auto-generate from the collection handle (e.g. reg-group-camps-summer)."
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "range",
+          "id": "product_limit",
+          "label": "Maximum cards",
+          "min": 4,
+          "max": 24,
+          "step": 2,
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "columns_desktop",
+          "label": "Columns on desktop",
+          "min": 2,
+          "max": 4,
+          "step": 1,
+          "default": 4
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "Card CTA label",
+          "default": "Register"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_price",
+          "label": "Show price",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_meta",
+          "label": "Show meta line (age · season · location)",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_location_filter",
+          "label": "Show location filter buttons",
+          "info": "Renders one button per unique location.name metaobject value above the cards.",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_view_all",
+          "label": "Show 'View all' button",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "view_all_label",
+          "label": "'View all' label",
+          "default": "View all"
+        },
+        {
+          "type": "text",
+          "id": "empty_state_text",
+          "label": "Empty-state text",
+          "default": "Nothing to register for here yet."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Registration (DC Way)",
+      "blocks": [
+        {
+          "type": "group",
+          "settings": {
+            "group_heading": "Summer Camps",
+            "group_subheading": "Weekly camps June through August."
+          }
+        },
+        {
+          "type": "group",
+          "settings": {
+            "group_heading": "Programs",
+            "group_subheading": "Year-round training and clinics."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

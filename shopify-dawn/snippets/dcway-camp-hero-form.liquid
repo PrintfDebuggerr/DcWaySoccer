@@ -1,0 +1,53 @@
+{%- comment -%}
+  Variant select + Add to cart button for camp-hero. Extracted so both layouts
+  (side_by_side, image_banner_overlay) reuse the same markup.
+
+  Inputs:
+    product, current_variant, section
+{%- endcomment -%}
+
+<product-form class="dcway-camp-hero__form">
+  {%- form 'product', product, id: 'dcway-camp-hero-form', class: 'form', novalidate: 'novalidate' -%}
+    {%- if product.has_only_default_variant == false -%}
+      <label for="dcway-camp-hero-variant-select" class="dcway-camp-hero__label dcway-uppercase">
+        {{ product.options_with_values.first.name }}
+      </label>
+      <select
+        id="dcway-camp-hero-variant-select"
+        class="dcway-camp-hero__select select__select"
+        name="id"
+        data-variant-select
+      >
+        {%- for variant in product.variants -%}
+          <option
+            value="{{ variant.id }}"
+            data-price="{{ variant.price | money_without_trailing_zeros | escape }}"
+            {%- if variant == current_variant %} selected{% endif -%}
+            {%- unless variant.available %} disabled{% endunless -%}
+          >
+            {{ variant.title -}}
+            {%- unless variant.available %} — Sold out{% endunless -%}
+            {%- if variant.available and variant.inventory_management == 'shopify' and variant.inventory_quantity > 0 and variant.inventory_quantity <= 5 -%}
+              {{ ' ' }}— only {{ variant.inventory_quantity }} left
+            {%- endif -%}
+          </option>
+        {%- endfor -%}
+      </select>
+    {%- else -%}
+      <input type="hidden" name="id" value="{{ current_variant.id }}">
+    {%- endif -%}
+
+    <button
+      type="submit"
+      name="add"
+      class="dcway-camp-hero__cta button button--primary button--full-width dcway-uppercase"
+      {%- unless current_variant.available %} disabled{% endunless -%}
+    >
+      <span data-add-button-label>
+        {%- if current_variant.available -%}{{ section.settings.cta_label | default: 'Register' }}{%- else -%}Sold out{%- endif -%}
+      </span>
+      <span class="dcway-visually-hidden" data-loading-spinner-label>Loading…</span>
+      {%- render 'loading-spinner' -%}
+    </button>
+  {%- endform -%}
+</product-form>

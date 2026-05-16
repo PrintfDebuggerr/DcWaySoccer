@@ -1,0 +1,78 @@
+/*
+ * dcway-base.css — DC Way Soccer brand tokens and minimal global helpers.
+ *
+ * Rules:
+ * 1. Define brand tokens as CSS custom properties on :root.
+ * 2. Provide a tiny set of opt-in helpers (.dcway-uppercase, .dcway-container).
+ * 3. NO global selectors that target Dawn primitives (no bare .button, h1, a).
+ * 4. Section-scoped styles live inside each section's <style> block, scoped to
+ *    #shopify-section-{{ section.id }} .dcway-foo {}.
+ *
+ * Keep this file under ~300 lines.
+ */
+
+:root {
+  /* Brand palette */
+  --dcway-orange: #ff7200;
+  --dcway-orange-hover: #e66700;
+  --dcway-blue: #2180a8;
+  --dcway-blue-hover: #1b6f93;
+  --dcway-dark: #2c2c2c;
+  --dcway-text: #333333;
+  --dcway-muted: #737373;
+  --dcway-muted-bg: #f2f2f2;
+  --dcway-muted-bg-2: #e5e5e5;
+  --dcway-white: #ffffff;
+
+  /* Layout */
+  --dcway-container-max: 1170px;
+  --dcway-section-py-desktop: 64px;
+  --dcway-section-py-mobile: 40px;
+  --dcway-card-gap: 20px;
+
+  /* Typography helpers */
+  --dcway-tracking-button: 0.04em;
+}
+
+/* Opt-in helper: brand container clamp. Apply to a .dcway-container wrapper
+   inside a custom section when its content needs to honor DC Way's 1170 max-width
+   regardless of Dawn's page_width setting (which steps in 100px increments). */
+.dcway-container {
+  max-width: var(--dcway-container-max);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+/* Opt-in helper: uppercase + tracking, used on CTAs and section eyebrows.
+   Add the class explicitly — never apply globally to .button. */
+.dcway-uppercase {
+  text-transform: uppercase;
+  letter-spacing: var(--dcway-tracking-button);
+}
+
+/* Opt-in helper: orange accent text (prices, eyebrows, CTAs in card titles). */
+.dcway-accent {
+  color: var(--dcway-orange);
+}
+
+/* Opt-in helper: visually-hidden but available to screen readers.
+   Mirrors Dawn's .visually-hidden so custom sections don't need to depend on it. */
+.dcway-visually-hidden {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Membership page — WP parity: section headings render in DC Way orange.
+   Why: original WP page wraps every H3 in <span style="color:#ff6600">. */
+.page-membership .rich-text__heading,
+.page-membership .image-with-text__heading,
+.page-membership .multicolumn .title {
+  color: var(--dcway-orange);
+}

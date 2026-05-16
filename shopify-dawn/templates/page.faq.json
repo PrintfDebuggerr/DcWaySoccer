@@ -1,0 +1,262 @@
+{
+  "sections": {
+    "hero": {
+      "type": "rich-text",
+      "blocks": {
+        "eyebrow": {
+          "type": "caption",
+          "settings": {
+            "caption": "Got a question?",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "title": {
+          "type": "heading",
+          "settings": {
+            "heading": "FREQUENTLY ASKED QUESTIONS",
+            "heading_size": "h0"
+          }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Everything parents ask us most — about camps, programs, registration, and how DC Way runs day to day. Can't find your answer? Reach out on our contact page.</p>"
+          }
+        }
+      },
+      "block_order": ["eyebrow", "title", "body"],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-1",
+        "full_width": true,
+        "padding_top": 56,
+        "padding_bottom": 24
+      }
+    },
+    "faq_general": {
+      "type": "collapsible-content",
+      "blocks": {
+        "q_who": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Who is DC Way for?",
+            "icon": "question_mark",
+            "row_content": "<p>Boys and girls ages 4–13 across the DC, MD, and VA area. Our programs are non-competitive and welcome players of every skill level — from absolute beginners to seasoned competitive players.</p>"
+          }
+        },
+        "q_locations": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Where are your locations?",
+            "icon": "question_mark",
+            "row_content": "<p>We run programs across multiple Capitol Hill fields and DC-area sites. See the <a href=\"/pages/contact\">Locations list</a> at the bottom of most pages for addresses and hours.</p>"
+          }
+        },
+        "q_membership": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Do I need a membership to register?",
+            "icon": "question_mark",
+            "row_content": "<p>No — membership is optional. Anyone can register for camps, leagues, and clinics. Members simply receive a 10% discount on every program for a year. <a href=\"/pages/membership\">Learn about membership.</a></p>"
+          }
+        }
+      },
+      "block_order": ["q_who", "q_locations", "q_membership"],
+      "settings": {
+        "caption": "General",
+        "heading": "General",
+        "heading_size": "h1",
+        "heading_alignment": "center",
+        "layout": "none",
+        "color_scheme": "scheme-1",
+        "open_first_collapsible_row": true,
+        "padding_top": 48,
+        "padding_bottom": 32
+      }
+    },
+    "faq_camps": {
+      "type": "collapsible-content",
+      "blocks": {
+        "q_offer": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What do we offer at Summer Camp?",
+            "icon": "question_mark",
+            "row_content": "<p>Weekly soccer camps Monday through Friday in a fun, positive, non-competitive, safe environment. Kids grow technically and socially while staying active all summer long.</p>"
+          }
+        },
+        "q_ages": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What ages can attend camp?",
+            "icon": "question_mark",
+            "row_content": "<p>Boys and girls ages 4–13, split into age- and skill-appropriate groups. 4-year-olds must be potty trained and able to follow directions.</p>"
+          }
+        },
+        "q_bring": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What should my child bring?",
+            "icon": "question_mark",
+            "row_content": "<p>Soccer cleats or sneakers, shin guards, a refillable water bottle, sunscreen, a hat, and a packed lunch. We provide soccer balls and all equipment.</p>"
+          }
+        },
+        "q_pricing": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What are the camp options and pricing?",
+            "icon": "question_mark",
+            "row_content": "<p><strong>Full Week</strong> — 9:00 am to 3:00 pm.<br><strong>Extended Full Week</strong> — 9:00 am to 5:30 pm with before- and after-care available. Pricing is listed on each camp page.</p>"
+          }
+        }
+      },
+      "block_order": ["q_offer", "q_ages", "q_bring", "q_pricing"],
+      "settings": {
+        "caption": "Camps",
+        "heading": "Camps",
+        "heading_size": "h1",
+        "heading_alignment": "center",
+        "layout": "none",
+        "color_scheme": "scheme-2",
+        "open_first_collapsible_row": false,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "faq_programs": {
+      "type": "collapsible-content",
+      "blocks": {
+        "q_difference": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What's the difference between a camp and a program?",
+            "icon": "question_mark",
+            "row_content": "<p>Camps run for a full week (or single day) during school breaks. Programs — leagues, clinics, after-school, private lessons — run weekly throughout the school year.</p>"
+          }
+        },
+        "q_skill_level": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Do programs require prior experience?",
+            "icon": "question_mark",
+            "row_content": "<p>No. Every program is open to first-timers as well as experienced players. We group players by age and skill so everyone gets the right level of challenge.</p>"
+          }
+        },
+        "q_missed": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What if my child misses a session?",
+            "icon": "question_mark",
+            "row_content": "<p>We don't pro-rate for missed sessions, but coaches are happy to catch your player up on what they missed in the next class.</p>"
+          }
+        }
+      },
+      "block_order": ["q_difference", "q_skill_level", "q_missed"],
+      "settings": {
+        "caption": "Programs",
+        "heading": "Programs",
+        "heading_size": "h1",
+        "heading_alignment": "center",
+        "layout": "none",
+        "color_scheme": "scheme-1",
+        "open_first_collapsible_row": false,
+        "padding_top": 48,
+        "padding_bottom": 32
+      }
+    },
+    "faq_registration": {
+      "type": "collapsible-content",
+      "blocks": {
+        "q_register": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "How do I register my child?",
+            "icon": "question_mark",
+            "row_content": "<p>Visit the <a href=\"/pages/Registration\">Registration page</a>, pick the camp or program, choose the week or session, and check out. You'll receive a confirmation email with everything you need.</p>"
+          }
+        },
+        "q_payment": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What payment methods do you accept?",
+            "icon": "question_mark",
+            "row_content": "<p>All major credit and debit cards through our secure Shopify checkout, plus Shop Pay, Apple Pay, and Google Pay where supported.</p>"
+          }
+        },
+        "q_refund": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What is the refund and transfer policy?",
+            "icon": "question_mark",
+            "row_content": "<p>Cancellations 14+ days before the start date are eligible for a full refund less a processing fee. Within 14 days, we'll transfer your spot to another week if availability allows. <a href=\"/pages/contact\">Contact us</a> for help.</p>"
+          }
+        },
+        "q_waitlist": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What if a camp or program is sold out?",
+            "icon": "question_mark",
+            "row_content": "<p>Get in touch on our <a href=\"/pages/contact\">contact page</a> and we'll add you to the waitlist. Spots open up regularly as schedules change.</p>"
+          }
+        }
+      },
+      "block_order": ["q_register", "q_payment", "q_refund", "q_waitlist"],
+      "settings": {
+        "caption": "Registration & Payment",
+        "heading": "Registration & Payment",
+        "heading_size": "h1",
+        "heading_alignment": "center",
+        "layout": "none",
+        "color_scheme": "scheme-2",
+        "open_first_collapsible_row": false,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "contact_cta": {
+      "type": "rich-text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Still have a question?",
+            "heading_size": "h1"
+          }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "text": "<p>We'd love to help. Reach out and we'll get back to you within one business day.</p>"
+          }
+        },
+        "cta": {
+          "type": "button",
+          "settings": {
+            "button_label": "Contact us",
+            "button_link": "shopify://pages/contact",
+            "button_style_secondary": false
+          }
+        }
+      },
+      "block_order": ["heading", "body", "cta"],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-1",
+        "full_width": true,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "faq_general",
+    "faq_camps",
+    "faq_programs",
+    "faq_registration",
+    "contact_cta"
+  ]
+}

@@ -1,0 +1,189 @@
+{%- liquid
+  assign source = section.settings.collection
+  assign limit = section.settings.product_limit | default: 12
+  assign cols = section.settings.columns_desktop | default: 3
+  assign cta = section.settings.cta_label | default: 'View camp'
+-%}
+
+<div class="dcway-camps-grid color-{{ section.settings.color_scheme }} gradient">
+  <div class="dcway-container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="dcway-camps-grid__heading dcway-uppercase">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.intro_text != blank -%}
+      <div class="dcway-camps-grid__intro rte">{{ section.settings.intro_text }}</div>
+    {%- endif -%}
+
+    {%- if source != blank and source.products_count > 0 -%}
+      <ul class="dcway-camps-grid__grid" role="list" data-cols="{{ cols }}">
+        {%- for product in source.products limit: limit -%}
+          <li class="dcway-camps-grid__item">
+            {%- render 'card-camp',
+              product: product,
+              cta_label: cta,
+              show_price: section.settings.show_price,
+              show_meta: section.settings.show_meta
+            -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if section.settings.show_view_all and source.url != blank -%}
+        <div class="dcway-camps-grid__more">
+          <a class="button dcway-uppercase" href="{{ source.url }}">{{ section.settings.view_all_label | default: 'View all' }}</a>
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      <p class="dcway-camps-grid__empty">{{ section.settings.empty_state_text }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-camps-grid {
+    padding-block: 48px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camps-grid__heading {
+    margin: 0 0 12px;
+    font-size: 2rem;
+    line-height: 1.1;
+    font-weight: 700;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-camps-grid__intro {
+    margin: 0 auto 32px;
+    max-width: 720px;
+    text-align: center;
+    color: var(--dcway-muted);
+  }
+  #shopify-section-{{ section.id }} .dcway-camps-grid__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr;
+  }
+  #shopify-section-{{ section.id }} .dcway-camps-grid__item {
+    display: flex;
+  }
+  #shopify-section-{{ section.id }} .dcway-camps-grid__empty {
+    text-align: center;
+    color: var(--dcway-muted);
+    font-style: italic;
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-camps-grid__more {
+    margin-top: 32px;
+    text-align: center;
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .dcway-camps-grid__grid[data-cols='2'] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    #shopify-section-{{ section.id }} .dcway-camps-grid__grid[data-cols='3'] {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    #shopify-section-{{ section.id }} .dcway-camps-grid__grid[data-cols='4'] {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Camps grid (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Summer Camps"
+    },
+    {
+      "type": "richtext",
+      "id": "intro_text",
+      "label": "Intro text",
+      "default": "<p>Choose a week and lock in your spot.</p>"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Pick a camps collection (e.g. Summer Camps, School-Year Camps, One-Day Camps)."
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "Maximum cards",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Card CTA label",
+      "default": "View camp"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_meta",
+      "label": "Show meta line (age · season · location)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View all' button",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "'View all' label",
+      "default": "View all camps"
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty-state text",
+      "default": "Camps coming soon."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Camps grid (DC Way)",
+      "settings": {
+        "heading": "Summer Camps"
+      }
+    }
+  ]
+}
+{% endschema %}

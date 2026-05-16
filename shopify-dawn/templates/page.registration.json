@@ -1,0 +1,142 @@
+{
+  "sections": {
+    "registration_header": {
+      "type": "registration-header",
+      "blocks": {
+        "opt_summer": {
+          "type": "camp_option",
+          "settings": {
+            "label": "Summer Camps",
+            "target_anchor": "reg-group-camps-summer"
+          }
+        },
+        "opt_one_day": {
+          "type": "camp_option",
+          "settings": {
+            "label": "One-Day Camps",
+            "target_anchor": "reg-group-camps-one-day"
+          }
+        },
+        "opt_programs": {
+          "type": "program_option",
+          "settings": {
+            "label": "All Programs",
+            "target_anchor": "reg-group-programs"
+          }
+        },
+        "opt_clinics": {
+          "type": "program_option",
+          "settings": {
+            "label": "Skills Clinics",
+            "target_anchor": "reg-group-programs-clinics"
+          }
+        },
+        "opt_private": {
+          "type": "program_option",
+          "settings": {
+            "label": "Private Lessons",
+            "target_anchor": "reg-group-programs-private"
+          }
+        },
+        "opt_after_school": {
+          "type": "program_option",
+          "settings": {
+            "label": "After-School",
+            "target_anchor": "reg-group-programs-after-school"
+          }
+        }
+      },
+      "block_order": [
+        "opt_summer",
+        "opt_one_day",
+        "opt_programs",
+        "opt_clinics",
+        "opt_private",
+        "opt_after_school"
+      ],
+      "settings": {
+        "heading_main": "REGISTRATION",
+        "heading_sub": "PAGE",
+        "tab_camps_label": "Camps",
+        "tab_programs_label": "Programs",
+        "camps_dropdown_label": "Choose a Camp",
+        "programs_dropdown_label": "Choose a Program",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "registration_grid": {
+      "type": "registration-grid",
+      "blocks": {
+        "summer_camps": {
+          "type": "group",
+          "settings": {
+            "group_heading": "Summer Camps",
+            "group_subheading": "Weekly camps June through August.",
+            "reg_category": "camps",
+            "anchor_id": "reg-group-camps-summer",
+            "collection": "camps-summer",
+            "product_limit": 12,
+            "columns_desktop": 4,
+            "cta_label": "Register",
+            "show_price": true,
+            "show_meta": true,
+            "show_view_all": false,
+            "view_all_label": "View all",
+            "empty_state_text": "Nothing to register for here yet."
+          }
+        },
+        "one_day_camps": {
+          "type": "group",
+          "settings": {
+            "group_heading": "One-Day Camps",
+            "group_subheading": "Single-session camps during the school year.",
+            "reg_category": "camps",
+            "anchor_id": "reg-group-camps-one-day",
+            "collection": "camps-one-day",
+            "product_limit": 12,
+            "columns_desktop": 4,
+            "cta_label": "Register",
+            "show_price": true,
+            "show_meta": true,
+            "show_view_all": false,
+            "view_all_label": "View all",
+            "empty_state_text": "No one-day camps scheduled yet."
+          }
+        },
+        "programs": {
+          "type": "group",
+          "settings": {
+            "group_heading": "Programs",
+            "group_subheading": "Year-round training, clinics, and leagues.",
+            "reg_category": "programs",
+            "anchor_id": "reg-group-programs",
+            "collection": "programs",
+            "product_limit": 12,
+            "columns_desktop": 4,
+            "cta_label": "Register",
+            "show_price": true,
+            "show_meta": true,
+            "show_view_all": false,
+            "view_all_label": "View all",
+            "empty_state_text": "Nothing to register for here yet."
+          }
+        }
+      },
+      "block_order": [
+        "summer_camps",
+        "one_day_camps",
+        "programs"
+      ],
+      "settings": {
+        "heading": "",
+        "intro_text": "",
+        "columns_desktop": 4,
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "registration_header",
+    "registration_grid"
+  ]
+}

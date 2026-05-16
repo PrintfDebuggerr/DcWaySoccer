@@ -1,0 +1,102 @@
+{
+  "sections": {
+    "hero": {
+      "type": "rich-text",
+      "blocks": {
+        "eyebrow": {
+          "type": "caption",
+          "settings": {
+            "caption": "From DC Way families",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "title": {
+          "type": "heading",
+          "settings": {
+            "heading": "TESTIMONIALS",
+            "heading_size": "h0"
+          }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "text": "<p>What parents and players say about their seasons with DC Way Soccer.</p>"
+          }
+        }
+      },
+      "block_order": ["eyebrow", "title", "body"],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-1",
+        "full_width": true,
+        "padding_top": 56,
+        "padding_bottom": 24
+      }
+    },
+    "testimonial_list": {
+      "type": "testimonial-list",
+      "settings": {
+        "heading": "What Parents Say",
+        "columns_desktop": 2,
+        "show_rating": false,
+        "empty_state_text": "Testimonials coming soon.",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "register_cta": {
+      "type": "rich-text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Ready to join our team?",
+            "heading_size": "h1"
+          }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "text": "<p>See what your family will be saying after a season with DC Way.</p>"
+          }
+        },
+        "cta": {
+          "type": "button",
+          "settings": {
+            "button_label": "Register now",
+            "button_link": "/pages/Registration",
+            "button_style_secondary": false,
+            "button_label_2": "Browse programs",
+            "button_link_2": "shopify://pages/programs",
+            "button_style_secondary_2": true
+          }
+        }
+      },
+      "block_order": ["heading", "body", "cta"],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-2",
+        "full_width": true,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "locations": {
+      "type": "locations-list",
+      "settings": {
+        "heading": "Our Locations",
+        "columns_desktop": 3,
+        "empty_state_text": "Locations coming soon.",
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "testimonial_list",
+    "register_cta",
+    "locations"
+  ]
+}

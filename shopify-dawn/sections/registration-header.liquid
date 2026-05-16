@@ -1,0 +1,362 @@
+{%- comment -%}
+  WP-style registration header: stacked REGISTRATION/PAGE title, Camps/Programs
+  category tabs, "Choose a ..." subcategory dropdown, hero image on the right.
+
+  Tabs scroll-jump to anchors that registration-grid emits per block.
+  Dropdown options link to those same anchors (or to a collection page if
+  provided).
+{%- endcomment -%}
+
+{%- liquid
+  assign hero = section.settings.hero_image
+  assign tab_camps_label = section.settings.tab_camps_label | default: 'Camps'
+  assign tab_programs_label = section.settings.tab_programs_label | default: 'Programs'
+-%}
+
+<div class="dcway-reg-header color-{{ section.settings.color_scheme }} gradient">
+  <div class="dcway-container dcway-reg-header__container">
+    <div class="dcway-reg-header__left">
+      <div class="dcway-reg-header__titles">
+        <h1 class="dcway-reg-header__title-main">{{ section.settings.heading_main | default: 'REGISTRATION' }}</h1>
+        <h2 class="dcway-reg-header__title-sub">{{ section.settings.heading_sub | default: 'PAGE' }}</h2>
+      </div>
+
+      <div class="dcway-reg-header__tabs" role="tablist">
+        <button
+          type="button"
+          class="dcway-reg-header__tab is-active"
+          role="tab"
+          data-category="camps"
+          aria-selected="true"
+        >
+          {{ tab_camps_label }}
+        </button>
+        <button
+          type="button"
+          class="dcway-reg-header__tab"
+          role="tab"
+          data-category="programs"
+          aria-selected="false"
+        >
+          {{ tab_programs_label }}
+        </button>
+      </div>
+
+      <h3 class="dcway-reg-header__subcat-title" data-camps-label="{{ section.settings.camps_dropdown_label | default: 'Choose a Camp' }}" data-programs-label="{{ section.settings.programs_dropdown_label | default: 'Choose a Program' }}">
+        {{ section.settings.camps_dropdown_label | default: 'Choose a Camp' }}
+      </h3>
+
+      <div class="dcway-reg-header__dropdowns">
+        <select class="dcway-reg-header__select" data-category="camps" aria-label="Choose a Camp">
+          <option value="">All Camps</option>
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'camp_option' and block.settings.target_anchor != blank -%}
+              <option value="{{ block.settings.target_anchor }}">{{ block.settings.label }}</option>
+            {%- endif -%}
+          {%- endfor -%}
+        </select>
+
+        <select class="dcway-reg-header__select" data-category="programs" aria-label="Choose a Program" hidden>
+          <option value="">All Programs</option>
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'program_option' and block.settings.target_anchor != blank -%}
+              <option value="{{ block.settings.target_anchor }}">{{ block.settings.label }}</option>
+            {%- endif -%}
+          {%- endfor -%}
+        </select>
+      </div>
+    </div>
+
+    <div class="dcway-reg-header__right">
+      {%- if hero != blank -%}
+        {{ hero | image_url: width: 1200 | image_tag:
+          loading: 'eager',
+          fetchpriority: 'high',
+          width: 800,
+          height: 533,
+          alt: section.settings.hero_alt | default: 'Registration',
+          class: 'dcway-reg-header__image'
+        }}
+      {%- else -%}
+        <div class="dcway-reg-header__image-placeholder" aria-hidden="true">
+          {{ 'image' | placeholder_svg_tag: 'placeholder-svg dcway-reg-header__image' }}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-reg-header {
+    padding-block: 32px 8px;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: 20px;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__left,
+  #shopify-section-{{ section.id }} .dcway-reg-header__right {
+    flex: 1;
+    min-width: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__titles {
+    margin-bottom: 24px;
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__title-main {
+    font-size: 46px;
+    line-height: 1;
+    font-weight: 700;
+    color: #212121;
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__title-sub {
+    font-size: 36px;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--dcway-orange, #ff7200);
+    margin: 4px 0 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__tabs {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__tab {
+    padding: 15px 30px;
+    background-color: #fff;
+    color: #212121;
+    border: 0;
+    border-radius: 0;
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    min-width: 190px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__tab.is-active,
+  #shopify-section-{{ section.id }} .dcway-reg-header__tab:hover {
+    background-color: var(--dcway-orange, #ff7200);
+    color: #fff;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__subcat-title {
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
+    font-weight: 500;
+    font-size: 32px;
+    letter-spacing: -0.01em;
+    color: #2c2c2c;
+    margin: 0 0 16px;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__select {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 36px 12px 15px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__select[hidden] {
+    display: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__image,
+  #shopify-section-{{ section.id }} .dcway-reg-header__image-placeholder {
+    width: 100%;
+    height: auto;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .dcway-reg-header__container {
+      flex-direction: column-reverse;
+      align-items: stretch;
+    }
+    #shopify-section-{{ section.id }} .dcway-reg-header__title-main {
+      font-size: 36px;
+    }
+    #shopify-section-{{ section.id }} .dcway-reg-header__title-sub {
+      font-size: 28px;
+    }
+    #shopify-section-{{ section.id }} .dcway-reg-header__tabs {
+      gap: 10px;
+    }
+    #shopify-section-{{ section.id }} .dcway-reg-header__tab {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 16px;
+      font-size: 18px;
+    }
+    #shopify-section-{{ section.id }} .dcway-reg-header__subcat-title {
+      font-size: 24px;
+    }
+  }
+{%- endstyle -%}
+
+<script>
+  (function () {
+    var root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
+    var tabs = root.querySelectorAll('.dcway-reg-header__tab');
+    var subTitle = root.querySelector('.dcway-reg-header__subcat-title');
+    var selects = root.querySelectorAll('.dcway-reg-header__select');
+
+    function activate(category) {
+      tabs.forEach(function (t) {
+        var active = t.getAttribute('data-category') === category;
+        t.classList.toggle('is-active', active);
+        t.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      selects.forEach(function (s) {
+        var match = s.getAttribute('data-category') === category;
+        s.hidden = !match;
+      });
+      if (subTitle) {
+        var label = subTitle.getAttribute('data-' + category + '-label');
+        if (label) subTitle.textContent = label;
+      }
+      // Toggle visibility of registration-grid groups marked with data-category
+      document.querySelectorAll('[data-reg-category]').forEach(function (group) {
+        var groupCat = group.getAttribute('data-reg-category');
+        group.hidden = groupCat && groupCat !== category;
+      });
+    }
+
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () {
+        activate(t.getAttribute('data-category'));
+      });
+    });
+
+    selects.forEach(function (s) {
+      s.addEventListener('change', function () {
+        var anchor = s.value;
+        if (!anchor) return;
+        var el = document.getElementById(anchor);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Registration header (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_main",
+      "label": "Main heading",
+      "default": "REGISTRATION"
+    },
+    {
+      "type": "text",
+      "id": "heading_sub",
+      "label": "Sub heading (orange)",
+      "default": "PAGE"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image"
+    },
+    {
+      "type": "text",
+      "id": "hero_alt",
+      "label": "Hero image alt text",
+      "default": "DC Way Soccer players"
+    },
+    {
+      "type": "text",
+      "id": "tab_camps_label",
+      "label": "Camps tab label",
+      "default": "Camps"
+    },
+    {
+      "type": "text",
+      "id": "tab_programs_label",
+      "label": "Programs tab label",
+      "default": "Programs"
+    },
+    {
+      "type": "text",
+      "id": "camps_dropdown_label",
+      "label": "Camps dropdown title",
+      "default": "Choose a Camp"
+    },
+    {
+      "type": "text",
+      "id": "programs_dropdown_label",
+      "label": "Programs dropdown title",
+      "default": "Choose a Program"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "camp_option",
+      "name": "Camp dropdown option",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Option label",
+          "default": "Summer Camp"
+        },
+        {
+          "type": "text",
+          "id": "target_anchor",
+          "label": "Target anchor ID",
+          "info": "ID of the registration-grid group to scroll to (e.g. reg-group-camps-summer).",
+          "default": "reg-group-camps-summer"
+        }
+      ]
+    },
+    {
+      "type": "program_option",
+      "name": "Program dropdown option",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Option label",
+          "default": "Skills Clinics"
+        },
+        {
+          "type": "text",
+          "id": "target_anchor",
+          "label": "Target anchor ID",
+          "info": "ID of the registration-grid group to scroll to (e.g. reg-group-programs).",
+          "default": "reg-group-programs"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Registration header (DC Way)"
+    }
+  ]
+}
+{% endschema %}

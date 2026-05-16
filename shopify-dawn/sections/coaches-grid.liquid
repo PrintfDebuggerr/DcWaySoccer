@@ -1,0 +1,365 @@
+{%- liquid
+  assign entries = shop.metaobjects['coach'].values | sort: 'sort_order'
+  assign count = entries.size
+  assign visible_desktop = section.settings.cards_visible_desktop | default: 3
+-%}
+
+<section
+  class="dcway-coaches color-{{ section.settings.color_scheme }}"
+  data-dcway-coaches
+  data-count="{{ count }}"
+  data-visible="{{ visible_desktop }}"
+  style="--dcway-coaches-visible:{{ visible_desktop }};"
+>
+  <div class="dcway-coaches__inner">
+    <div class="dcway-coaches__intro">
+      <h2 class="dcway-coaches__title">
+        {%- if section.settings.heading_lead != blank -%}
+          <span class="dcway-coaches__title-lead">{{ section.settings.heading_lead }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading_accent != blank -%}
+          <span class="dcway-coaches__title-accent">{{ section.settings.heading_accent }}</span>
+        {%- endif -%}
+      </h2>
+
+      {%- if section.settings.description != blank -%}
+        <div class="dcway-coaches__description rte">{{ section.settings.description }}</div>
+      {%- endif -%}
+
+      {%- if count > visible_desktop -%}
+        <div class="dcway-coaches__controls">
+          <button type="button" class="dcway-coaches__arrow" data-dcway-coaches-prev aria-label="Previous coaches">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4L7 10l5.5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="dcway-coaches__arrow" data-dcway-coaches-next aria-label="Next coaches">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4l5.5 6-5.5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="dcway-coaches__carousel">
+      {%- if count > 0 -%}
+        <div class="dcway-coaches__viewport">
+          <div class="dcway-coaches__track" data-dcway-coaches-track>
+            {%- for entry in entries -%}
+              <article class="dcway-coaches__card" data-index="{{ forloop.index0 }}">
+                <div class="dcway-coaches__photo-wrap">
+                  {%- if entry.photo != blank -%}
+                    {{ entry.photo
+                      | image_url: width: 700
+                      | image_tag:
+                        loading: 'lazy',
+                        widths: '300, 400, 550, 700',
+                        sizes: '(max-width: 749px) 80vw, (max-width: 989px) 40vw, 280px',
+                        class: 'dcway-coaches__photo',
+                        alt: entry.name
+                    }}
+                  {%- else -%}
+                    <div class="dcway-coaches__photo dcway-coaches__photo--placeholder">
+                      {{ 'collection-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  {%- endif -%}
+                </div>
+                <h3 class="dcway-coaches__name">{{ entry.name }}</h3>
+                {%- if entry.role != blank -%}
+                  <p class="dcway-coaches__role">{{ entry.role }}</p>
+                {%- endif -%}
+              </article>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- else -%}
+        <p class="dcway-coaches__empty">{{ section.settings.empty_state_text }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var root = document.currentScript.previousElementSibling;
+    if (!root || !root.matches('[data-dcway-coaches]')) return;
+    var track = root.querySelector('[data-dcway-coaches-track]');
+    if (!track) return;
+
+    var cards = Array.prototype.slice.call(track.querySelectorAll('.dcway-coaches__card'));
+    var count = cards.length;
+
+    function visibleCount() {
+      var w = window.innerWidth;
+      if (w < 750) return 1;
+      if (w < 990) return 2;
+      return parseInt(root.getAttribute('data-visible'), 10) || 3;
+    }
+
+    var index = 0;
+
+    function maxIndex() { return Math.max(0, count - visibleCount()); }
+
+    function apply() {
+      var v = visibleCount();
+      // Reset clamp on resize.
+      if (index > maxIndex()) index = maxIndex();
+      var card = cards[0];
+      if (!card) return;
+      var cardWidth = card.getBoundingClientRect().width;
+      var styles = window.getComputedStyle(track);
+      var gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+      var offset = (cardWidth + gap) * index;
+      track.style.transform = 'translate3d(' + (-offset) + 'px, 0, 0)';
+    }
+
+    var prevBtn = root.querySelector('[data-dcway-coaches-prev]');
+    var nextBtn = root.querySelector('[data-dcway-coaches-next]');
+    if (prevBtn) prevBtn.addEventListener('click', function () {
+      var m = maxIndex();
+      index = index <= 0 ? m : index - 1;
+      apply();
+    });
+    if (nextBtn) nextBtn.addEventListener('click', function () {
+      var m = maxIndex();
+      index = index >= m ? 0 : index + 1;
+      apply();
+    });
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(apply, 120);
+    });
+
+    apply();
+  })();
+</script>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-coaches {
+    background: #ffffff;
+    color: #1a1a1a;
+    padding: clamp(56px, 7vw, 96px) clamp(24px, 4vw, 64px);
+    position: relative;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-coaches__inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    gap: clamp(32px, 4vw, 72px);
+    align-items: start;
+  }
+
+  /* ---------- LEFT INTRO COLUMN ---------- */
+  #shopify-section-{{ section.id }} .dcway-coaches__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: clamp(8px, 2vw, 24px);
+  }
+
+  #shopify-section-{{ section.id }} .dcway-coaches__title {
+    margin: 0 0 clamp(20px, 2vw, 28px);
+    font-family: var(--font-heading-family), 'Barlow Condensed', 'Oswald', sans-serif;
+    font-weight: 800;
+    font-size: clamp(44px, 4.8vw, 68px);
+    line-height: 0.98;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.22em;
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__title-lead   { color: #1a1a1a; }
+  #shopify-section-{{ section.id }} .dcway-coaches__title-accent { color: var(--dcway-orange, #FF7200); }
+
+  #shopify-section-{{ section.id }} .dcway-coaches__description {
+    font-size: clamp(15px, 1.05vw, 17px);
+    line-height: 1.6;
+    color: #2a2a2a;
+    max-width: 460px;
+    margin-bottom: clamp(24px, 3vw, 36px);
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__description p {
+    margin: 0 0 12px;
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__description p:last-child { margin-bottom: 0; }
+
+  #shopify-section-{{ section.id }} .dcway-coaches__controls {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__arrow {
+    width: 42px;
+    height: 42px;
+    background: var(--dcway-orange, #FF7200);
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__arrow:hover { background: #ff8a26; }
+  #shopify-section-{{ section.id }} .dcway-coaches__arrow:active { transform: scale(0.95); }
+  #shopify-section-{{ section.id }} .dcway-coaches__arrow svg { width: 18px; height: 18px; }
+
+  /* ---------- RIGHT CAROUSEL ---------- */
+  #shopify-section-{{ section.id }} .dcway-coaches__carousel {
+    min-width: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__viewport {
+    overflow: hidden;
+    position: relative;
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__track {
+    display: flex;
+    flex-wrap: nowrap;
+    column-gap: clamp(16px, 2vw, 30px);
+    transition: transform 0.55s cubic-bezier(.22,.61,.36,1);
+    will-change: transform;
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__card {
+    flex: 0 0 calc((100% - (var(--dcway-coaches-visible, 3) - 1) * clamp(16px, 2vw, 30px)) / var(--dcway-coaches-visible, 3));
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__photo-wrap {
+    width: 100%;
+    aspect-ratio: 270 / 280;
+    overflow: hidden;
+    background: rgba(0,0,0,0.04);
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__photo--placeholder svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-coaches__name {
+    margin: 0;
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(22px, 1.7vw, 30px);
+    line-height: 1.1;
+    text-transform: uppercase;
+    color: var(--dcway-orange, #FF7200);
+    letter-spacing: 0.01em;
+  }
+  #shopify-section-{{ section.id }} .dcway-coaches__role {
+    margin: 0;
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-size: clamp(15px, 1.05vw, 18px);
+    font-weight: 500;
+    line-height: 1.35;
+    color: #2a2a2a;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-coaches__empty {
+    margin: 0;
+    padding: 48px 0;
+    color: rgba(0,0,0,0.55);
+    font-style: italic;
+  }
+
+  /* ---------- TABLET ---------- */
+  @media (max-width: 989px) {
+    #shopify-section-{{ section.id }} .dcway-coaches__inner {
+      grid-template-columns: 1fr;
+      gap: clamp(28px, 4vw, 40px);
+    }
+    #shopify-section-{{ section.id }} .dcway-coaches__intro {
+      padding-top: 0;
+      max-width: 100%;
+    }
+    #shopify-section-{{ section.id }} .dcway-coaches__description { max-width: 100%; }
+    /* Force 2-up on tablet regardless of section setting. */
+    #shopify-section-{{ section.id }} .dcway-coaches__card {
+      flex-basis: calc((100% - clamp(16px, 2vw, 30px)) / 2);
+    }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-coaches {
+      padding: clamp(40px, 8vw, 64px) clamp(20px, 5vw, 32px);
+    }
+    #shopify-section-{{ section.id }} .dcway-coaches__title {
+      font-size: clamp(40px, 9vw, 52px);
+    }
+    /* One card at a time. */
+    #shopify-section-{{ section.id }} .dcway-coaches__card {
+      flex-basis: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .dcway-coaches__track {
+      transition: transform 0.2s linear;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Coaches (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_lead",
+      "label": "Heading (left, dark)",
+      "default": "OUR"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading (right, orange)",
+      "default": "COACHES"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>We're not just any team — we're a dream team! Our extraordinary team of coaches is dedicated to creating a fun and enriching soccer experience for children of all ages and skill levels. With each member bringing their unique talents and infectious energy, our coaching squad forms the heart and soul of DC Way's vibrant culture!</p>"
+    },
+    {
+      "type": "range",
+      "id": "cards_visible_desktop",
+      "label": "Cards visible (desktop)",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty-state text",
+      "default": "Coaches coming soon."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Coaches (DC Way)"
+    }
+  ]
+}
+{% endschema %}

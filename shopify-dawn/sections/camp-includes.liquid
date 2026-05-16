@@ -1,0 +1,173 @@
+{%- comment -%}
+  Renders the "What's included" list from product.metafields.dcway.includes_bullets
+  (multi-line text — one bullet per line). Lines starting with `#` are treated as
+  comments and skipped.
+
+  Section settings: heading, intro_text, columns, color_scheme.
+{%- endcomment -%}
+
+{%- liquid
+  assign raw = product.metafields.dcway.includes_bullets | default: ''
+  assign lines = raw | strip | newline_to_br | split: '<br />'
+  assign cols = section.settings.columns_desktop | default: 2
+
+  assign bullets = ''
+  for line in lines
+    assign trimmed = line | strip
+    assign first_char = trimmed | slice: 0
+    unless trimmed == blank or first_char == '#'
+      assign bullets = bullets | append: trimmed | append: '|'
+    endunless
+  endfor
+  assign bullet_list = bullets | split: '|'
+-%}
+
+<div class="dcway-camp-includes color-{{ section.settings.color_scheme }} gradient">
+  <div class="dcway-container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="dcway-camp-includes__heading dcway-uppercase">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+    {%- if section.settings.intro_text != blank -%}
+      <p class="dcway-camp-includes__sub">{{ section.settings.intro_text }}</p>
+    {%- endif -%}
+
+    {%- if bullet_list.size > 0 -%}
+      <ul class="dcway-camp-includes__grid" role="list" data-cols="{{ cols }}">
+        {%- for bullet in bullet_list -%}
+          <li class="dcway-camp-includes__item">
+            <span class="dcway-camp-includes__check" aria-hidden="true">
+              <svg viewBox="0 0 16 16" width="16" height="16" focusable="false">
+                <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="dcway-camp-includes__text">{{ bullet }}</span>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <p class="dcway-camp-includes__empty">{{ section.settings.empty_state_text }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-camp-includes {
+    padding-block: 56px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-includes__heading {
+    margin: 0 0 8px;
+    font-size: 1.875rem;
+    line-height: 1.1;
+    font-weight: 700;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-includes__sub {
+    margin: 0 auto 32px;
+    max-width: 640px;
+    text-align: center;
+    color: var(--dcway-muted);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-includes__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px 24px;
+    grid-template-columns: 1fr;
+    max-width: 880px;
+    margin-inline: auto;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-includes__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid var(--dcway-muted-bg);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-includes__check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    background: var(--dcway-orange);
+    color: #fff;
+    border-radius: 50%;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-includes__text {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: var(--dcway-text);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-includes__empty {
+    text-align: center;
+    color: var(--dcway-muted);
+    font-style: italic;
+    margin: 0;
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .dcway-camp-includes__grid[data-cols='2'] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    #shopify-section-{{ section.id }} .dcway-camp-includes__grid[data-cols='3'] {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Camp includes (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What's included"
+    },
+    {
+      "type": "text",
+      "id": "intro_text",
+      "label": "Intro text"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty-state text",
+      "default": "Details coming soon."
+    },
+    {
+      "type": "paragraph",
+      "content": "Source: product metafield `dcway.includes_bullets` (multi-line text). One bullet per line. Lines starting with # are treated as comments and skipped."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Camp includes (DC Way)"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

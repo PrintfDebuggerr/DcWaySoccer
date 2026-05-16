@@ -1,0 +1,298 @@
+{%- liquid
+  assign entries = shop.metaobjects['location'].values | sort: 'sort_order'
+  assign count = entries.size
+-%}
+
+<section class="dcway-locations color-{{ section.settings.color_scheme }}">
+  <div class="dcway-locations__inner">
+    <div class="dcway-locations__intro">
+      <h2 class="dcway-locations__title">
+        {%- if section.settings.heading_lead != blank -%}
+          <span class="dcway-locations__title-lead">{{ section.settings.heading_lead }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading_accent != blank -%}
+          <span class="dcway-locations__title-accent">{{ section.settings.heading_accent }}</span>
+        {%- endif -%}
+      </h2>
+
+      {%- if section.settings.subtitle != blank -%}
+        <p class="dcway-locations__subtitle">{{ section.settings.subtitle }}</p>
+      {%- endif -%}
+
+      {%- if count > 0 -%}
+        <ul class="dcway-locations__list" role="list">
+          {%- for loc in entries -%}
+            <li class="dcway-locations__item">
+              {%- assign loc_link = loc.map_url -%}
+              {%- if loc_link != blank -%}
+                <a class="dcway-locations__row" href="{{ loc_link }}" target="_blank" rel="noopener">
+              {%- else -%}
+                <div class="dcway-locations__row">
+              {%- endif -%}
+                <span class="dcway-locations__pin" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C9.92 2 5 6.92 5 13c0 7.7 9.55 16.18 9.96 16.54a1.6 1.6 0 0 0 2.08 0C17.45 29.18 27 20.7 27 13c0-6.08-4.92-11-11-11Zm0 15.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z" fill="currentColor"/>
+                  </svg>
+                </span>
+                <div class="dcway-locations__text">
+                  <div class="dcway-locations__name">{{ loc.name }}</div>
+                  {%- if loc.address != blank -%}
+                    <p class="dcway-locations__address">
+                      {{- loc.address -}}
+                      {%- if loc.city != blank -%}, {{ loc.city }}{%- endif -%}
+                      {%- if loc.state != blank -%}, {{ loc.state }}{%- endif -%}
+                    </p>
+                  {%- endif -%}
+                </div>
+              {%- if loc_link != blank -%}
+                </a>
+              {%- else -%}
+                </div>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- else -%}
+        <p class="dcway-locations__empty">{{ section.settings.empty_state_text }}</p>
+      {%- endif -%}
+    </div>
+
+  </div>
+
+  {%- if section.settings.map_embed_url != blank -%}
+    <div class="dcway-locations__map">
+      <iframe
+        src="{{ section.settings.map_embed_url }}"
+        title="{{ section.settings.map_title | default: 'DC Way locations map' | escape }}"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
+    </div>
+  {%- endif -%}
+</section>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-locations {
+    position: relative;
+    background: #ffffff;
+    color: #2C2C2C;
+    overflow: hidden;
+    min-height: clamp(560px, 56vw, 720px);
+  }
+  #shopify-section-{{ section.id }} .dcway-locations__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: clamp(40px, 5vw, 72px) clamp(24px, 4vw, 64px);
+    min-height: inherit;
+  }
+
+  /* ---------- LEFT: TITLE + LIST (overlays the map) ---------- */
+  #shopify-section-{{ section.id }} .dcway-locations__intro {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: clamp(300px, 36vw, 460px);
+    background: #ffffff;
+    padding: clamp(8px, 1vw, 16px) clamp(20px, 2vw, 28px) clamp(8px, 1vw, 16px) 0;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-locations__title {
+    margin: 0 0 clamp(12px, 1.4vw, 18px);
+    font-family: var(--font-heading-family), 'Barlow Condensed', 'Oswald', sans-serif;
+    font-weight: 800;
+    font-size: clamp(38px, 4.2vw, 60px);
+    line-height: 0.98;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.22em;
+  }
+  #shopify-section-{{ section.id }} .dcway-locations__title-lead   { color: #2C2C2C; }
+  #shopify-section-{{ section.id }} .dcway-locations__title-accent { color: var(--dcway-orange, #FF7200); }
+
+  #shopify-section-{{ section.id }} .dcway-locations__subtitle {
+    margin: 0 0 clamp(24px, 3vw, 36px);
+    font-size: clamp(14px, 1.05vw, 17px);
+    line-height: 1.5;
+    color: #2C2C2C;
+    max-width: 420px;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-locations__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 2vw, 24px);
+  }
+  #shopify-section-{{ section.id }} .dcway-locations__item {
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-locations__row {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} a.dcway-locations__row:hover {
+    opacity: 0.85;
+  }
+  #shopify-section-{{ section.id }} .dcway-locations__pin {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 32px;
+    display: inline-flex;
+    align-items: flex-start;
+    justify-content: center;
+    color: var(--dcway-orange, #FF7200);
+  }
+  #shopify-section-{{ section.id }} .dcway-locations__pin svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-locations__text {
+    min-width: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-locations__name {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(18px, 1.4vw, 22px);
+    line-height: 1.2;
+    color: var(--dcway-orange, #FF7200);
+    text-transform: none;
+    margin-bottom: 4px;
+  }
+  #shopify-section-{{ section.id }} .dcway-locations__address {
+    margin: 0;
+    font-size: clamp(14px, 1.05vw, 16px);
+    line-height: 1.45;
+    color: #2C2C2C;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-locations__empty {
+    margin: 0;
+    color: rgba(0,0,0,0.55);
+    font-style: italic;
+  }
+
+  /* ---------- MAP: full-width background layer ---------- */
+  #shopify-section-{{ section.id }} .dcway-locations__map {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: #f1f2f3;
+  }
+  #shopify-section-{{ section.id }} .dcway-locations__map iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  /* ---------- TABLET ---------- */
+  @media (max-width: 989px) {
+    #shopify-section-{{ section.id }} .dcway-locations {
+      min-height: auto;
+    }
+    #shopify-section-{{ section.id }} .dcway-locations__inner {
+      padding: clamp(28px, 4vw, 48px) clamp(24px, 4vw, 48px);
+    }
+    /* Stack: intro on top, map below */
+    #shopify-section-{{ section.id }} .dcway-locations__intro {
+      position: static;
+      width: 100%;
+      max-width: 100%;
+      padding: 0;
+      margin-bottom: clamp(24px, 3vw, 36px);
+    }
+    #shopify-section-{{ section.id }} .dcway-locations__map {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+    #shopify-section-{{ section.id }} .dcway-locations__subtitle { max-width: 100%; }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-locations__inner {
+      padding: clamp(36px, 8vw, 56px) clamp(20px, 5vw, 32px);
+    }
+    #shopify-section-{{ section.id }} .dcway-locations__title {
+      font-size: clamp(34px, 9vw, 48px);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Locations (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_lead",
+      "label": "Heading (left, dark)",
+      "default": "OUR"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading (right, orange)",
+      "default": "LOCATIONS"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Your child's next soccer journey is closer than you think—explore our locations!"
+    },
+    {
+      "type": "url",
+      "id": "map_embed_url",
+      "label": "Google Maps embed URL",
+      "info": "Use the iframe src from Google Maps Share → Embed. Example: https://www.google.com/maps/embed?pb=…"
+    },
+    {
+      "type": "text",
+      "id": "map_title",
+      "label": "Map title (accessibility)",
+      "default": "DC Way locations map"
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty-state text",
+      "default": "Locations coming soon."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Locations (DC Way)"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,140 @@
+{%- comment -%}
+  Renders the camp's typical daily schedule from product.metafields.dcway.daily_schedule
+  (list of schedule_row metaobjects). Two-column "Time | Activity" layout.
+  Sort by `sort_order` if set; falls back to assigned order.
+{%- endcomment -%}
+
+{%- liquid
+  assign rows = product.metafields.dcway.daily_schedule.value | sort: 'sort_order'
+-%}
+
+<div class="dcway-camp-day color-{{ section.settings.color_scheme }} gradient">
+  <div class="dcway-container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="dcway-camp-day__heading dcway-uppercase">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+    {%- if section.settings.subheading != blank -%}
+      <p class="dcway-camp-day__sub">{{ section.settings.subheading }}</p>
+    {%- endif -%}
+
+    {%- if rows != blank and rows.size > 0 -%}
+      <div class="dcway-camp-day__list-wrap">
+        <ul class="dcway-camp-day__list" role="list">
+          {%- for row in rows -%}
+            <li class="dcway-camp-day__row">
+              <span class="dcway-camp-day__time dcway-uppercase">{{ row.time }}</span>
+              <span class="dcway-camp-day__activity">{{ row.activity }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- else -%}
+      <p class="dcway-camp-day__empty">{{ section.settings.empty_state_text }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-camp-day {
+    padding-block: 56px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-day__heading {
+    margin: 0 0 8px;
+    font-size: 1.875rem;
+    line-height: 1.1;
+    font-weight: 700;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-day__sub {
+    margin: 0 auto 32px;
+    max-width: 640px;
+    text-align: center;
+    color: var(--dcway-muted);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-day__list-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid var(--dcway-muted-bg-2);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-day__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-day__row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--dcway-muted-bg);
+    align-items: baseline;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-day__row:last-child {
+    border-bottom: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-day__time {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--dcway-orange);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-day__activity {
+    font-size: 0.9375rem;
+    color: var(--dcway-text);
+    line-height: 1.4;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-day__empty {
+    text-align: center;
+    color: var(--dcway-muted);
+    font-style: italic;
+    margin: 0;
+  }
+
+  @media (max-width: 480px) {
+    #shopify-section-{{ section.id }} .dcway-camp-day__row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Camp daily (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "A typical day"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty-state text",
+      "default": "Daily schedule coming soon."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Camp daily (DC Way)"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

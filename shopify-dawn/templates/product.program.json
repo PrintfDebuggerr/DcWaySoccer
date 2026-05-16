@@ -1,0 +1,43 @@
+{
+  "sections": {
+    "hero": {
+      "type": "camp-hero",
+      "settings": {
+        "cta_label": "Register",
+        "show_description": true,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "info_bar": {
+      "type": "camp-info-bar",
+      "blocks": {
+        "age": {
+          "type": "fact",
+          "settings": { "label": "Age", "source": "age" }
+        },
+        "location": {
+          "type": "fact",
+          "settings": { "label": "Location", "source": "location" }
+        },
+        "dates": {
+          "type": "fact",
+          "settings": { "label": "Schedule", "source": "dates" }
+        },
+        "spots": {
+          "type": "fact",
+          "settings": { "label": "Spots left", "source": "spots_left" }
+        }
+      },
+      "block_order": ["age", "location", "dates", "spots"],
+      "settings": { "color_scheme": "scheme-2" }
+    },
+    "daily": {
+      "type": "camp-daily-schedule",
+      "settings": {
+        "heading": "What a session looks like",
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": ["hero", "info_bar", "daily"]
+}

@@ -1,0 +1,95 @@
+{%- comment -%}
+  Renders a single gallery album card (cover + title + optional date + photo count).
+
+  Inputs:
+    album      — metaobject of type `gallery_album` (required)
+    show_date  — boolean (optional; default true)
+
+  Expected fields on the metaobject:
+    title (single line text, required)
+    cover (file: image, required)
+    photos (file: image, list, required)
+    date (date, optional)
+
+  Note: cards are non-interactive in Phase 3. Lightbox / detail page is later work.
+{%- endcomment -%}
+
+{%- liquid
+  if show_date == nil
+    assign show_date = true
+  endif
+  assign photo_count = album.photos.size
+-%}
+
+<article class="dcway-card-gallery-album">
+  <div class="dcway-card-gallery-album__cover">
+    {%- if album.cover != blank -%}
+      {{ album.cover | image_url: width: 800 | image_tag: loading: 'lazy', alt: album.title, width: 400, height: 400 }}
+    {%- endif -%}
+    {%- if photo_count > 0 -%}
+      <span class="dcway-card-gallery-album__count" aria-label="{{ photo_count }} photos">
+        {{ photo_count }}
+        {%- if photo_count == 1 -%} photo{% else %} photos{% endif -%}
+      </span>
+    {%- endif -%}
+  </div>
+
+  <div class="dcway-card-gallery-album__body">
+    <h3 class="dcway-card-gallery-album__title">{{ album.title }}</h3>
+    {%- if show_date and album.date != blank -%}
+      <p class="dcway-card-gallery-album__date">{{ album.date | date: '%b %-d, %Y' }}</p>
+    {%- endif -%}
+  </div>
+</article>
+
+<style>
+  .dcway-card-gallery-album {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--dcway-muted-bg);
+    color: var(--dcway-text);
+  }
+  .dcway-card-gallery-album__cover {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--dcway-muted-bg);
+  }
+  .dcway-card-gallery-album__cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .dcway-card-gallery-album__count {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background: var(--dcway-orange);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .dcway-card-gallery-album__body {
+    padding: 14px 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .dcway-card-gallery-album__title {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+  .dcway-card-gallery-album__date {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--dcway-muted);
+  }
+</style>

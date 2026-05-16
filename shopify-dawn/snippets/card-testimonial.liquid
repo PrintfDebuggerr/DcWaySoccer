@@ -1,0 +1,101 @@
+{%- comment -%}
+  Renders a single testimonial card.
+
+  Inputs:
+    testimonial — metaobject of type `testimonial` (required)
+    show_rating — boolean (optional; default true)
+
+  Expected fields on the metaobject:
+    author (single line text)
+    photo (file: image, optional)
+    quote (multi-line text)
+    rating (integer 1–5, optional)
+{%- endcomment -%}
+
+{%- liquid
+  if show_rating == nil
+    assign show_rating = true
+  endif
+  assign rating = testimonial.rating | plus: 0
+-%}
+
+<article class="dcway-card-testimonial">
+  <blockquote class="dcway-card-testimonial__quote">
+    {{ testimonial.quote | newline_to_br }}
+  </blockquote>
+
+  <footer class="dcway-card-testimonial__footer">
+    {%- if testimonial.photo != blank -%}
+      <span class="dcway-card-testimonial__avatar">
+        {{ testimonial.photo | image_url: width: 96 | image_tag: loading: 'lazy', alt: testimonial.author, width: 48, height: 48 }}
+      </span>
+    {%- endif -%}
+
+    <span class="dcway-card-testimonial__author">{{ testimonial.author }}</span>
+
+    {%- if show_rating and rating > 0 -%}
+      <span class="dcway-card-testimonial__rating" aria-label="Rated {{ rating }} out of 5">
+        {%- for i in (1..5) -%}
+          <span class="dcway-card-testimonial__star{% if i > rating %} dcway-card-testimonial__star--empty{% endif %}" aria-hidden="true">★</span>
+        {%- endfor -%}
+      </span>
+    {%- endif -%}
+  </footer>
+</article>
+
+<style>
+  .dcway-card-testimonial {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid var(--dcway-muted-bg);
+    color: var(--dcway-text);
+    width: 100%;
+  }
+  .dcway-card-testimonial__quote {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--dcway-text);
+  }
+  .dcway-card-testimonial__quote::before {
+    content: '\201C';
+    color: var(--dcway-orange);
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-right: 4px;
+    line-height: 0;
+    vertical-align: -0.2em;
+  }
+  .dcway-card-testimonial__footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+  }
+  .dcway-card-testimonial__avatar img {
+    display: block;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .dcway-card-testimonial__author {
+    font-weight: 700;
+    color: var(--dcway-text);
+  }
+  .dcway-card-testimonial__rating {
+    display: inline-flex;
+    gap: 2px;
+    margin-left: auto;
+    color: var(--dcway-orange);
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .dcway-card-testimonial__star--empty {
+    color: var(--dcway-muted-bg-2);
+  }
+</style>

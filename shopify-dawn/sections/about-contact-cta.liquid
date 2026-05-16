@@ -1,0 +1,80 @@
+<section class="dcway-contact-cta color-{{ section.settings.color_scheme }}">
+  <div class="dcway-contact-cta__inner">
+    {%- if section.settings.message != blank -%}
+      <p class="dcway-contact-cta__message">{{ section.settings.message }}</p>
+    {%- endif -%}
+    {%- if section.settings.email != blank -%}
+      <a href="mailto:{{ section.settings.email }}" class="dcway-contact-cta__email">{{ section.settings.email }}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-contact-cta {
+    background: #ffffff;
+    padding: clamp(40px, 5vw, 72px) clamp(20px, 4vw, 56px);
+  }
+  #shopify-section-{{ section.id }} .dcway-contact-cta__inner {
+    max-width: 880px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(14px, 1.8vw, 22px);
+  }
+  #shopify-section-{{ section.id }} .dcway-contact-cta__message {
+    margin: 0;
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(18px, 1.6vw, 24px);
+    line-height: 1.35;
+    color: #2C2C2C;
+    max-width: 720px;
+  }
+  #shopify-section-{{ section.id }} .dcway-contact-cta__email {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(22px, 2vw, 32px);
+    color: var(--dcway-orange, #FF7200);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-contact-cta__email:hover {
+    opacity: 0.85;
+    text-decoration: underline;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Contact CTA (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "message",
+      "label": "Message",
+      "default": "If you have specific questions not addressed here or on our website, please feel free to reach out to us at"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email address",
+      "default": "contact@dcway.com"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact CTA (DC Way)"
+    }
+  ]
+}
+{% endschema %}

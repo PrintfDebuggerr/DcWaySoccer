@@ -1,0 +1,22 @@
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo_width": 180,
+        "menu": "main-menu",
+        "sticky": true,
+        "login_label": "Login/Register",
+        "account_label": "My Account",
+        "color_scheme": "scheme-1",
+        "menu_type_desktop": "dropdown",
+        "logo_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-logo-white.png?v=1778959323"
+      }
+    }
+  },
+  "order": [
+    "header"
+  ]
+}

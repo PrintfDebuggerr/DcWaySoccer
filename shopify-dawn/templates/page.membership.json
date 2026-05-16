@@ -1,0 +1,190 @@
+{
+  "sections": {
+    "hero": {
+      "type": "rich-text",
+      "blocks": {
+        "title": {
+          "type": "heading",
+          "settings": {
+            "heading": "MEMBERSHIP",
+            "heading_size": "h1"
+          }
+        }
+      },
+      "block_order": [
+        "title"
+      ],
+      "settings": {
+        "desktop_content_position": "left",
+        "content_alignment": "left",
+        "color_scheme": "scheme-1",
+        "full_width": false,
+        "padding_top": 64,
+        "padding_bottom": 16
+      }
+    },
+    "intro": {
+      "type": "rich-text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Join the DC Way Family: Become a Member Today!",
+            "heading_size": "h2"
+          }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Are you ready to be part of something bigger? At DC Way, we&rsquo;re more than just a soccer club. We&rsquo;re a thriving community where young athletes and their families come together, support one another, and experience the joy of soccer, growth, and friendship. Becoming a DC Way member means joining a network that values the development of every player both on and off the field.</p><p>By signing up for a membership, you&rsquo;ll enjoy exclusive benefits, making every game, camp, and program even more rewarding. Not only will you save on all our programs throughout the year, but you&rsquo;ll also be part of a community that supports and celebrates your soccer journey.</p><p>To become a member, please <strong>create an account first.</strong> It&rsquo;s quick, easy, and the first step toward unlocking your membership benefits.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "body"
+      ],
+      "settings": {
+        "desktop_content_position": "left",
+        "content_alignment": "left",
+        "color_scheme": "scheme-1",
+        "full_width": false,
+        "padding_top": 8,
+        "padding_bottom": 32
+      }
+    },
+    "plan": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Membership Benefits",
+            "heading_size": "h2"
+          }
+        },
+        "list": {
+          "type": "text",
+          "settings": {
+            "text": "<ul><li>10% Discount on all programs for one year</li><li>DC Way Goody Bag</li><li>Membership Fee: $100</li></ul><p>Join us and start enjoying the benefits today!</p>"
+          }
+        },
+        "cta": {
+          "type": "button",
+          "settings": {
+            "button_label": "JOIN NOW",
+            "button_link": "shopify://products/dc-way-membership",
+            "button_style_secondary": false
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "list",
+        "cta"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/membership-benefits.jpg",
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "text_first",
+        "desktop_content_position": "top",
+        "desktop_content_alignment": "left",
+        "content_layout": "no-overlap",
+        "section_color_scheme": "scheme-1",
+        "color_scheme": "scheme-1",
+        "mobile_content_alignment": "left",
+        "image_behavior": "none",
+        "padding_top": 24,
+        "padding_bottom": 40
+      }
+    },
+    "benefits": {
+      "type": "rich-text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Why Become a Member?",
+            "heading_size": "h2"
+          }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "text": "<ul><li><strong>Exclusive Discounts</strong>: Members receive a 10% discount on every program for an entire year, giving you access to incredible savings while supporting your child&rsquo;s development in soccer and beyond.</li><li><strong>Goody Bag:</strong> As a thank you for joining, each member receives a special goody bag filled with fun surprises&mdash;perfect for celebrating your DC Way pride.</li><li><strong>Year-Round Community</strong>: Becoming a member means joining a community dedicated to your child&rsquo;s growth. You&rsquo;re not just saving on soccer programs; you&rsquo;re connecting with a supportive network of families, coaches, and young players who share your passion.</li></ul>"
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "body"
+      ],
+      "settings": {
+        "desktop_content_position": "left",
+        "content_alignment": "left",
+        "color_scheme": "scheme-1",
+        "full_width": false,
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "closing": {
+      "type": "rich-text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "Ready to Join?",
+            "heading_size": "h2"
+          }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Joining as a member of DC Way isn&rsquo;t just a purchase; it&rsquo;s an investment in your child&rsquo;s love for soccer and personal growth. It&rsquo;s about making the most out of every game, every camp, and every opportunity to learn and connect. Secure your membership today, and give your child the chance to experience the DC Way difference all year long. We&rsquo;re thrilled to welcome you to our family!</p>"
+          }
+        },
+        "cta": {
+          "type": "button",
+          "settings": {
+            "button_label": "JOIN NOW",
+            "button_link": "shopify://products/dc-way-membership",
+            "button_style_secondary": false
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "body",
+        "cta"
+      ],
+      "settings": {
+        "desktop_content_position": "left",
+        "content_alignment": "left",
+        "color_scheme": "scheme-1",
+        "full_width": false,
+        "padding_top": 24,
+        "padding_bottom": 48
+      }
+    },
+    "gallery": {
+      "type": "gallery-grid",
+      "settings": {
+        "heading": "OUR GALLERY",
+        "columns_desktop": 3,
+        "show_date": false,
+        "empty_state_text": "Gallery coming soon.",
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "intro",
+    "plan",
+    "benefits",
+    "closing",
+    "gallery"
+  ]
+}

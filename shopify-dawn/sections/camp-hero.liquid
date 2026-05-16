@@ -1,0 +1,450 @@
+{%- comment -%}
+  Camp/program hero section.
+
+  Two layouts:
+    side_by_side          — image left, body right (default)
+    image_banner_overlay  — full-width image banner with title/eyebrow overlay,
+                            body (description + variant + CTA + location) below
+
+  Reads product + dcway.{age_range, season, date_range_label, location, product_kind}.
+  Variant model: each variant = a "Week" or "Period". Selected variant drives price + Add to cart.
+  Uses Dawn's <product-form> custom element so the cart drawer / cart-notification fires on submit.
+{%- endcomment -%}
+
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign mf_age = product.metafields.dcway.age_range
+  assign mf_season = product.metafields.dcway.season
+  assign mf_date_label = product.metafields.dcway.date_range_label
+  assign mf_location = product.metafields.dcway.location.value
+  assign mf_kind = product.metafields.dcway.product_kind
+  assign featured = product.featured_media
+  assign layout = section.settings.layout | default: 'side_by_side'
+-%}
+
+<div class="dcway-camp-hero dcway-camp-hero--{{ layout }} color-{{ section.settings.color_scheme }} gradient">
+
+  {%- if layout == 'image_banner_overlay' -%}
+    {%- comment -%} ─── Banner: full-width image with title overlay ─── {%- endcomment -%}
+    <div class="dcway-camp-hero__banner">
+      {%- if featured != blank -%}
+        {{ featured | image_url: width: 2400 | image_tag: loading: 'eager', alt: product.title, width: 2400, height: 900, class: 'dcway-camp-hero__banner-img' }}
+      {%- else -%}
+        <div class="dcway-camp-hero__banner-img dcway-camp-hero__media-placeholder" aria-hidden="true"></div>
+      {%- endif -%}
+      <div class="dcway-camp-hero__banner-scrim" aria-hidden="true"></div>
+      <div class="dcway-camp-hero__banner-content dcway-container">
+        {%- if mf_kind != blank -%}
+          <span class="dcway-camp-hero__kind dcway-uppercase">{{ mf_kind }}</span>
+        {%- endif -%}
+        {%- if mf_age != blank or mf_season != blank -%}
+          <p class="dcway-camp-hero__eyebrow dcway-uppercase">
+            {%- if mf_age != blank -%}{{ mf_age }}{%- endif -%}
+            {%- if mf_age != blank and mf_season != blank -%}<span aria-hidden="true"> · </span>{%- endif -%}
+            {%- if mf_season != blank -%}{{ mf_season }}{%- endif -%}
+          </p>
+        {%- endif -%}
+        <h1 class="dcway-camp-hero__title dcway-uppercase">{{ product.title }}</h1>
+        {%- if mf_date_label != blank -%}
+          <p class="dcway-camp-hero__dates">{{ mf_date_label }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} ─── Body: description + form + location, single column ─── {%- endcomment -%}
+    <div class="dcway-container dcway-camp-hero__body-wrap">
+      <div class="dcway-camp-hero__body dcway-camp-hero__body--centered">
+        {%- if product.description != blank and section.settings.show_description -%}
+          <div class="dcway-camp-hero__description rte">{{ product.description }}</div>
+        {%- endif -%}
+
+        <div class="dcway-camp-hero__price" data-price-target>
+          {%- if current_variant -%}
+            {%- if current_variant.compare_at_price > current_variant.price -%}
+              <s class="dcway-camp-hero__price-was">{{ current_variant.compare_at_price | money_without_trailing_zeros }}</s>
+            {%- endif -%}
+            <span class="dcway-camp-hero__price-now">{{ current_variant.price | money_without_trailing_zeros }}</span>
+          {%- endif -%}
+        </div>
+
+        {%- render 'dcway-camp-hero-form', product: product, current_variant: current_variant, section: section -%}
+
+        {%- if mf_location.name != blank -%}
+          <p class="dcway-camp-hero__location">
+            <span class="dcway-uppercase">Location:</span>
+            {{ mf_location.name }}{%- if mf_location.city != blank -%}, {{ mf_location.city }}{%- endif -%}
+          </p>
+        {%- endif -%}
+      </div>
+    </div>
+
+  {%- else -%}
+    {%- comment -%} ─── Side-by-side: image left, body right ─── {%- endcomment -%}
+    <div class="dcway-container dcway-camp-hero__inner">
+      <div class="dcway-camp-hero__media">
+        {%- if featured != blank -%}
+          {{ featured | image_url: width: 1400 | image_tag: loading: 'eager', alt: product.title, width: 700, height: 525 }}
+        {%- else -%}
+          <div class="dcway-camp-hero__media-placeholder" aria-hidden="true"></div>
+        {%- endif -%}
+        {%- if mf_kind != blank -%}
+          <span class="dcway-camp-hero__kind dcway-uppercase">{{ mf_kind }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="dcway-camp-hero__body">
+        {%- if mf_age != blank or mf_season != blank -%}
+          <p class="dcway-camp-hero__eyebrow dcway-uppercase">
+            {%- if mf_age != blank -%}{{ mf_age }}{%- endif -%}
+            {%- if mf_age != blank and mf_season != blank -%}<span aria-hidden="true"> · </span>{%- endif -%}
+            {%- if mf_season != blank -%}{{ mf_season }}{%- endif -%}
+          </p>
+        {%- endif -%}
+
+        <h1 class="dcway-camp-hero__title">{{ product.title }}</h1>
+
+        {%- if mf_date_label != blank -%}
+          <p class="dcway-camp-hero__dates">{{ mf_date_label }}</p>
+        {%- endif -%}
+
+        {%- if product.description != blank and section.settings.show_description -%}
+          <div class="dcway-camp-hero__description rte">{{ product.description }}</div>
+        {%- endif -%}
+
+        <div class="dcway-camp-hero__price" data-price-target>
+          {%- if current_variant -%}
+            {%- if current_variant.compare_at_price > current_variant.price -%}
+              <s class="dcway-camp-hero__price-was">{{ current_variant.compare_at_price | money_without_trailing_zeros }}</s>
+            {%- endif -%}
+            <span class="dcway-camp-hero__price-now">{{ current_variant.price | money_without_trailing_zeros }}</span>
+          {%- endif -%}
+        </div>
+
+        {%- render 'dcway-camp-hero-form', product: product, current_variant: current_variant, section: section -%}
+
+        {%- if mf_location.name != blank -%}
+          <p class="dcway-camp-hero__location">
+            <span class="dcway-uppercase">Location:</span>
+            {{ mf_location.name }}{%- if mf_location.city != blank -%}, {{ mf_location.city }}{%- endif -%}
+          </p>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+<script type="application/json" data-section-config>
+  {
+    "variants": [
+      {%- for variant in product.variants -%}
+        {
+          "id": {{ variant.id }},
+          "available": {{ variant.available }},
+          "price": {{ variant.price | json }},
+          "compare_at_price": {{ variant.compare_at_price | json }},
+          "inventory_quantity": {{ variant.inventory_quantity | default: 0 }}
+        }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  }
+</script>
+
+<script>
+  (function () {
+    var section = document.getElementById('shopify-section-{{ section.id }}');
+    if (!section) return;
+    var select = section.querySelector('[data-variant-select]');
+    if (!select) return;
+    var priceTarget = section.querySelector('[data-price-target]');
+    var ctaLabel = section.querySelector('[data-add-button-label]');
+    var ctaButton = section.querySelector('button[name="add"]');
+    var configEl = section.querySelector('[data-section-config]');
+    if (!configEl) return;
+    var variants = JSON.parse(configEl.textContent).variants;
+
+    function fmtMoney(cents) {
+      try { return new Intl.NumberFormat({{ shop.locale | json }}, { style: 'currency', currency: {{ cart.currency.iso_code | json }} }).format(cents / 100); }
+      catch (e) { return '$' + (cents / 100).toFixed(2); }
+    }
+
+    select.addEventListener('change', function () {
+      var v = variants.find(function (x) { return x.id === parseInt(select.value, 10); });
+      if (!v) return;
+      if (priceTarget) {
+        var html = '';
+        if (v.compare_at_price && v.compare_at_price > v.price) {
+          html += '<s class="dcway-camp-hero__price-was">' + fmtMoney(v.compare_at_price) + '</s>';
+        }
+        html += '<span class="dcway-camp-hero__price-now">' + fmtMoney(v.price) + '</span>';
+        priceTarget.innerHTML = html;
+      }
+      if (ctaButton && ctaLabel) {
+        if (v.available) {
+          ctaButton.removeAttribute('disabled');
+          ctaLabel.textContent = {{ section.settings.cta_label | default: 'Register' | json }};
+        } else {
+          ctaButton.setAttribute('disabled', 'disabled');
+          ctaLabel.textContent = 'Sold out';
+        }
+      }
+    });
+  })();
+</script>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-camp-hero {
+    padding-block: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero--side_by_side {
+    padding-block: 48px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__inner {
+    display: grid;
+    gap: 32px;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  /* Shared media (side-by-side) */
+  #shopify-section-{{ section.id }} .dcway-camp-hero__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--dcway-muted-bg);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__media img,
+  #shopify-section-{{ section.id }} .dcway-camp-hero__media-placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__media-placeholder {
+    background: linear-gradient(135deg, var(--dcway-muted-bg) 0%, var(--dcway-muted-bg-2) 100%);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__kind {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: var(--dcway-orange);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    letter-spacing: 0.06em;
+  }
+
+  /* Banner (image_banner_overlay) */
+  #shopify-section-{{ section.id }} .dcway-camp-hero__banner {
+    position: relative;
+    width: 100%;
+    min-height: 280px;
+    overflow: hidden;
+    background: var(--dcway-dark);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__banner-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__banner-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.7) 100%);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__banner-content {
+    position: relative;
+    color: #fff;
+    padding-block: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    min-height: 280px;
+    justify-content: flex-end;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__banner-content .dcway-camp-hero__kind {
+    position: static;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__banner-content .dcway-camp-hero__eyebrow {
+    color: #ffb27a;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__banner-content .dcway-camp-hero__title {
+    color: #fff;
+    font-size: 2.5rem;
+    line-height: 1;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__banner-content .dcway-camp-hero__dates {
+    color: rgba(255,255,255,0.92);
+    font-size: 1rem;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__body-wrap {
+    padding-block: 40px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__body--centered {
+    max-width: 720px;
+    margin-inline: auto;
+    align-items: stretch;
+  }
+
+  /* Body shared */
+  #shopify-section-{{ section.id }} .dcway-camp-hero__body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__eyebrow {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--dcway-orange);
+    font-weight: 700;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__title {
+    margin: 0;
+    font-size: 2.25rem;
+    line-height: 1.05;
+    font-weight: 700;
+    color: var(--dcway-dark);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__dates {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dcway-text);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__description {
+    color: var(--dcway-text);
+    line-height: 1.5;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--dcway-orange);
+    margin-top: 4px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__price-was {
+    color: var(--dcway-muted);
+    font-size: 1.125rem;
+    text-decoration: line-through;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 460px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__body--centered .dcway-camp-hero__form {
+    max-width: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--dcway-text);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--dcway-dark);
+    background: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dcway-text);
+    border-radius: 0;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%23333' d='M6 8L0 0h12z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__cta {
+    margin-top: 4px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__location {
+    margin: 8px 0 0;
+    font-size: 0.9375rem;
+    color: var(--dcway-text);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__location .dcway-uppercase {
+    font-weight: 700;
+    margin-right: 4px;
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .dcway-camp-hero__banner-content {
+      min-height: 360px;
+      padding-block: 72px;
+    }
+    #shopify-section-{{ section.id }} .dcway-camp-hero__banner-content .dcway-camp-hero__title {
+      font-size: 3.25rem;
+    }
+  }
+
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .dcway-camp-hero--side_by_side .dcway-camp-hero__inner {
+      grid-template-columns: 1.1fr 1fr;
+      gap: 48px;
+    }
+    #shopify-section-{{ section.id }} .dcway-camp-hero--side_by_side .dcway-camp-hero__title {
+      font-size: 2.75rem;
+    }
+    #shopify-section-{{ section.id }} .dcway-camp-hero__banner-content {
+      min-height: 440px;
+    }
+    #shopify-section-{{ section.id }} .dcway-camp-hero__banner-content .dcway-camp-hero__title {
+      font-size: 4rem;
+    }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Camp hero (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "side_by_side", "label": "Image + body side-by-side" },
+        { "value": "image_banner_overlay", "label": "Image banner with title overlay" }
+      ],
+      "default": "side_by_side"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Add-to-cart label",
+      "default": "Register"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show product description",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Camp hero (DC Way)"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

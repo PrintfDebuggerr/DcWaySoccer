@@ -1,0 +1,106 @@
+<div class="dcway-about-intro color-{{ section.settings.color_scheme }}">
+  <div class="dcway-about-intro__inner">
+    {%- if section.settings.heading != blank -%}
+      <h1 class="dcway-about-intro__title">{{ section.settings.heading | escape }}</h1>
+    {%- endif -%}
+    {%- if section.settings.body != blank -%}
+      <div class="dcway-about-intro__body rte">{{ section.settings.body }}</div>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-about-intro {
+    padding: {{ section.settings.padding_top }}px 16px {{ section.settings.padding_bottom }}px;
+  }
+  #shopify-section-{{ section.id }} .dcway-about-intro__inner {
+    max-width: var(--dcway-container, 1170px);
+    margin-inline: auto;
+  }
+  #shopify-section-{{ section.id }} .dcway-about-intro__title {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    color: var(--dcway-text, #333);
+    margin: 0 0 32px;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1;
+    text-align: left;
+    padding-left: clamp(0px, 8vw, 80px);
+  }
+  #shopify-section-{{ section.id }} .dcway-about-intro__body {
+    max-width: 720px;
+    margin-left: clamp(0px, 8vw, 80px);
+    color: var(--dcway-text, #333);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  #shopify-section-{{ section.id }} .dcway-about-intro__body p {
+    margin: 0 0 16px;
+  }
+  #shopify-section-{{ section.id }} .dcway-about-intro__body p:last-child {
+    margin-bottom: 0;
+  }
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-about-intro__title,
+    #shopify-section-{{ section.id }} .dcway-about-intro__body {
+      padding-left: 0;
+      margin-left: 0;
+    }
+    #shopify-section-{{ section.id }} .dcway-about-intro__title {
+      margin-bottom: 20px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "About intro (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "ABOUT DC WAY"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body",
+      "default": "<p>DC Way is a Capitol Hill-based, award-winning recreational soccer club that was created with a clear mission and aligned core values in order to teach more than just the fundamentals of soccer while having an absolute blast. Founded in 2013, we have more than a decade of experience sharing our love of sports with children.</p><p>The goal of our club is to teach children how fun soccer can be! DC Way's passionate and qualified coaches provide the perfect pressure-free environment for covering all aspects of children's development including physical, mental, social-emotional, and communication.</p>"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 64
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "About intro (DC Way)"
+    }
+  ]
+}
+{% endschema %}

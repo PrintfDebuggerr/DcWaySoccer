@@ -1,0 +1,69 @@
+{
+  "sections": {
+    "hero": {
+      "type": "camp-hero",
+      "settings": {
+        "layout": "image_banner_overlay",
+        "cta_label": "Register",
+        "show_description": true,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "info_bar": {
+      "type": "camp-info-bar",
+      "blocks": {
+        "age": {
+          "type": "fact",
+          "settings": { "label": "Age", "source": "age" }
+        },
+        "location": {
+          "type": "fact",
+          "settings": { "label": "Location", "source": "location" }
+        },
+        "dates": {
+          "type": "fact",
+          "settings": { "label": "Dates", "source": "dates" }
+        },
+        "spots": {
+          "type": "fact",
+          "settings": { "label": "Spots left", "source": "spots_left" }
+        }
+      },
+      "block_order": ["age", "location", "dates", "spots"],
+      "settings": { "color_scheme": "scheme-2" }
+    },
+    "includes": {
+      "type": "camp-includes",
+      "settings": {
+        "heading": "What's included",
+        "columns_desktop": 2,
+        "color_scheme": "scheme-2"
+      }
+    },
+    "weeks": {
+      "type": "camp-week-schedule",
+      "settings": {
+        "heading": "Weekly themes",
+        "subheading": "Each week has its own theme — projects, games, and tournaments built around it.",
+        "columns_desktop": 3,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "daily": {
+      "type": "camp-daily-schedule",
+      "settings": {
+        "heading": "A typical day",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "faq": {
+      "type": "camp-faq",
+      "settings": {
+        "heading": "Frequently asked questions",
+        "single_open": true,
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": ["hero", "info_bar", "includes", "weeks", "daily", "faq"]
+}

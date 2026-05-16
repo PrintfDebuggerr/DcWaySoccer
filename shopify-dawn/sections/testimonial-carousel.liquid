@@ -1,0 +1,239 @@
+{%- liquid
+  assign entries = shop.metaobjects['testimonial'].values | sort: 'position'
+  assign autorotate = section.settings.autorotate_seconds | default: 0
+-%}
+
+<div class="dcway-testimonial-carousel color-{{ section.settings.color_scheme }} gradient">
+  <div class="dcway-container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="dcway-testimonial-carousel__heading dcway-uppercase">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if entries.size > 0 -%}
+      <dcway-testimonial-carousel
+        class="dcway-testimonial-carousel__shell"
+        data-autorotate="{{ autorotate }}"
+        data-count="{{ entries.size }}"
+      >
+        <ul class="dcway-testimonial-carousel__track" role="list">
+          {%- for entry in entries -%}
+            <li class="dcway-testimonial-carousel__slide" data-index="{{ forloop.index0 }}" aria-roledescription="slide" aria-label="{{ forloop.index }} of {{ entries.size }}">
+              {%- render 'card-testimonial', testimonial: entry, show_rating: section.settings.show_rating -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if section.settings.show_dots and entries.size > 1 -%}
+          <div class="dcway-testimonial-carousel__dots" role="tablist" aria-label="Testimonial selector">
+            {%- for entry in entries -%}
+              <button
+                type="button"
+                class="dcway-testimonial-carousel__dot{% if forloop.first %} is-active{% endif %}"
+                role="tab"
+                aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                aria-label="Show testimonial {{ forloop.index }}"
+                data-index="{{ forloop.index0 }}"
+              ></button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </dcway-testimonial-carousel>
+    {%- else -%}
+      <p class="dcway-testimonial-carousel__empty">{{ section.settings.empty_state_text }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel {
+    padding-block: 48px;
+  }
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel__heading {
+    margin: 0 0 12px;
+    font-size: 2rem;
+    line-height: 1.1;
+    font-weight: 700;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel__shell {
+    display: block;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel__track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel__slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+    scroll-snap-align: center;
+    display: flex;
+    padding: 8px 4px 16px;
+  }
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel__dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel__dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--dcway-muted-bg);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel__dot.is-active {
+    background: var(--dcway-orange);
+    transform: scale(1.2);
+  }
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel__dot:focus-visible {
+    outline: 2px solid var(--dcway-orange);
+    outline-offset: 2px;
+  }
+  #shopify-section-{{ section.id }} .dcway-testimonial-carousel__empty {
+    text-align: center;
+    color: var(--dcway-muted);
+    font-style: italic;
+    margin: 0;
+  }
+{%- endstyle -%}
+
+<script>
+  if (!window.customElements.get('dcway-testimonial-carousel')) {
+    class DcwayTestimonialCarousel extends HTMLElement {
+      connectedCallback() {
+        this.track = this.querySelector('.dcway-testimonial-carousel__track');
+        this.dots = this.querySelectorAll('.dcway-testimonial-carousel__dot');
+        this.count = parseInt(this.dataset.count, 10) || 0;
+        this.autorotate = parseInt(this.dataset.autorotate, 10) || 0;
+        this.current = 0;
+        this._timer = null;
+
+        this.dots.forEach((dot) => {
+          dot.addEventListener('click', () => {
+            const idx = parseInt(dot.dataset.index, 10);
+            this.go(idx, true);
+            this._resetTimer();
+          });
+        });
+
+        // Sync dot state when user manually scrolls/swipes the track.
+        this.track.addEventListener('scroll', () => {
+          const slideWidth = this.track.clientWidth;
+          if (slideWidth === 0) return;
+          const idx = Math.round(this.track.scrollLeft / slideWidth);
+          if (idx !== this.current) this._setActive(idx);
+        }, { passive: true });
+
+        // Pause autorotate when carousel isn't visible or user hovers.
+        if (this.autorotate > 0 && this.count > 1) {
+          this.addEventListener('mouseenter', () => this._pause());
+          this.addEventListener('mouseleave', () => this._start());
+          this.addEventListener('focusin', () => this._pause());
+          this.addEventListener('focusout', () => this._start());
+          if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver((entries) => {
+              entries.forEach((e) => (e.isIntersecting ? this._start() : this._pause()));
+            }, { threshold: 0.25 });
+            io.observe(this);
+          } else {
+            this._start();
+          }
+        }
+      }
+
+      go(idx, smooth) {
+        if (this.count === 0) return;
+        const target = ((idx % this.count) + this.count) % this.count;
+        this.track.scrollTo({ left: this.track.clientWidth * target, behavior: smooth ? 'smooth' : 'auto' });
+        this._setActive(target);
+      }
+
+      _setActive(idx) {
+        this.current = idx;
+        this.dots.forEach((d, i) => {
+          const on = i === idx;
+          d.classList.toggle('is-active', on);
+          d.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+      }
+
+      _start() {
+        if (this._timer || this.autorotate <= 0 || this.count <= 1) return;
+        this._timer = setInterval(() => this.go(this.current + 1, true), this.autorotate * 1000);
+      }
+      _pause() { if (this._timer) { clearInterval(this._timer); this._timer = null; } }
+      _resetTimer() { this._pause(); this._start(); }
+    }
+    window.customElements.define('dcway-testimonial-carousel', DcwayTestimonialCarousel);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Testimonials (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Testimonials"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show ratings",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show dot navigation",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autorotate_seconds",
+      "label": "Auto-rotate every (seconds)",
+      "info": "Set to 0 to disable auto-rotation.",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty-state text",
+      "default": "No testimonials yet."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials (DC Way)"
+    }
+  ]
+}
+{% endschema %}

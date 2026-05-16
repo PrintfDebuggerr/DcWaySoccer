@@ -1,0 +1,145 @@
+/*
+  DC Way merch overrides — loaded conditionally on /collections/merch and merch product pages.
+
+  Scope: every Dawn product card on a merch route is wrapped in .product-card-wrapper.
+  We override Dawn corner radius via the per-card CSS variable, paint the price orange,
+  and render the DC Way rotated side-label band from `data-product-type` (set in
+  snippets/card-product.liquid). No global Dawn selectors are introduced — every rule
+  below is gated either to the .product-card-wrapper local scope or to the merch product
+  detail page via .dcway-merch-product (added by templates/product.merch.json).
+*/
+
+/* ---- 1. Card: sharp corners + crisp shadow ---- */
+.product-card-wrapper {
+  --product-card-corner-radius: 0rem;
+  --media-radius: 0px;
+}
+
+.product-card-wrapper .card,
+.product-card-wrapper .card__inner,
+.product-card-wrapper .card__media,
+.product-card-wrapper .media {
+  border-radius: 0 !important;
+}
+
+.product-card-wrapper .card--card,
+.product-card-wrapper .card--standard .card__inner {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+}
+
+/* ---- 2. Price: brand orange, slightly larger, Barlow-condensed feel ---- */
+.product-card-wrapper .price,
+.product-card-wrapper .price .price-item--regular,
+.product-card-wrapper .price .price-item--sale,
+.product-card-wrapper .price .price-item--last {
+  color: var(--dcway-orange, #ff7200);
+  font-family: var(--font-heading-family, inherit);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.product-card-wrapper .price--large,
+.product-card-wrapper .price {
+  font-size: 2rem;
+}
+
+@media screen and (min-width: 750px) {
+  .product-card-wrapper .price,
+  .product-card-wrapper .price--large {
+    font-size: 2.2rem;
+  }
+}
+
+/* Compare-at (strike-through) stays muted */
+.product-card-wrapper .price--on-sale .price-item--regular {
+  color: rgba(var(--color-foreground), 0.55);
+}
+
+/* ---- 3. Side-label band — the DC Way vertical orange stripe ---- */
+/* Rendered from the data-product-type attribute carried on .product-card-wrapper.
+   Only visible when the attribute is non-empty. */
+.product-card-wrapper {
+  position: relative;
+}
+
+.product-card-wrapper[data-product-type]:not([data-product-type=""])::before {
+  content: attr(data-product-type);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 100%;
+  max-height: 280px;
+  padding: 12px 6px;
+  background: var(--dcway-orange, #ff7200);
+  color: #ffffff;
+  font-family: var(--font-heading-family, inherit);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Nudge the card image away from the side label so it doesn't overlap on small cards */
+.product-card-wrapper[data-product-type]:not([data-product-type=""]) .card__media {
+  margin-left: 28px;
+}
+
+/* ---- 4. Card content padding so the side label has air ---- */
+.product-card-wrapper[data-product-type]:not([data-product-type=""]) .card__content {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* ---- 5. Product detail page (PDP): orange price, sharp variant pills, square swatches.
+   The whole stylesheet is only loaded on merch routes, so these rules don't leak elsewhere.
+   `.price--large` is Dawn's main-product price class — different from the card .price
+   already styled above. */
+.price--large,
+.price--large .price-item--regular,
+.price--large .price-item--sale,
+.price--large .price-item--last {
+  color: var(--dcway-orange, #ff7200);
+  font-family: var(--font-heading-family, inherit);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-size: 3rem;
+}
+
+@media screen and (min-width: 750px) {
+  .price--large {
+    font-size: 3.6rem;
+  }
+}
+
+/* Square swatches and sharp variant buttons — keeps the WP screenshot look. */
+.product-form__input--swatch input[type='radio'] + label,
+.product-form__input--pill input[type='radio'] + label {
+  border-radius: 0;
+}
+
+.product-form__input--swatch input[type='radio']:checked + label {
+  outline: 2px solid var(--dcway-orange, #ff7200);
+  outline-offset: 2px;
+}
+
+/* ---- 6. Mobile: shrink the side label so it doesn't squeeze the image ---- */
+@media screen and (max-width: 749px) {
+  .product-card-wrapper[data-product-type]:not([data-product-type=""])::before {
+    min-width: 22px;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+  }
+  .product-card-wrapper[data-product-type]:not([data-product-type=""]) .card__media {
+    margin-left: 22px;
+  }
+}

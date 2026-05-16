@@ -1,0 +1,63 @@
+{
+  "sections": {
+    "hero": {
+      "type": "rich-text",
+      "blocks": {
+        "eyebrow": {
+          "type": "caption",
+          "settings": {
+            "caption": "Moments from the pitch",
+            "text_style": "caption-with-letter-spacing",
+            "text_size": "medium"
+          }
+        },
+        "title": {
+          "type": "heading",
+          "settings": {
+            "heading": "GALLERY",
+            "heading_size": "h0"
+          }
+        },
+        "body": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Explore the excitement, growth, and joy that fill every camp, league, and clinic at DC Way.</p>"
+          }
+        }
+      },
+      "block_order": ["eyebrow", "title", "body"],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "scheme-1",
+        "full_width": true,
+        "padding_top": 56,
+        "padding_bottom": 24
+      }
+    },
+    "albums": {
+      "type": "gallery-grid",
+      "settings": {
+        "heading": "Albums",
+        "columns_desktop": 3,
+        "show_date": true,
+        "empty_state_text": "Albums coming soon — check back after our next event.",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "locations": {
+      "type": "locations-list",
+      "settings": {
+        "heading": "Our Locations",
+        "columns_desktop": 3,
+        "empty_state_text": "Locations coming soon.",
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "albums",
+    "locations"
+  ]
+}

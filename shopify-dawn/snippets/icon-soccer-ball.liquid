@@ -1,0 +1,32 @@
+{%- comment -%}
+  Outline soccer-ball icon for DC Way decorative use (Camp spotlight section).
+  Sized via parent's font-size (uses 1em width/height).
+  Color via currentColor.
+
+  Inputs (all optional):
+    size — CSS length (default "1em")
+    title — accessibility label (default empty → marks svg aria-hidden)
+{%- endcomment -%}
+
+{%- assign icon_size = size | default: '1em' -%}
+
+<svg
+  class="dcway-icon-soccer-ball"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 64 64"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2.2"
+  stroke-linejoin="round"
+  stroke-linecap="round"
+  {% if title != blank %}role="img" aria-label="{{ title | escape }}"{% else %}aria-hidden="true"{% endif %}
+>
+  <circle cx="32" cy="32" r="28" />
+  <polygon points="32,21 42.4,28.6 38.4,40.8 25.6,40.8 21.6,28.6" fill="currentColor" fill-opacity="0.08" />
+  <line x1="32" y1="21" x2="32" y2="6" />
+  <line x1="42.4" y1="28.6" x2="56.6" y2="22.6" />
+  <line x1="38.4" y1="40.8" x2="49.4" y2="52.2" />
+  <line x1="25.6" y1="40.8" x2="14.6" y2="52.2" />
+  <line x1="21.6" y1="28.6" x2="7.4" y2="22.6" />
+</svg>

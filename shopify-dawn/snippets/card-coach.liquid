@@ -1,0 +1,84 @@
+{%- comment -%}
+  Renders a single coach card.
+
+  Inputs:
+    coach          — metaobject of type `coach` (required)
+    bio_max_chars  — integer (optional; default 140)
+
+  Expected fields on the metaobject:
+    name (single line text, required)
+    role (single line text, optional)
+    photo (file: image, required)
+    bio (multi-line text, optional)
+{%- endcomment -%}
+
+{%- liquid
+  if bio_max_chars == nil
+    assign bio_max_chars = 140
+  endif
+-%}
+
+<article class="dcway-card-coach">
+  {%- if coach.photo != blank -%}
+    <div class="dcway-card-coach__photo">
+      {{ coach.photo | image_url: width: 600 | image_tag: loading: 'lazy', alt: coach.name, width: 300, height: 300 }}
+    </div>
+  {%- endif -%}
+
+  <div class="dcway-card-coach__body">
+    <h3 class="dcway-card-coach__name">{{ coach.name }}</h3>
+    {%- if coach.role != blank -%}
+      <p class="dcway-card-coach__role dcway-uppercase">{{ coach.role }}</p>
+    {%- endif -%}
+    {%- if coach.bio != blank -%}
+      <p class="dcway-card-coach__bio">{{ coach.bio | strip_html | truncate: bio_max_chars }}</p>
+    {%- endif -%}
+  </div>
+</article>
+
+<style>
+  .dcway-card-coach {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--dcway-muted-bg);
+    color: var(--dcway-text);
+  }
+  .dcway-card-coach__photo {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--dcway-muted-bg);
+  }
+  .dcway-card-coach__photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .dcway-card-coach__body {
+    padding: 16px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .dcway-card-coach__name {
+    margin: 0;
+    font-size: 1.125rem;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+  .dcway-card-coach__role {
+    margin: 0;
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    color: var(--dcway-orange);
+    font-weight: 600;
+  }
+  .dcway-card-coach__bio {
+    margin: 6px 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: var(--dcway-muted);
+  }
+</style>

@@ -1,0 +1,366 @@
+{%- comment -%}
+  WP-faithful port of DC Way's "KICKSTART THE FUN!" section.
+  Layout: heading top with right-aligned "View all" → 2-column body (left:
+  soccer-ball icon + product copy + SIGN UP outline button + prev/next arrows;
+  right: large product photo). Single product visible at a time, scroll-snap
+  carousel via a small custom element with keyboard/aria support.
+
+  Data source: a Shopify collection (default = camps-summer).
+{%- endcomment -%}
+
+{%- liquid
+  assign source = section.settings.collection
+  assign limit = section.settings.product_limit | default: 6
+  assign view_all_text = section.settings.view_all_label | default: 'View all'
+  assign cta_text = section.settings.cta_label | default: 'SIGN UP'
+-%}
+
+<div class="dcway-camp-spotlight color-{{ section.settings.color_scheme }} gradient">
+  <div class="dcway-container">
+    <div class="dcway-camp-spotlight__head">
+      <h2 class="dcway-camp-spotlight__heading dcway-uppercase">
+        {%- if section.settings.heading_lead != blank -%}{{ section.settings.heading_lead }} {% endif -%}
+        {%- if section.settings.heading_accent != blank -%}<span class="dcway-accent">{{ section.settings.heading_accent }}</span>{%- endif -%}
+      </h2>
+      {%- if section.settings.show_view_all and source.url != blank -%}
+        <a class="dcway-camp-spotlight__viewall" href="{{ source.url }}">
+          {{ view_all_text }}
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M10.9392 9.00387L5.68923 14.2517L6.74989 15.3119L13.0605 9.00387L6.74989 2.69585L5.68923 3.75607L10.9392 9.00387Z" fill="currentColor" stroke="currentColor" stroke-linecap="square"/>
+          </svg>
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- if source != blank and source.products_count > 0 -%}
+      <dcway-camp-spotlight class="dcway-camp-spotlight__shell" data-count="{{ source.products_count | at_most: limit }}">
+        <ul class="dcway-camp-spotlight__track" role="list">
+          {%- for product in source.products limit: limit -%}
+            {%- liquid
+              assign desc = product.metafields.dcway.card_description.value | default: product.description | strip_html
+              assign desc = desc | strip_newlines | truncatewords: 50
+            -%}
+            <li class="dcway-camp-spotlight__slide" data-index="{{ forloop.index0 }}" aria-roledescription="slide" aria-label="{{ forloop.index }} of {{ source.products_count }}">
+              <div class="dcway-camp-spotlight__copy">
+                <div class="dcway-camp-spotlight__icon" aria-hidden="true">
+                  {%- render 'icon-soccer-ball', size: '120px' -%}
+                </div>
+                <div class="dcway-camp-spotlight__text">
+                  <h3 class="dcway-camp-spotlight__title dcway-uppercase">
+                    <a href="{{ product.url }}">{{ product.title }}</a>
+                  </h3>
+                  {%- if desc != blank -%}
+                    <p class="dcway-camp-spotlight__desc">{{ desc }}</p>
+                  {%- endif -%}
+                  <a class="dcway-camp-spotlight__cta dcway-uppercase" href="{{ product.url }}">{{ cta_text }}</a>
+                </div>
+              </div>
+              <div class="dcway-camp-spotlight__media">
+                {%- if product.featured_media -%}
+                  {{ product.featured_media | image_url: width: 1200 | image_tag:
+                    loading: 'lazy',
+                    widths: '400,600,800,1000,1200',
+                    sizes: '(min-width: 750px) 50vw, 100vw',
+                    alt: product.featured_media.alt | default: product.title
+                  }}
+                {%- else -%}
+                  <div class="dcway-camp-spotlight__placeholder">
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                {%- endif -%}
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if source.products_count > 1 -%}
+          <div class="dcway-camp-spotlight__arrows" role="group" aria-label="Carousel controls">
+            <button type="button" class="dcway-camp-spotlight__arrow" data-dir="-1" aria-label="Previous camp">
+              <svg width="16" height="16" viewBox="0 0 320 512" aria-hidden="true">
+                <path fill="currentColor" d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"/>
+              </svg>
+            </button>
+            <button type="button" class="dcway-camp-spotlight__arrow" data-dir="1" aria-label="Next camp">
+              <svg width="16" height="16" viewBox="0 0 1000 1000" aria-hidden="true">
+                <path fill="currentColor" d="M696 533C708 521 713 504 713 487 713 471 708 454 696 446L400 146C388 133 375 125 354 125 338 125 325 129 313 142 300 154 292 171 292 187 292 204 296 221 308 233L563 492 304 771C292 783 288 800 288 817 288 833 296 850 308 863 321 871 338 875 354 875 371 875 388 867 400 854L696 533Z"/>
+              </svg>
+            </button>
+          </div>
+        {%- endif -%}
+      </dcway-camp-spotlight>
+    {%- else -%}
+      <p class="dcway-camp-spotlight__empty">{{ section.settings.empty_state_text }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight {
+    padding-block: 64px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__heading {
+    margin: 0;
+    font-size: 2.6rem;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__heading .dcway-accent { color: var(--dcway-orange); }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__viewall {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--dcway-dark);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__viewall:hover { color: var(--dcway-orange); }
+
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__shell {
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__track::-webkit-scrollbar { display: none; }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+    scroll-snap-align: start;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__copy {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__icon {
+    color: var(--dcway-dark);
+    line-height: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__title {
+    margin: 0 0 12px;
+    font-size: 2rem;
+    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--dcway-orange);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__title a:hover { text-decoration: underline; }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__desc {
+    margin: 0 0 24px;
+    color: var(--dcway-text);
+    font-size: 1rem;
+    line-height: 1.55;
+    max-width: 52ch;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading-family, inherit);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--dcway-orange);
+    background: #ffffff;
+    border: 2px solid var(--dcway-orange);
+    padding: 11px 36px;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+    letter-spacing: 0.04em;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__cta:hover {
+    background: var(--dcway-orange);
+    color: #ffffff;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__media {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--dcway-muted-bg);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__media img,
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__arrows {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__arrow {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: #ffffff;
+    border: 2px solid var(--dcway-orange);
+    color: var(--dcway-orange);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__arrow:hover {
+    background: var(--dcway-orange);
+    color: #ffffff;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__arrow:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #ffffff;
+    color: var(--dcway-orange);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-spotlight__empty {
+    text-align: center;
+    color: var(--dcway-muted);
+    font-style: italic;
+    margin: 0;
+  }
+
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .dcway-camp-spotlight__slide {
+      grid-template-columns: 5fr 6fr;
+      gap: 48px;
+    }
+  }
+{%- endstyle -%}
+
+<script>
+  if (!window.customElements.get('dcway-camp-spotlight')) {
+    class DcwayCampSpotlight extends HTMLElement {
+      connectedCallback() {
+        this.track = this.querySelector('.dcway-camp-spotlight__track');
+        this.arrows = this.querySelectorAll('.dcway-camp-spotlight__arrow');
+        this.count = parseInt(this.dataset.count, 10) || 0;
+        this.current = 0;
+        if (!this.track) return;
+        this.arrows.forEach((b) => {
+          b.addEventListener('click', () => {
+            const dir = parseInt(b.dataset.dir, 10);
+            this.go(this.current + dir);
+          });
+        });
+        this.track.addEventListener('scroll', () => {
+          const w = this.track.clientWidth;
+          if (w === 0) return;
+          this.current = Math.round(this.track.scrollLeft / w);
+          this._updateArrows();
+        }, { passive: true });
+        this._updateArrows();
+      }
+      go(idx) {
+        const target = Math.max(0, Math.min(this.count - 1, idx));
+        this.track.scrollTo({ left: this.track.clientWidth * target, behavior: 'smooth' });
+        this.current = target;
+        this._updateArrows();
+      }
+      _updateArrows() {
+        if (!this.arrows.length) return;
+        this.arrows[0].disabled = this.current <= 0;
+        this.arrows[1].disabled = this.current >= this.count - 1;
+      }
+    }
+    window.customElements.define('dcway-camp-spotlight', DcwayCampSpotlight);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Camp spotlight (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_lead",
+      "label": "Heading — lead word(s)",
+      "default": "KICKSTART"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading — orange-accent word(s)",
+      "default": "THE FUN!"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Default to a camps collection. Each product becomes a slide."
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "Maximum slides",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "SIGN UP"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View all' link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "'View all' label",
+      "default": "View all"
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty-state text",
+      "default": "Camps coming soon."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Camp spotlight (DC Way)"
+    }
+  ]
+}
+{% endschema %}

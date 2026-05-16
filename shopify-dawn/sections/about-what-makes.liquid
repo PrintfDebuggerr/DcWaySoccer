@@ -1,0 +1,297 @@
+{%- liquid
+  assign items = section.blocks | where: 'type', 'item'
+-%}
+
+<div class="dcway-what-makes color-{{ section.settings.color_scheme }}">
+  <div class="dcway-what-makes__inner">
+    <header class="dcway-what-makes__head">
+      <h2 class="dcway-what-makes__title">
+        {%- if section.settings.heading_lead != blank -%}
+          <span class="dcway-what-makes__title-lead">{{ section.settings.heading_lead | escape }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading_accent != blank -%}
+          <span class="dcway-what-makes__title-accent">{{ section.settings.heading_accent | escape }}</span>
+        {%- endif -%}
+      </h2>
+
+      <div class="dcway-what-makes__deco" aria-hidden="true">
+        {%- if section.settings.decoration_image != blank -%}
+          {{ section.settings.decoration_image
+            | image_url: width: 800
+            | image_tag:
+              loading: 'lazy',
+              widths: '300, 500, 700, 900',
+              sizes: '(max-width: 749px) 200px, 360px',
+              class: 'dcway-what-makes__deco-img',
+              alt: ''
+          }}
+        {%- else -%}
+          <img src="{{ 'dcway-ball-flying.svg' | asset_url }}" alt="" class="dcway-what-makes__deco-img" loading="lazy">
+        {%- endif -%}
+      </div>
+    </header>
+
+    <div class="dcway-what-makes__watermark" aria-hidden="true">
+      {%- if section.settings.watermark_image != blank -%}
+        {{ section.settings.watermark_image
+          | image_url: width: 900
+          | image_tag:
+            loading: 'lazy',
+            widths: '400, 600, 800',
+            sizes: '420px',
+            class: 'dcway-what-makes__watermark-img',
+            alt: ''
+        }}
+      {%- else -%}
+        <img src="{{ 'dcway-ball.svg' | asset_url }}" alt="" class="dcway-what-makes__watermark-img" loading="lazy">
+      {%- endif -%}
+    </div>
+
+    <ol class="dcway-what-makes__list" reversed="false">
+      {%- for block in items -%}
+        <li class="dcway-what-makes__item dcway-what-makes__item--pos-{{ forloop.index }}" {{ block.shopify_attributes }}>
+          <span class="dcway-what-makes__num" aria-hidden="true">{{ forloop.index }}</span>
+          <div class="dcway-what-makes__copy">
+            {%- if block.settings.title != blank -%}
+              <h3 class="dcway-what-makes__item-title">{{ block.settings.title | escape }}</h3>
+            {%- endif -%}
+            {%- if block.settings.body != blank -%}
+              <div class="dcway-what-makes__item-body">{{ block.settings.body }}</div>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ol>
+  </div>
+</div>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-what-makes {
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    position: relative;
+    overflow: hidden;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__inner {
+    max-width: var(--dcway-container, 1170px);
+    margin-inline: auto;
+    padding-inline: 16px;
+    position: relative;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__head {
+    position: relative;
+    margin-bottom: 48px;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__title {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(32px, 5vw, 60px);
+    line-height: 1;
+    margin: 0;
+    color: var(--dcway-text, #333);
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.3em;
+    justify-content: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__title-accent {
+    color: var(--dcway-orange, #FF7200);
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__deco {
+    position: absolute;
+    top: -20px;
+    right: 0;
+    width: clamp(120px, 22vw, 280px);
+    pointer-events: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__deco-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__watermark {
+    position: absolute;
+    left: -120px;
+    top: 30%;
+    width: 420px;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__watermark-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    position: relative;
+    z-index: 1;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__item {
+    display: grid;
+    grid-template-columns: clamp(140px, 16vw, 240px) minmax(0, 1fr);
+    align-items: stretch;
+    gap: clamp(20px, 2.4vw, 40px);
+    max-width: 720px;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__item--pos-1 { margin-left: 25%; }
+  #shopify-section-{{ section.id }} .dcway-what-makes__item--pos-2 { margin-left: 45%; }
+  #shopify-section-{{ section.id }} .dcway-what-makes__item--pos-3 { margin-left: 20%; }
+  #shopify-section-{{ section.id }} .dcway-what-makes__item--pos-4 { margin-left: 40%; }
+  #shopify-section-{{ section.id }} .dcway-what-makes__num {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    color: var(--dcway-orange, #FF7200);
+    font-size: clamp(140px, 18vw, 260px);
+    line-height: 0.85;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__item-title {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    text-transform: capitalize;
+    letter-spacing: 0;
+    color: var(--dcway-text, #333);
+    font-size: clamp(28px, 2.8vw, 40px);
+    line-height: 1.05;
+    margin: 0 0 16px;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__item-body {
+    font-size: clamp(16px, 1.15vw, 18px);
+    line-height: 1.6;
+    color: var(--dcway-text, #333);
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__item-body p {
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-what-makes__item-body p + p {
+    margin-top: 12px;
+  }
+  @media (max-width: 989px) {
+    #shopify-section-{{ section.id }} .dcway-what-makes__item--pos-1,
+    #shopify-section-{{ section.id }} .dcway-what-makes__item--pos-2,
+    #shopify-section-{{ section.id }} .dcway-what-makes__item--pos-3,
+    #shopify-section-{{ section.id }} .dcway-what-makes__item--pos-4 {
+      margin-left: 0;
+    }
+    #shopify-section-{{ section.id }} .dcway-what-makes__deco { width: 140px; top: -10px; }
+    #shopify-section-{{ section.id }} .dcway-what-makes__watermark { display: none; }
+  }
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-what-makes__item {
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 16px;
+    }
+    #shopify-section-{{ section.id }} .dcway-what-makes__num { font-size: 110px; }
+    #shopify-section-{{ section.id }} .dcway-what-makes__item-title { font-size: 24px; margin-bottom: 12px; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "What Makes DC Way",
+  "tag": "section",
+  "class": "section dcway-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_lead",
+      "label": "Heading (black part)",
+      "default": "WHAT MAKES DC WAY"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading (orange part)",
+      "default": "DIFFERENT?"
+    },
+    {
+      "type": "image_picker",
+      "id": "decoration_image",
+      "label": "Decorative image (top-right of heading)",
+      "info": "Optional. Use a flying-ball SVG or similar transparent PNG."
+    },
+    {
+      "type": "image_picker",
+      "id": "watermark_image",
+      "label": "Watermark image (faded, left-side background)",
+      "info": "Optional. Renders at 8% opacity behind the list."
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 80
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Numbered feature",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Exceptional Coaches"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Body",
+          "default": "<p>Experienced, vetted coaches who care about your child's growth on and off the pitch.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "What Makes DC Way",
+      "blocks": [
+        { "type": "item", "settings": { "title": "Exceptional Coaches", "body": "<p>We go above and beyond to provide our coaches with top-notch training and resources, ensuring they deliver nothing but the best. Each class is approached with the same passion and enthusiasm as if it were their very first!</p>" } },
+        { "type": "item", "settings": { "title": "Culture of Excellence", "body": "<p>We prioritize sportsmanship and put our players first, creating a positive learning environment where every child can thrive.</p>" } },
+        { "type": "item", "settings": { "title": "Building Strong Connections", "body": "<p>Our relationships extend beyond the game. We work closely with parents and families to ensure that everyone feels welcomed and valued.</p>" } },
+        { "type": "item", "settings": { "title": "Dynamic Training Curriculum", "body": "<p>Each session at DC Way is an adventure in learning, filled with engaging drills, fun games, and invaluable life lessons.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

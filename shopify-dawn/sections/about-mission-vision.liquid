@@ -1,0 +1,289 @@
+<div class="dcway-mv color-{{ section.settings.color_scheme }}">
+  <div class="dcway-mv__inner">
+    <div class="dcway-mv__media">
+      <div class="dcway-mv__watermark" aria-hidden="true">
+        {%- if section.settings.watermark_image != blank -%}
+          {{ section.settings.watermark_image
+            | image_url: width: 700
+            | image_tag:
+              loading: 'lazy',
+              widths: '300, 500, 700',
+              sizes: '320px',
+              class: 'dcway-mv__watermark-img',
+              alt: ''
+          }}
+        {%- else -%}
+          <img src="{{ 'dcway-ball.svg' | asset_url }}" alt="" class="dcway-mv__watermark-img" loading="lazy">
+        {%- endif -%}
+      </div>
+
+      <div class="dcway-mv__photo-wrap">
+        <div class="dcway-mv__photo-rect" aria-hidden="true"></div>
+        {%- if section.settings.main_image != blank -%}
+          {{ section.settings.main_image
+            | image_url: width: 1200
+            | image_tag:
+              loading: 'lazy',
+              widths: '400, 600, 800, 1000, 1200',
+              sizes: '(max-width: 749px) 90vw, 480px',
+              class: 'dcway-mv__photo',
+              alt: section.settings.main_image.alt | default: 'DC Way Soccer team photo'
+          }}
+        {%- else -%}
+          <div class="dcway-mv__photo dcway-mv__photo--placeholder">
+            {{ 'collection-2' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {%- endif -%}
+
+        <div class="dcway-mv__frame" aria-hidden="true">
+          {%- if section.settings.frame_image != blank -%}
+            {{ section.settings.frame_image
+              | image_url: width: 800
+              | image_tag:
+                loading: 'lazy',
+                widths: '300, 500, 800',
+                sizes: '280px',
+                class: 'dcway-mv__frame-img',
+                alt: ''
+            }}
+          {%- else -%}
+            <img src="{{ 'dcway-frame.svg' | asset_url }}" alt="" class="dcway-mv__frame-img" loading="lazy">
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+    <div class="dcway-mv__copy">
+      <div class="dcway-mv__block">
+        {%- if section.settings.mission_heading != blank -%}
+          <h2 class="dcway-mv__heading">{{ section.settings.mission_heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.mission_body != blank -%}
+          <div class="dcway-mv__body">{{ section.settings.mission_body }}</div>
+        {%- endif -%}
+      </div>
+
+      <div class="dcway-mv__block">
+        {%- if section.settings.vision_heading != blank -%}
+          <h2 class="dcway-mv__heading">{{ section.settings.vision_heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.vision_body != blank -%}
+          <div class="dcway-mv__body">{{ section.settings.vision_body }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-mv {
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    position: relative;
+    overflow: hidden;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__inner {
+    max-width: var(--dcway-container, 1170px);
+    margin-inline: auto;
+    padding-inline: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(24px, 4vw, 64px);
+    align-items: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__media {
+    position: relative;
+    min-height: 460px;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__watermark {
+    position: absolute;
+    left: -60px;
+    top: -40px;
+    width: 320px;
+    opacity: 0.12;
+    z-index: 0;
+    pointer-events: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__watermark-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__photo-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    margin-left: auto;
+    z-index: 1;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__photo-rect {
+    position: absolute;
+    inset: -24px 24px 24px -24px;
+    background: var(--dcway-dark, #2C2C2C);
+    z-index: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__photo {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__photo--placeholder {
+    background: var(--dcway-muted-bg, #f2f2f2);
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__photo--placeholder svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__frame {
+    position: absolute;
+    bottom: -32px;
+    right: -32px;
+    width: 220px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__frame-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__heading {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--dcway-orange, #FF7200);
+    font-size: clamp(32px, 3.6vw, 48px);
+    line-height: 1;
+    margin: 0 0 16px;
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__body {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--dcway-text, #333);
+  }
+  #shopify-section-{{ section.id }} .dcway-mv__body p { margin: 0 0 12px; }
+  #shopify-section-{{ section.id }} .dcway-mv__body p:last-child { margin-bottom: 0; }
+
+  @media (max-width: 989px) {
+    #shopify-section-{{ section.id }} .dcway-mv__inner {
+      grid-template-columns: 1fr;
+    }
+    #shopify-section-{{ section.id }} .dcway-mv__photo-wrap {
+      margin: 0 auto;
+    }
+    #shopify-section-{{ section.id }} .dcway-mv__media {
+      min-height: 0;
+    }
+  }
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-mv__watermark { width: 200px; left: -20px; top: -20px; }
+    #shopify-section-{{ section.id }} .dcway-mv__frame { width: 140px; bottom: -18px; right: -18px; }
+    #shopify-section-{{ section.id }} .dcway-mv__photo-rect { inset: -16px 16px 16px -16px; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Mission + Vision",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media (left side)"
+    },
+    {
+      "type": "image_picker",
+      "id": "main_image",
+      "label": "Main photo"
+    },
+    {
+      "type": "image_picker",
+      "id": "watermark_image",
+      "label": "Watermark image",
+      "info": "Optional. Faded soccer-ball SVG behind the photo."
+    },
+    {
+      "type": "image_picker",
+      "id": "frame_image",
+      "label": "Frame overlay",
+      "info": "Optional. Decorative geometric SVG at bottom-right of the photo."
+    },
+    {
+      "type": "header",
+      "content": "Mission"
+    },
+    {
+      "type": "text",
+      "id": "mission_heading",
+      "label": "Heading",
+      "default": "MISSION"
+    },
+    {
+      "type": "richtext",
+      "id": "mission_body",
+      "label": "Body",
+      "default": "<p>DC Way's mission is to help develop the game of soccer in the DC area and bring opportunities for all children to play and enjoy the beautiful game of soccer. We want to develop bright young athletes and help children be active and play, all at an affordable cost.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Vision"
+    },
+    {
+      "type": "text",
+      "id": "vision_heading",
+      "label": "Heading",
+      "default": "VISION"
+    },
+    {
+      "type": "richtext",
+      "id": "vision_body",
+      "label": "Body",
+      "default": "<p>To become the preliminary soccer education company in the DC area, and grow as a company to have a wide variety of programming throughout the entire year. Be the best community-enriching youth sports club by cultivating player and life skills through the beautiful game of soccer.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 80
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mission + Vision"
+    }
+  ]
+}
+{% endschema %}
