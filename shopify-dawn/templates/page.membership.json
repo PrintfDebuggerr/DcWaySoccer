@@ -177,6 +177,18 @@
         "empty_state_text": "Gallery coming soon.",
         "color_scheme": "scheme-1"
       }
+    },
+    "locations": {
+      "type": "locations-list",
+      "settings": {
+        "heading_lead": "OUR",
+        "heading_accent": "LOCATIONS",
+        "subtitle": "Your child's next soccer journey is closer than you think—explore our locations!",
+        "map_embed_url": "https://maps.google.com/maps?q=Shirley+Chisholm+Elementary+School+1001+G+Street+SE+Washington+DC+20003&output=embed",
+        "map_title": "DC Way locations map",
+        "empty_state_text": "Locations coming soon.",
+        "color_scheme": "scheme-1"
+      }
     }
   },
   "order": [
@@ -185,6 +197,7 @@
     "plan",
     "benefits",
     "closing",
-    "gallery"
+    "gallery",
+    "locations"
   ]
 }

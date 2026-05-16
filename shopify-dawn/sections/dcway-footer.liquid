@@ -1,0 +1,259 @@
+{%- liquid
+  assign tel = section.settings.phone | default: ''
+  assign tel_href = tel | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | prepend: 'tel:'
+  assign email = section.settings.email | default: ''
+-%}
+
+<footer class="dcway-footer" role="contentinfo">
+  <div class="dcway-container dcway-footer__inner">
+    <div class="dcway-footer__col dcway-footer__col--left">
+      <ul class="dcway-footer__socials" role="list">
+        {%- if section.settings.facebook_url != blank -%}
+          <li>
+            <a href="{{ section.settings.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook">
+              <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M27.515 3H3.485C3.09115 3 2.71344 3.15646 2.43495 3.43495C2.15646 3.71344 2 4.09115 2 4.485V28.515C2 28.9088 2.15646 29.2866 2.43495 29.5651C2.71344 29.8435 3.09115 30 3.485 30H16.418V19.5375H12.908V15.4875H16.418V12.45C16.3453 11.7369 16.4295 11.0165 16.6647 10.3393C16.8998 9.66218 17.2803 9.04469 17.7794 8.53015C18.2785 8.01562 18.8841 7.61652 19.5538 7.36082C20.2235 7.10513 20.941 6.99904 21.656 7.05C22.7067 7.04353 23.757 7.09762 24.8015 7.212V10.857H22.655C20.954 10.857 20.63 11.667 20.63 12.8415V15.447H24.68L24.1535 19.497H20.63V30H27.515C27.71 30 27.9031 29.9616 28.0833 29.887C28.2635 29.8123 28.4272 29.7029 28.5651 29.5651C28.7029 29.4272 28.8123 29.2635 28.887 29.0833C28.9616 28.9031 29 28.71 29 28.515V4.485C29 4.28999 28.9616 4.09688 28.887 3.91672C28.8123 3.73655 28.7029 3.57284 28.5651 3.43495C28.4272 3.29705 28.2635 3.18767 28.0833 3.11304C27.9031 3.03841 27.71 3 27.515 3Z" fill="currentColor"/>
+              </svg>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if section.settings.instagram_url != blank -%}
+          <li>
+            <a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.78619 3C6.25198 3 4.78058 3.60931 3.69552 4.69395C2.61046 5.77859 2.00059 7.24976 2 8.78397V24.2138C2 25.7484 2.60961 27.2201 3.69474 28.3053C4.77986 29.3904 6.2516 30 7.78619 30H23.216C24.7502 29.9994 26.2214 29.3895 27.306 28.3045C28.3907 27.2194 29 25.748 29 24.2138V8.78397C28.9994 7.25015 28.3898 5.77931 27.3053 4.69474C26.2207 3.61016 24.7499 3.00059 23.216 3H7.78619ZM24.8803 8.79286C24.8803 9.23485 24.7048 9.65874 24.3922 9.97127C24.0797 10.2838 23.6558 10.4594 23.2138 10.4594C22.7718 10.4594 22.3479 10.2838 22.0354 9.97127C21.7229 9.65874 21.5473 9.23485 21.5473 8.79286C21.5473 8.35087 21.7229 7.92698 22.0354 7.61444C22.3479 7.30191 22.7718 7.12633 23.2138 7.12633C23.6558 7.12633 24.0797 7.30191 24.3922 7.61444C24.7048 7.92698 24.8803 8.35087 24.8803 8.79286ZM15.5033 11.877C14.2775 11.877 13.102 12.364 12.2352 13.2308C11.3684 14.0975 10.8815 15.2731 10.8815 16.4989C10.8815 17.7247 11.3684 18.9003 12.2352 19.767C13.102 20.6338 14.2775 21.1207 15.5033 21.1207C16.7291 21.1207 17.9047 20.6338 18.7715 19.767C19.6382 18.9003 20.1252 17.7247 20.1252 16.4989C20.1252 15.2731 19.6382 14.0975 18.7715 13.2308C17.9047 12.364 16.7291 11.877 15.5033 11.877ZM8.65723 16.4989C8.65723 14.6838 9.37828 12.943 10.6618 11.6595C11.9452 10.3761 13.686 9.65501 15.5011 9.65501C17.3162 9.65501 19.057 10.3761 20.3405 11.6595C21.6239 12.943 22.345 14.6838 22.345 16.4989C22.345 18.314 21.6239 20.0548 20.3405 21.3382C19.057 22.6217 17.3162 23.3428 15.5011 23.3428C13.686 23.3428 11.9452 22.6217 10.6618 21.3382C9.37828 20.0548 8.65723 18.314 8.65723 16.4989Z" fill="currentColor"/>
+              </svg>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- if email != blank -%}
+          <li>
+            <a href="mailto:{{ email }}" aria-label="Email DC Way">
+              <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M4 29C3.175 29 2.469 28.7065 1.882 28.1195C1.295 27.5325 1.001 26.826 1 26V8C1 7.175 1.294 6.469 1.882 5.882C2.47 5.295 3.176 5.001 4 5H28C28.825 5 29.5315 5.294 30.1195 5.882C30.7075 6.47 31.001 7.176 31 8V26C31 26.825 30.7065 27.5315 30.1195 28.1195C29.5325 28.7075 28.826 29.001 28 29H4ZM16 18.5L28 11V8L16 15.5L4 8V11L16 18.5Z" fill="currentColor"/>
+              </svg>
+            </a>
+          </li>
+        {%- endif -%}
+      </ul>
+
+      {%- if tel != blank -%}
+        <p class="dcway-footer__contact-line"><a href="{{ tel_href }}">{{ tel }}</a></p>
+      {%- endif -%}
+      {%- if email != blank -%}
+        <p class="dcway-footer__contact-line"><a href="mailto:{{ email }}">{{ email }}</a></p>
+      {%- endif -%}
+    </div>
+
+    <div class="dcway-footer__col dcway-footer__col--center">
+      {%- if section.settings.logo != blank -%}
+        <a href="{{ routes.root_url }}" class="dcway-footer__logo" aria-label="DC Way Soccer home">
+          {{ section.settings.logo | image_url: width: 320 | image_tag: alt: 'DC Way Soccer', loading: 'lazy', class: 'dcway-footer__logo-img' }}
+        </a>
+      {%- endif -%}
+      {%- if section.settings.tagline != blank -%}
+        <p class="dcway-footer__tagline">{{ section.settings.tagline }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="dcway-footer__col dcway-footer__col--right">
+      <ul class="dcway-footer__hours" role="list">
+        {%- if section.settings.location_label != blank -%}
+          <li>{{ section.settings.location_label }}</li>
+        {%- endif -%}
+        {%- if section.settings.hours_label != blank -%}
+          <li>{{ section.settings.hours_label }}</li>
+        {%- endif -%}
+        {%- if section.settings.hours_value != blank -%}
+          <li>{{ section.settings.hours_value }}</li>
+        {%- endif -%}
+      </ul>
+    </div>
+  </div>
+</footer>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-footer {
+    background: var(--dcway-orange);
+    color: #fff;
+    padding-block: 40px;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer a {
+    color: inherit;
+    text-decoration: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer a:hover {
+    text-decoration: underline;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    gap: 32px;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__col {
+    min-width: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__col--center {
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__col--right {
+    text-align: right;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__socials {
+    list-style: none;
+    margin: 0 0 22px;
+    padding: 0;
+    display: flex;
+    gap: 18px;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__socials a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__socials a svg {
+    width: 40px;
+    height: 40px;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__socials a:hover {
+    text-decoration: none;
+    opacity: 0.85;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__contact-line {
+    margin: 0 0 4px;
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.45;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__logo {
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__logo-img {
+    display: block;
+    max-width: 180px;
+    height: auto;
+    margin: 0 auto;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__tagline {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    max-width: 360px;
+    margin-inline: auto;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__hours {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__hours li {
+    margin: 0 0 4px;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__hours li:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-footer {
+      padding-block: 28px;
+    }
+    #shopify-section-{{ section.id }} .dcway-footer__inner {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      text-align: center;
+    }
+    #shopify-section-{{ section.id }} .dcway-footer__col--right {
+      text-align: center;
+    }
+    #shopify-section-{{ section.id }} .dcway-footer__socials {
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Footer (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contact"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone",
+      "default": "+1 (571) 490-1275"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email",
+      "default": "contact@dcway.com"
+    },
+    {
+      "type": "text",
+      "id": "facebook_url",
+      "label": "Facebook URL",
+      "default": "https://www.facebook.com/profile.php?id=61554007134520"
+    },
+    {
+      "type": "text",
+      "id": "instagram_url",
+      "label": "Instagram URL",
+      "default": "https://www.instagram.com/dcwaysoccer/"
+    },
+    {
+      "type": "header",
+      "content": "Brand"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo (white)"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Best Soccer Camp in Washington, DC by Washington City Paper Reader's Poll 2017!"
+    },
+    {
+      "type": "header",
+      "content": "Hours"
+    },
+    {
+      "type": "text",
+      "id": "location_label",
+      "label": "Location",
+      "default": "Capitol Hill, Washington, DC"
+    },
+    {
+      "type": "text",
+      "id": "hours_label",
+      "label": "Hours label",
+      "default": "Mon–Sat:"
+    },
+    {
+      "type": "text",
+      "id": "hours_value",
+      "label": "Hours value",
+      "default": "8 am–8 pm"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer (DC Way)"
+    }
+  ]
+}
+{% endschema %}

@@ -1,50 +1,18 @@
 {
   "sections": {
     "hero": {
-      "type": "image-banner",
-      "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "DC Way Soccer",
-            "heading_size": "h0"
-          }
-        },
-        "text": {
-          "type": "text",
-          "settings": {
-            "text": "Capitol Hill's home for youth soccer — camps, programs, and gear for every player.",
-            "text_style": "subtitle"
-          }
-        },
-        "buttons": {
-          "type": "buttons",
-          "settings": {
-            "button_label_1": "Register now",
-            "button_link_1": "shopify://pages/registration",
-            "button_style_secondary_1": false,
-            "button_label_2": "Explore camps",
-            "button_link_2": "shopify://collections/camps-summer",
-            "button_style_secondary_2": true
-          }
-        }
-      },
-      "block_order": [
-        "heading",
-        "text",
-        "buttons"
-      ],
+      "type": "dcway-home-hero",
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "desktop_content_position": "middle-center",
-        "show_text_box": false,
-        "image_behavior": "none",
-        "desktop_content_alignment": "center",
-        "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
-        "stack_images_on_mobile": false,
-        "show_text_below": false
+        "image": "shopify://shop_images/dcway-home-hero.jpg",
+        "focal_point": "center center",
+        "overlay_opacity": 72,
+        "height_desktop": 560,
+        "height_mobile": 420,
+        "heading": "DC Way Soccer",
+        "subheading": "Score Fun, Kick Goals & Shine!",
+        "button_label": "Learn more",
+        "button_link": "shopify://pages/about",
+        "color_scheme": "scheme-1"
       }
     },
     "kickstart": {
@@ -92,128 +60,86 @@
       }
     },
     "blog": {
-      "type": "featured-blog",
+      "type": "dcway-blog",
       "settings": {
-        "heading": "DC Way Blog",
-        "heading_size": "h1",
+        "heading_lead": "DC WAY",
+        "heading_accent": "BLOG",
+        "intro": "Welcome to our blog, where we share updates, insights, and stories from the DC Way community! Whether you're a player, parent, coach, or fan, our blog is here to keep you informed, inspired, and connected with our vibrant community.",
+        "mascot_image": "shopify://shop_images/dcway-blog-mascot.png",
         "blog": "news",
-        "post_limit": 3,
-        "columns_desktop": 3,
-        "show_image": true,
-        "show_date": true,
-        "show_author": false,
+        "post_limit": 6,
+        "cta_label": "LEARN MORE",
         "show_view_all": true,
-        "color_scheme": "scheme-2",
-        "padding_top": 48,
-        "padding_bottom": 48
-      }
-    },
-    "shop": {
-      "type": "featured-collection",
-      "settings": {
-        "title": "DC Way Soccer Shop",
-        "heading_size": "h1",
-        "description": "<p>Check out our gear — jerseys, balls, and shin guards.</p>",
-        "show_description": true,
-        "description_style": "body",
-        "collection": "merch",
-        "products_to_show": 4,
-        "columns_desktop": 4,
-        "color_scheme": "scheme-1",
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": true,
-        "image_ratio": "square",
-        "image_shape": "default",
-        "show_secondary_image": true,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "standard",
-        "columns_mobile": "2",
-        "padding_top": 48,
-        "padding_bottom": 48
+        "view_all_label": "View all",
+        "empty_state_text": "Blog posts coming soon.",
+        "color_scheme": "scheme-1"
       }
     },
     "anniversary": {
-      "type": "rich-text",
-      "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "10-Year Anniversary",
-            "heading_size": "h1"
-          }
-        },
-        "text": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Celebrating a decade of soccer passion and growth, DC Way is thrilled to mark its 10-year anniversary with gratitude for the incredible journey shared with our vibrant community. Thank you for being a part of our DC Way family.</p>"
-          }
-        },
-        "button": {
-          "type": "button",
-          "settings": {
-            "button_label": "Read the story",
-            "button_link": "shopify://pages/about",
-            "button_style_secondary": false
-          }
-        }
-      },
-      "block_order": [
-        "heading",
-        "text",
-        "button"
-      ],
+      "type": "dcway-anniversary",
       "settings": {
-        "desktop_content_position": "center",
-        "content_alignment": "center",
-        "color_scheme": "scheme-4",
-        "full_width": true,
-        "padding_top": 48,
-        "padding_bottom": 48
+        "youtube_id": "-PPw8Z4j2mM",
+        "video_title": "DC Way 10-Year Anniversary",
+        "heading_lead": "10 YEAR",
+        "heading_accent": "ANNIVERSARY!",
+        "paragraph_1": "Celebrating a decade of soccer passion and growth, DC Way is thrilled to mark its 10-year anniversary with gratitude for the incredible journey we've shared with our vibrant community!",
+        "paragraph_2": "As we look ahead, we remain committed to fostering a love for the game and providing exceptional opportunities for players of all ages and skill levels. Thank you for being an essential part of our DC Way Family!",
+        "button_label": "Learn more",
+        "button_link": "shopify://pages/10-year-anniversary",
+        "color_scheme": "scheme-1"
       }
     },
     "testimonials": {
-      "type": "testimonial-carousel",
+      "type": "dcway-testimonials",
       "settings": {
         "heading": "Testimonials",
-        "show_rating": true,
-        "show_dots": true,
-        "autorotate_seconds": 6,
-        "empty_state_text": "No testimonials yet.",
-        "color_scheme": "scheme-2"
+        "limit": 12,
+        "show_view_all": true,
+        "view_all_label": "View all",
+        "view_all_link": "shopify://pages/testimonials",
+        "empty_state_text": "Testimonials coming soon.",
+        "color_scheme": "scheme-1"
       }
     },
     "instagram": {
-      "type": "instagram-feed",
+      "type": "dcway-instagram",
       "settings": {
-        "heading": "Follow us on Instagram",
-        "handle_text": "@dcwaysoccer",
+        "heading_lead": "FOLLOW US ON",
+        "heading_accent": "INSTAGRAM",
+        "handle_text": "@DCWAYSOCCER",
         "handle_url": "https://www.instagram.com/dcwaysoccer/",
-        "columns_desktop": 4,
+        "default_alt": "DC Way Soccer on Instagram",
         "empty_state_text": "Add Instagram posts in the theme editor.",
         "color_scheme": "scheme-1"
       },
       "blocks": {
-        "post-1": { "type": "post", "settings": { "alt": "DC Way on Instagram" } },
-        "post-2": { "type": "post", "settings": { "alt": "DC Way on Instagram" } },
-        "post-3": { "type": "post", "settings": { "alt": "DC Way on Instagram" } },
-        "post-4": { "type": "post", "settings": { "alt": "DC Way on Instagram" } }
+        "ig-01": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-01.webp", "post_url": "https://www.instagram.com/p/DX4Xt6wDYLK/", "is_video": false, "alt": "This is why we do it" } },
+        "ig-02": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-02.webp", "post_url": "https://www.instagram.com/reel/DXz3VUDDUY2/", "is_video": true, "alt": "5 things soccer teaches" } },
+        "ig-03": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-03.webp", "post_url": "https://www.instagram.com/p/DXwwKSxjJe3/", "is_video": false, "alt": "Last chance for Early Bird pricing" } },
+        "ig-04": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-04.webp", "post_url": "https://www.instagram.com/p/DXpI3OIiADB/", "is_video": false, "alt": "Summer Camp Early Bird ends in 3 days" } },
+        "ig-05": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-05.webp", "post_url": "https://www.instagram.com/p/DXmUR0DiXCd/", "is_video": false, "alt": "Make your child's birthday unforgettable" } },
+        "ig-06": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-06.webp", "post_url": "https://www.instagram.com/p/DXjsDU8kiSD/", "is_video": false, "alt": "One month into spring programs" } },
+        "ig-07": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-07.webp", "post_url": "https://www.instagram.com/p/DXewMmHiAUv/", "is_video": false, "alt": "Great Ward 6 Spring Clean" } },
+        "ig-08": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-08.webp", "post_url": "https://www.instagram.com/p/DXZoVQQjdpU/", "is_video": false, "alt": "Summer Camp Early Bird ends April 30" } },
+        "ig-09": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-09.webp", "post_url": "https://www.instagram.com/reel/DXRo8a_CceK/", "is_video": true, "alt": "What an incredible week" } },
+        "ig-10": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-10.webp", "post_url": "https://www.instagram.com/p/DXMtK1ejcvu/", "is_video": false, "alt": "Early Bird pricing for Summer Camp" } },
+        "ig-11": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-11.webp", "post_url": "https://www.instagram.com/reel/DXKBg0MEi5u/", "is_video": true, "alt": "Spring Break Camp is in full swing" } },
+        "ig-12": { "type": "post", "settings": { "image_url": "https://cdn.shopify.com/s/files/1/0754/3773/6108/files/dcway-ig-12.webp", "post_url": "https://www.instagram.com/p/DXCMEgtAc2D/", "is_video": false, "alt": "Spring Break Camp starts tomorrow" } }
       },
       "block_order": [
-        "post-1",
-        "post-2",
-        "post-3",
-        "post-4"
+        "ig-01", "ig-02", "ig-03", "ig-04",
+        "ig-05", "ig-06", "ig-07", "ig-08",
+        "ig-09", "ig-10", "ig-11", "ig-12"
       ]
     },
     "locations": {
       "type": "locations-list",
       "settings": {
-        "heading": "Our Locations",
-        "columns_desktop": 3,
+        "heading_lead": "OUR",
+        "heading_accent": "LOCATIONS",
+        "subtitle": "Your child's next soccer journey is closer than you think — explore our locations!",
+        "map_embed_url": "https://www.google.com/maps?q=1001+G+Street+SE+Washington+DC+20003&output=embed",
+        "map_title": "DC Way locations map",
         "empty_state_text": "Locations coming soon.",
         "color_scheme": "scheme-1"
       }
@@ -225,7 +151,6 @@
     "programs",
     "camps",
     "blog",
-    "shop",
     "anniversary",
     "testimonials",
     "instagram",

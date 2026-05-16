@@ -5,12 +5,19 @@
   assign success_id = band_id | append: '-Success'
 -%}
 
-<div class="dcway-newsletter-band color-{{ section.settings.color_scheme }} gradient">
+<div class="dcway-newsletter-band">
   <div class="dcway-container dcway-newsletter-band__inner">
     <div class="dcway-newsletter-band__copy">
-      {%- if section.settings.heading != blank -%}
-        <h2 class="dcway-newsletter-band__heading dcway-uppercase">{{ section.settings.heading }}</h2>
-      {%- endif -%}
+      <div class="dcway-newsletter-band__heading-row">
+        <span class="dcway-newsletter-band__icon" aria-hidden="true">
+          <svg width="44" height="34" viewBox="0 0 44 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 4h36c1.1 0 2 .9 2 2v22c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 19L4 7v2l18 12L40 9V7L22 19z" fill="currentColor"/>
+          </svg>
+        </span>
+        {%- if section.settings.heading != blank -%}
+          <h2 class="dcway-newsletter-band__heading dcway-uppercase">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+      </div>
       {%- if section.settings.body_text != blank -%}
         <p class="dcway-newsletter-band__body">{{ section.settings.body_text }}</p>
       {%- endif -%}
@@ -58,33 +65,54 @@
 
 {%- style -%}
   #shopify-section-{{ section.id }} .dcway-newsletter-band {
-    padding-block: 28px;
+    background: #ece6dd;
+    color: var(--dcway-dark);
+    padding-block: 48px;
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__inner {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 24px;
+    gap: 40px;
     justify-content: space-between;
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__copy {
-    flex: 1 1 320px;
+    flex: 1 1 460px;
     min-width: 0;
   }
+  #shopify-section-{{ section.id }} .dcway-newsletter-band__heading-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 10px;
+  }
+  #shopify-section-{{ section.id }} .dcway-newsletter-band__icon {
+    display: inline-flex;
+    color: var(--dcway-orange);
+    flex: 0 0 auto;
+  }
+  #shopify-section-{{ section.id }} .dcway-newsletter-band__icon svg {
+    display: block;
+    width: 56px;
+    height: auto;
+  }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__heading {
-    margin: 0 0 4px;
-    font-size: 1.6rem;
-    line-height: 1.2;
-    font-weight: 700;
+    margin: 0;
+    font-size: 2.125rem;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    color: var(--dcway-dark);
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__body {
     margin: 0;
-    font-size: 0.9375rem;
-    line-height: 1.4;
-    opacity: 0.95;
+    font-size: 1.25rem;
+    line-height: 1.55;
+    color: var(--dcway-text);
+    max-width: 64ch;
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__form-wrap {
-    flex: 1 1 360px;
+    flex: 1 1 420px;
     min-width: 0;
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__form {
@@ -92,90 +120,83 @@
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__field {
     display: flex;
-    background: #fff;
+    background: transparent;
     border: 0;
+    gap: 0;
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__field input[type='email'] {
     flex: 1 1 auto;
     min-width: 0;
-    border: 0;
-    background: transparent;
-    padding: 12px 14px;
+    border: 1px solid #cdc7bd;
+    background: #fff;
+    padding: 18px 20px;
     font-family: inherit;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     color: var(--dcway-text);
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__field input[type='email']:focus {
-    outline: 2px solid var(--dcway-dark);
+    outline: 2px solid var(--dcway-orange);
     outline-offset: -2px;
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__submit {
     flex: 0 0 auto;
     border: 0;
-    padding: 12px 24px;
+    padding: 18px 44px;
     font-family: inherit;
     font-weight: 700;
-    font-size: 0.9375rem;
-    background: var(--dcway-dark);
+    font-size: 1.0625rem;
+    letter-spacing: var(--dcway-tracking-button);
+    background: var(--dcway-orange);
     color: #fff;
     cursor: pointer;
     transition: background 0.2s ease;
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__submit:hover {
-    background: #000;
+    background: var(--dcway-orange-hover);
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__message {
     margin: 8px 0 0;
     font-size: 0.875rem;
   }
   #shopify-section-{{ section.id }} .dcway-newsletter-band__message--error {
-    color: #fff;
+    color: #b00020;
+    font-weight: 600;
+  }
+  #shopify-section-{{ section.id }} .dcway-newsletter-band__message--success {
+    color: #1f7a3a;
     font-weight: 600;
   }
 
   @media (max-width: 749px) {
     #shopify-section-{{ section.id }} .dcway-newsletter-band {
-      padding-block: 20px;
-      min-height: 0;
+      padding-block: 24px;
     }
     #shopify-section-{{ section.id }} .dcway-newsletter-band__inner {
       flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      text-align: center;
-      gap: 14px;
+      align-items: stretch;
+      text-align: left;
+      gap: 16px;
       padding-inline: 20px;
-      min-height: 0;
     }
-    #shopify-section-{{ section.id }} .dcway-newsletter-band__copy {
-      flex: 0 0 auto;
-      width: 100%;
-      max-width: 360px;
-    }
-    #shopify-section-{{ section.id }} .dcway-newsletter-band__heading {
-      font-size: 1.25rem;
-      margin-bottom: 4px;
-    }
-    #shopify-section-{{ section.id }} .dcway-newsletter-band__body {
-      font-size: 0.875rem;
-      line-height: 1.35;
-    }
+    #shopify-section-{{ section.id }} .dcway-newsletter-band__copy,
     #shopify-section-{{ section.id }} .dcway-newsletter-band__form-wrap {
       flex: 0 0 auto;
       width: 100%;
-      max-width: 360px;
+    }
+    #shopify-section-{{ section.id }} .dcway-newsletter-band__heading {
+      font-size: 1.5rem;
+    }
+    #shopify-section-{{ section.id }} .dcway-newsletter-band__body {
+      font-size: 0.9375rem;
+    }
+    #shopify-section-{{ section.id }} .dcway-newsletter-band__icon svg {
+      width: 40px;
     }
     #shopify-section-{{ section.id }} .dcway-newsletter-band__field {
       flex-direction: column;
-      gap: 0;
-    }
-    #shopify-section-{{ section.id }} .dcway-newsletter-band__field input[type='email'] {
-      padding: 12px 14px;
-      text-align: center;
     }
     #shopify-section-{{ section.id }} .dcway-newsletter-band__submit {
-      padding: 12px 24px;
-      font-size: 0.875rem;
+      padding: 14px 24px;
     }
   }
 {%- endstyle -%}
@@ -196,13 +217,13 @@
       "type": "text",
       "id": "body_text",
       "label": "Body text",
-      "default": "Don't miss out on a single update. Sign up below."
+      "default": "Our programs fill up fast! If you don't want to miss out on the best soccer programs around, then join our EMAIL LIST for news and information the moment it is released!"
     },
     {
       "type": "text",
       "id": "email_placeholder",
       "label": "Email placeholder",
-      "default": "Email address"
+      "default": "E-mail address"
     },
     {
       "type": "text",
@@ -213,8 +234,8 @@
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "scheme-4"
+      "label": "Color scheme (legacy, ignored — section uses fixed cream/orange)",
+      "default": "scheme-1"
     }
   ],
   "presets": [

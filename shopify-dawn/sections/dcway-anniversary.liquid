@@ -1,0 +1,250 @@
+{%- comment -%}
+  WP-faithful port of DC Way's "10 YEAR ANNIVERSARY!" home section.
+
+  Layout (desktop):
+    - 2-column grid (left 1fr / right 1fr) with 40px gap.
+    - Left: 16:9 responsive YouTube embed (lazy-loaded via privacy-friendly
+      youtube-nocookie host).
+    - Right: heading "10 YEAR ANNIVERSARY!" ("10 YEAR" orange, "ANNIVERSARY!"
+      dark), paragraph copy (supports two paragraphs via two textareas), and
+      a solid-orange filled "LEARN MORE" button with white right-arrow icon.
+    - Mobile: video stacks above text block; everything left-aligned.
+
+  Reference: 03-saved-html-pages/01-home-main/DC Way Soccer.html lines 4572-4605.
+{%- endcomment -%}
+
+{%- liquid
+  assign youtube_id = section.settings.youtube_id | default: '-PPw8Z4j2mM'
+  assign cta_url = section.settings.button_link
+  if cta_url == blank
+    assign cta_url = '/pages/10-year-anniversary'
+  endif
+-%}
+
+<div class="dcway-anniversary color-{{ section.settings.color_scheme }} gradient">
+  <div class="dcway-container">
+    <div class="dcway-anniversary__grid">
+      <div class="dcway-anniversary__media">
+        <div class="dcway-anniversary__video">
+          {%- if youtube_id != blank -%}
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/{{ youtube_id }}?rel=0&modestbranding=1"
+              title="{{ section.settings.video_title | default: 'DC Way 10-Year Anniversary' | escape }}"
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            ></iframe>
+          {%- endif -%}
+        </div>
+      </div>
+      <div class="dcway-anniversary__copy">
+        {%- if section.settings.heading_lead != blank or section.settings.heading_accent != blank -%}
+          <h2 class="dcway-anniversary__heading">
+            {%- if section.settings.heading_lead != blank -%}<span class="dcway-anniversary__heading-lead">{{ section.settings.heading_lead }}</span> {% endif -%}
+            {%- if section.settings.heading_accent != blank -%}<span class="dcway-anniversary__heading-accent">{{ section.settings.heading_accent }}</span>{%- endif -%}
+          </h2>
+        {%- endif -%}
+        {%- if section.settings.paragraph_1 != blank -%}
+          <p class="dcway-anniversary__text">{{ section.settings.paragraph_1 }}</p>
+        {%- endif -%}
+        {%- if section.settings.paragraph_2 != blank -%}
+          <p class="dcway-anniversary__text">{{ section.settings.paragraph_2 }}</p>
+        {%- endif -%}
+        {%- if section.settings.button_label != blank -%}
+          <a class="dcway-anniversary__cta dcway-uppercase" href="{{ cta_url }}">
+            <span>{{ section.settings.button_label }}</span>
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M21.1743 22.8881L29.0625 15L21.1743 7.11188L19.8485 8.43774L25.4734 14.0626L0.982267 14.0626L0.982267 15.9376L25.4732 15.9376L19.8485 21.5623L21.1743 22.8881Z" fill="currentColor"/>
+            </svg>
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .dcway-anniversary {
+    padding-block: 64px;
+  }
+  #shopify-section-{{ section.id }} .dcway-container {
+    max-width: 1170px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__media {
+    min-width: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__video {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__heading {
+    margin: 0 0 4px;
+    font-family: 'Barlow Condensed', 'Barlow', Tahoma, Arial, sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    font-weight: 700;
+    color: #2c2c2c;
+    text-transform: uppercase;
+    letter-spacing: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__heading-lead {
+    color: var(--dcway-orange, #ff7200);
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__heading-accent {
+    color: #2c2c2c;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__text {
+    margin: 0;
+    color: #2c2c2c;
+    font-family: 'Nunito Sans', Tahoma, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    align-self: flex-start;
+    margin-top: 8px;
+    font-family: 'Barlow Condensed', 'Barlow', Tahoma, Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+    color: #ffffff;
+    background: var(--dcway-orange, #ff7200);
+    border: 2px solid var(--dcway-orange, #ff7200);
+    padding: 14px 32px;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__cta svg {
+    flex: 0 0 auto;
+  }
+  #shopify-section-{{ section.id }} .dcway-anniversary__cta:hover,
+  #shopify-section-{{ section.id }} .dcway-anniversary__cta:focus-visible {
+    background: #ffffff;
+    color: var(--dcway-orange, #ff7200);
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .dcway-anniversary__grid {
+      grid-template-columns: 7fr 5fr;
+      gap: 48px;
+    }
+  }
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-anniversary__heading { font-size: 36px; }
+    #shopify-section-{{ section.id }} .dcway-anniversary__cta { font-size: 18px; padding: 12px 24px; }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Anniversary (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "youtube_id",
+      "label": "YouTube video ID",
+      "default": "-PPw8Z4j2mM",
+      "info": "The part after 'youtu.be/' or 'v=' in the URL."
+    },
+    {
+      "type": "text",
+      "id": "video_title",
+      "label": "Video iframe title (a11y)",
+      "default": "DC Way 10-Year Anniversary"
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading_lead",
+      "label": "Heading — orange-accent word(s)",
+      "default": "10 YEAR"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading — dark word(s)",
+      "default": "ANNIVERSARY!"
+    },
+    {
+      "type": "header",
+      "content": "Body copy"
+    },
+    {
+      "type": "textarea",
+      "id": "paragraph_1",
+      "label": "Paragraph 1",
+      "default": "Celebrating a decade of soccer passion and growth, DC Way is thrilled to mark its 10-year anniversary with gratitude for the incredible journey we've shared with our vibrant community!"
+    },
+    {
+      "type": "textarea",
+      "id": "paragraph_2",
+      "label": "Paragraph 2",
+      "default": "As we look ahead, we remain committed to fostering a love for the game and providing exceptional opportunities for players of all ages and skill levels. Thank you for being an essential part of our DC Way Family!"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Learn more"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Anniversary (DC Way)"
+    }
+  ]
+}
+{% endschema %}
