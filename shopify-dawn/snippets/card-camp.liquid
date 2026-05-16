@@ -139,6 +139,27 @@
       </button>
     </form>
   </article>
+{%- elsif style == 'program' -%}
+  <article class="dcway-card-program">
+    <a class="dcway-card-program__media-link" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+      <div class="dcway-card-program__media">
+        {%- if featured != blank -%}
+          {{ featured | image_url: width: 800 | image_tag: loading: 'lazy', alt: product.title, width: 400, height: 270 }}
+        {%- else -%}
+          <div class="dcway-card-program__media-placeholder" aria-hidden="true"></div>
+        {%- endif -%}
+      </div>
+    </a>
+    <h3 class="dcway-card-program__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+    {%- if product.description != blank -%}
+      <div class="dcway-card-program__body rte">{{ product.description }}</div>
+    {%- endif -%}
+    <div class="dcway-card-program__footer">
+      <a class="dcway-card-program__cta dcway-uppercase" href="{{ product.url }}">{{ cta_label }}</a>
+    </div>
+  </article>
 {%- else -%}
 <article class="dcway-card-camp">
   <a class="dcway-card-camp__media-link" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
@@ -461,6 +482,96 @@
     .dcway-card-camp--compact {
       width: 100%;
       max-width: 320px;
+    }
+  }
+
+  /* WP-style program card */
+  .dcway-card-program {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 550px;
+    background: transparent;
+    color: var(--dcway-text, #212121);
+    padding: 0;
+  }
+  .dcway-card-program__media-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .dcway-card-program__media {
+    width: 100%;
+    height: 270px;
+    overflow: hidden;
+    background: var(--dcway-muted-bg, #f0f0f0);
+  }
+  .dcway-card-program__media img,
+  .dcway-card-program__media-placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+  .dcway-card-program__title {
+    margin: 10px 0 0;
+    font-family: "Barlow Condensed", Tahoma, Arial, sans-serif;
+    font-size: 36px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--dcway-orange, #ff7200);
+  }
+  .dcway-card-program__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .dcway-card-program__title a:hover {
+    text-decoration: underline;
+  }
+  .dcway-card-program__body {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--dcway-text, #212121);
+  }
+  .dcway-card-program__body p { margin: 0 0 8px; }
+  .dcway-card-program__body p:last-child { margin-bottom: 0; }
+  .dcway-card-program__footer {
+    margin-top: auto;
+    padding-top: 24px;
+  }
+  .dcway-card-program__cta {
+    display: inline-block;
+    font-family: "Barlow Condensed", Tahoma, Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--dcway-orange, #ff7200);
+    background-color: #fff;
+    border: 2px solid var(--dcway-orange, #ff7200);
+    padding: 12px 40px;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .dcway-card-program__cta:hover,
+  .dcway-card-program__cta:focus {
+    background-color: var(--dcway-orange, #ff7200);
+    color: #fff;
+  }
+  @media (max-width: 767px) {
+    .dcway-card-program {
+      min-height: 300px;
+    }
+    .dcway-card-program__media {
+      height: 220px;
+    }
+    .dcway-card-program__title {
+      font-size: 30px;
+    }
+    .dcway-card-program__cta {
+      font-size: 16px;
     }
   }
 </style>

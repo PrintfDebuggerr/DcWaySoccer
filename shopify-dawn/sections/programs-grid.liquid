@@ -3,6 +3,8 @@
   assign limit = section.settings.product_limit | default: 12
   assign cols = section.settings.columns_desktop | default: 3
   assign cta = section.settings.cta_label | default: 'View program'
+  assign per_page = section.settings.per_page | default: 9
+  assign use_pagination = section.settings.enable_pagination
 -%}
 
 <div class="dcway-programs-grid color-{{ section.settings.color_scheme }} gradient">
@@ -16,18 +18,69 @@
     {%- endif -%}
 
     {%- if source != blank and source.products_count > 0 -%}
-      <ul class="dcway-programs-grid__grid" role="list" data-cols="{{ cols }}">
-        {%- for product in source.products limit: limit -%}
-          <li class="dcway-programs-grid__item">
-            {%- render 'card-camp',
-              product: product,
-              cta_label: cta,
-              show_price: section.settings.show_price,
-              show_meta: section.settings.show_meta
-            -%}
-          </li>
-        {%- endfor -%}
-      </ul>
+      {%- if use_pagination -%}
+        {%- paginate source.products by per_page -%}
+          <ul class="dcway-programs-grid__grid" role="list" data-cols="{{ cols }}">
+            {%- for product in source.products -%}
+              <li class="dcway-programs-grid__item">
+                {%- render 'card-camp',
+                  product: product,
+                  cta_label: cta,
+                  show_price: section.settings.show_price,
+                  show_meta: section.settings.show_meta,
+                  style: section.settings.card_style
+                -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          {%- if paginate.pages > 1 -%}
+            <nav class="dcway-programs-grid__pagination" aria-label="Pagination">
+              {%- if paginate.previous -%}
+                <a class="dcway-programs-grid__page-link dcway-programs-grid__page-link--prev" href="{{ paginate.previous.url }}" aria-label="Previous page">
+                  <span aria-hidden="true">&lsaquo;</span>
+                </a>
+              {%- else -%}
+                <span class="dcway-programs-grid__page-link dcway-programs-grid__page-link--disabled" aria-hidden="true">&lsaquo;</span>
+              {%- endif -%}
+
+              {%- for part in paginate.parts -%}
+                {%- if part.is_link -%}
+                  <a class="dcway-programs-grid__page-link" href="{{ part.url }}">{{ part.title }}</a>
+                {%- else -%}
+                  {%- if part.title == paginate.current_page -%}
+                    <span class="dcway-programs-grid__page-link dcway-programs-grid__page-link--current" aria-current="page">{{ part.title }}</span>
+                  {%- else -%}
+                    <span class="dcway-programs-grid__page-link dcway-programs-grid__page-link--disabled">{{ part.title }}</span>
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if paginate.next -%}
+                <a class="dcway-programs-grid__page-link dcway-programs-grid__page-link--next" href="{{ paginate.next.url }}" aria-label="Next page">
+                  <span aria-hidden="true">&rsaquo;</span>
+                </a>
+              {%- else -%}
+                <span class="dcway-programs-grid__page-link dcway-programs-grid__page-link--disabled" aria-hidden="true">&rsaquo;</span>
+              {%- endif -%}
+            </nav>
+          {%- endif -%}
+        {%- endpaginate -%}
+      {%- else -%}
+        <ul class="dcway-programs-grid__grid" role="list" data-cols="{{ cols }}">
+          {%- for product in source.products limit: limit -%}
+            <li class="dcway-programs-grid__item">
+              {%- render 'card-camp',
+                product: product,
+                cta_label: cta,
+                show_price: section.settings.show_price,
+                show_meta: section.settings.show_meta,
+                style: section.settings.card_style
+              -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
 
       {%- if section.settings.show_view_all and source.url != blank -%}
         <div class="dcway-programs-grid__more">
@@ -45,11 +98,20 @@
     padding-block: 48px;
   }
   #shopify-section-{{ section.id }} .dcway-programs-grid__heading {
-    margin: 0 0 12px;
-    font-size: 2rem;
-    line-height: 1.1;
-    font-weight: 700;
-    text-align: center;
+    margin: 0 0 24px;
+    font-family: "Barlow Condensed", Tahoma, Arial, sans-serif;
+    font-size: 72px;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--dcway-text, #212121);
+  }
+  @media (max-width: 767px) {
+    #shopify-section-{{ section.id }} .dcway-programs-grid__heading {
+      font-size: 50px;
+    }
   }
   #shopify-section-{{ section.id }} .dcway-programs-grid__intro {
     margin: 0 auto 32px;
@@ -77,6 +139,43 @@
   #shopify-section-{{ section.id }} .dcway-programs-grid__more {
     margin-top: 32px;
     text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-programs-grid__pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 36px;
+  }
+  #shopify-section-{{ section.id }} .dcway-programs-grid__page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    font-family: "Barlow Condensed", Tahoma, Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dcway-orange, #ff7200);
+    border: 1px solid transparent;
+    text-decoration: none;
+    line-height: 1;
+  }
+  #shopify-section-{{ section.id }} .dcway-programs-grid__page-link:hover {
+    border-color: var(--dcway-orange, #ff7200);
+  }
+  #shopify-section-{{ section.id }} .dcway-programs-grid__page-link--current {
+    color: var(--dcway-text, #212121);
+    border-color: var(--dcway-orange, #ff7200);
+  }
+  #shopify-section-{{ section.id }} .dcway-programs-grid__page-link--disabled {
+    color: var(--dcway-muted, #999);
+    pointer-events: none;
+  }
+  #shopify-section-{{ section.id }} .dcway-programs-grid__page-link--prev,
+  #shopify-section-{{ section.id }} .dcway-programs-grid__page-link--next {
+    font-size: 24px;
   }
 
   @media (min-width: 750px) {
@@ -119,11 +218,26 @@
     {
       "type": "range",
       "id": "product_limit",
-      "label": "Maximum cards",
+      "label": "Maximum cards (no pagination)",
       "min": 4,
       "max": 24,
       "step": 2,
       "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_pagination",
+      "label": "Enable pagination",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "per_page",
+      "label": "Cards per page",
+      "min": 3,
+      "max": 24,
+      "step": 1,
+      "default": 9
     },
     {
       "type": "range",
@@ -139,6 +253,16 @@
       "id": "cta_label",
       "label": "Card CTA label",
       "default": "View program"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "options": [
+        { "value": "default", "label": "Default (image + meta + price)" },
+        { "value": "program", "label": "Program (WP-style)" }
+      ],
+      "default": "program"
     },
     {
       "type": "checkbox",

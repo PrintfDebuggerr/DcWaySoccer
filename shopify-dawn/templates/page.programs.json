@@ -1,189 +1,24 @@
 {
   "sections": {
-    "hero": {
-      "type": "rich-text",
-      "blocks": {
-        "eyebrow": {
-          "type": "caption",
-          "settings": {
-            "caption": "Year-round soccer",
-            "text_style": "caption-with-letter-spacing",
-            "text_size": "medium"
-          }
-        },
-        "title": {
-          "type": "heading",
-          "settings": {
-            "heading": "PROGRAMS",
-            "heading_size": "h0"
-          }
-        },
-        "body": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Leagues, clinics, after-school, private lessons, and the Kids Academy — pick the format that fits your player's level and schedule.</p>"
-          }
-        },
-        "cta": {
-          "type": "button",
-          "settings": {
-            "button_label": "Register now",
-            "button_link": "/pages/Registration",
-            "button_style_secondary": false
-          }
-        }
-      },
-      "block_order": ["eyebrow", "title", "body", "cta"],
-      "settings": {
-        "desktop_content_position": "center",
-        "content_alignment": "center",
-        "color_scheme": "scheme-1",
-        "full_width": true,
-        "padding_top": 56,
-        "padding_bottom": 32
-      }
-    },
-    "all_programs": {
+    "programs": {
       "type": "programs-grid",
       "settings": {
-        "heading": "All Programs",
-        "intro_text": "<p>Browse every weekly program DC Way runs across DC, MD, and VA.</p>",
+        "heading": "Programs",
+        "intro_text": "",
         "collection": "programs",
         "product_limit": 18,
+        "enable_pagination": true,
+        "per_page": 9,
         "columns_desktop": 3,
-        "cta_label": "View program",
-        "show_price": true,
-        "show_meta": true,
+        "cta_label": "Learn more",
+        "card_style": "program",
+        "show_price": false,
+        "show_meta": false,
         "show_view_all": false,
-        "view_all_label": "View all programs",
         "empty_state_text": "Programs coming soon.",
-        "color_scheme": "scheme-1"
-      }
-    },
-    "leagues": {
-      "type": "programs-grid",
-      "settings": {
-        "heading": "Leagues",
-        "intro_text": "<p>Weekly games and structured practices for players ready to compete.</p>",
-        "collection": "programs-leagues",
-        "product_limit": 8,
-        "columns_desktop": 3,
-        "cta_label": "View league",
-        "show_price": true,
-        "show_meta": true,
-        "show_view_all": false,
-        "view_all_label": "View all leagues",
-        "empty_state_text": "League schedule coming soon.",
-        "color_scheme": "scheme-2"
-      }
-    },
-    "clinics": {
-      "type": "programs-grid",
-      "settings": {
-        "heading": "Skills Clinics",
-        "intro_text": "<p>Focused training to sharpen specific skills — goalkeeping, finishing, ball mastery, and more.</p>",
-        "collection": "programs-clinics",
-        "product_limit": 8,
-        "columns_desktop": 3,
-        "cta_label": "View clinic",
-        "show_price": true,
-        "show_meta": true,
-        "show_view_all": false,
-        "view_all_label": "View all clinics",
-        "empty_state_text": "Clinic schedule coming soon.",
-        "color_scheme": "scheme-1"
-      }
-    },
-    "after_school": {
-      "type": "programs-grid",
-      "settings": {
-        "heading": "After-School",
-        "intro_text": "<p>End the school day with coaching, a game, and a smile — right at your child's school.</p>",
-        "collection": "programs-after-school",
-        "product_limit": 6,
-        "columns_desktop": 3,
-        "cta_label": "View program",
-        "show_price": true,
-        "show_meta": true,
-        "show_view_all": false,
-        "view_all_label": "View after-school programs",
-        "empty_state_text": "After-school programs coming soon.",
-        "color_scheme": "scheme-2"
-      }
-    },
-    "private": {
-      "type": "programs-grid",
-      "settings": {
-        "heading": "Private Lessons",
-        "intro_text": "<p>One-on-one coaching tailored to your player's specific goals and schedule.</p>",
-        "collection": "programs-private",
-        "product_limit": 6,
-        "columns_desktop": 3,
-        "cta_label": "Book a lesson",
-        "show_price": true,
-        "show_meta": true,
-        "show_view_all": false,
-        "view_all_label": "View private lessons",
-        "empty_state_text": "Private lessons coming soon.",
-        "color_scheme": "scheme-1"
-      }
-    },
-    "register_cta": {
-      "type": "rich-text",
-      "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "Ready to pick a program?",
-            "heading_size": "h1"
-          }
-        },
-        "body": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Spots fill quickly — choose your program and lock in your spot today.</p>"
-          }
-        },
-        "cta": {
-          "type": "button",
-          "settings": {
-            "button_label": "Go to registration",
-            "button_link": "/pages/Registration",
-            "button_style_secondary": false,
-            "button_label_2": "Contact us",
-            "button_link_2": "shopify://pages/contact",
-            "button_style_secondary_2": true
-          }
-        }
-      },
-      "block_order": ["heading", "body", "cta"],
-      "settings": {
-        "desktop_content_position": "center",
-        "content_alignment": "center",
-        "color_scheme": "scheme-2",
-        "full_width": true,
-        "padding_top": 56,
-        "padding_bottom": 56
-      }
-    },
-    "locations": {
-      "type": "locations-list",
-      "settings": {
-        "heading": "Our Locations",
-        "columns_desktop": 3,
-        "empty_state_text": "Locations coming soon.",
         "color_scheme": "scheme-1"
       }
     }
   },
-  "order": [
-    "hero",
-    "all_programs",
-    "leagues",
-    "clinics",
-    "after_school",
-    "private",
-    "register_cta",
-    "locations"
-  ]
+  "order": ["programs"]
 }
