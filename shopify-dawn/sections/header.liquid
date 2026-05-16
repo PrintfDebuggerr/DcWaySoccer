@@ -182,18 +182,20 @@
     --dcway-header-h-mobile: 60px;
   }
 
+  /* Sticky must be applied to the Shopify section WRAPPER, not the inner element. */
+  #shopify-section-{{ section.id }} {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  #shopify-section-{{ section.id }}.dcway-header-static {
+    position: static;
+  }
   .dcway-header {
     display: block;
     background: var(--dcway-orange, #FF7200);
     color: #fff;
     width: 100%;
-    /* Sticky by default; opt-out via data-sticky="false". */
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .dcway-header[data-sticky="false"] {
-    position: static;
   }
   .dcway-header.is-scrolled {
     box-shadow: 0 2px 12px rgba(0,0,0,0.18);
