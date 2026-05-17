@@ -48,19 +48,27 @@
 
       <div class="dcway-reg-header__dropdowns">
         <select class="dcway-reg-header__select" data-category="camps" aria-label="Choose a Camp">
-          <option value="">All Camps</option>
           {%- for block in section.blocks -%}
-            {%- if block.type == 'camp_option' and block.settings.target_anchor != blank -%}
-              <option value="{{ block.settings.target_anchor }}">{{ block.settings.label }}</option>
+            {%- if block.type == 'camp_option' -%}
+              <option
+                value="{{ block.settings.target_anchor }}"
+                data-subcat="{{ block.settings.subcategory | default: block.settings.target_anchor }}"
+              >
+                {{ block.settings.label }}
+              </option>
             {%- endif -%}
           {%- endfor -%}
         </select>
 
         <select class="dcway-reg-header__select" data-category="programs" aria-label="Choose a Program" hidden>
-          <option value="">All Programs</option>
           {%- for block in section.blocks -%}
-            {%- if block.type == 'program_option' and block.settings.target_anchor != blank -%}
-              <option value="{{ block.settings.target_anchor }}">{{ block.settings.label }}</option>
+            {%- if block.type == 'program_option' -%}
+              <option
+                value="{{ block.settings.target_anchor }}"
+                data-subcat="{{ block.settings.subcategory | default: block.settings.target_anchor }}"
+              >
+                {{ block.settings.label }}
+              </option>
             {%- endif -%}
           {%- endfor -%}
         </select>
@@ -68,20 +76,64 @@
     </div>
 
     <div class="dcway-reg-header__right">
-      {%- if hero != blank -%}
-        {{ hero | image_url: width: 1200 | image_tag:
-          loading: 'eager',
-          fetchpriority: 'high',
-          width: 800,
-          height: 533,
-          alt: section.settings.hero_alt | default: 'Registration',
-          class: 'dcway-reg-header__image'
-        }}
-      {%- else -%}
-        <div class="dcway-reg-header__image-placeholder" aria-hidden="true">
-          {{ 'image' | placeholder_svg_tag: 'placeholder-svg dcway-reg-header__image' }}
+      {%- liquid
+        assign img1 = section.settings.hero_image_1
+        assign img2 = section.settings.hero_image_2
+        assign img3 = section.settings.hero_image_3
+        assign img4 = section.settings.hero_image_4
+        assign hero_alt = section.settings.hero_alt | default: 'Registration'
+      -%}
+
+      <div class="dcway-reg-header__collage" aria-label="{{ hero_alt }}">
+        <div class="dcway-reg-header__collage-cell">
+          {%- if img1 != blank -%}
+            {{ img1 | image_url: width: 800 | image_tag:
+              loading: 'eager', width: 400, height: 400,
+              alt: hero_alt, class: 'dcway-reg-header__collage-img'
+            }}
+          {%- else -%}
+            <img src="{{ 'reg-collage-1.jpg' | asset_url }}"
+              loading="eager" width="400" height="400"
+              alt="{{ hero_alt }}" class="dcway-reg-header__collage-img">
+          {%- endif -%}
         </div>
-      {%- endif -%}
+        <div class="dcway-reg-header__collage-cell">
+          {%- if img2 != blank -%}
+            {{ img2 | image_url: width: 800 | image_tag:
+              loading: 'eager', width: 400, height: 400,
+              alt: hero_alt, class: 'dcway-reg-header__collage-img'
+            }}
+          {%- else -%}
+            <img src="{{ 'reg-collage-2.jpg' | asset_url }}"
+              loading="eager" width="400" height="400"
+              alt="{{ hero_alt }}" class="dcway-reg-header__collage-img">
+          {%- endif -%}
+        </div>
+        <div class="dcway-reg-header__collage-cell">
+          {%- if img3 != blank -%}
+            {{ img3 | image_url: width: 800 | image_tag:
+              loading: 'eager', width: 400, height: 400,
+              alt: hero_alt, class: 'dcway-reg-header__collage-img'
+            }}
+          {%- else -%}
+            <img src="{{ 'reg-collage-3.jpg' | asset_url }}"
+              loading="eager" width="400" height="400"
+              alt="{{ hero_alt }}" class="dcway-reg-header__collage-img">
+          {%- endif -%}
+        </div>
+        <div class="dcway-reg-header__collage-cell">
+          {%- if img4 != blank -%}
+            {{ img4 | image_url: width: 800 | image_tag:
+              loading: 'eager', width: 400, height: 400,
+              alt: hero_alt, class: 'dcway-reg-header__collage-img'
+            }}
+          {%- else -%}
+            <img src="{{ 'reg-collage-4.jpg' | asset_url }}"
+              loading="eager" width="400" height="400"
+              alt="{{ hero_alt }}" class="dcway-reg-header__collage-img">
+          {%- endif -%}
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -106,21 +158,26 @@
   }
   #shopify-section-{{ section.id }} .dcway-reg-header__titles {
     margin-bottom: 24px;
-    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
   }
-  #shopify-section-{{ section.id }} .dcway-reg-header__title-main {
+  #shopify-section-{{ section.id }} h1.dcway-reg-header__title-main {
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif !important;
     font-size: 46px;
     line-height: 1;
     font-weight: 700;
     color: #212121;
     margin: 0;
+    letter-spacing: 0;
+    text-transform: none;
   }
-  #shopify-section-{{ section.id }} .dcway-reg-header__title-sub {
+  #shopify-section-{{ section.id }} h2.dcway-reg-header__title-sub {
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif !important;
     font-size: 36px;
     line-height: 1;
     font-weight: 700;
     color: var(--dcway-orange, #ff7200);
     margin: 4px 0 0;
+    letter-spacing: 0;
+    text-transform: none;
   }
   #shopify-section-{{ section.id }} .dcway-reg-header__tabs {
     display: flex;
@@ -146,13 +203,15 @@
     background-color: var(--dcway-orange, #ff7200);
     color: #fff;
   }
-  #shopify-section-{{ section.id }} .dcway-reg-header__subcat-title {
-    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
-    font-weight: 500;
-    font-size: 32px;
-    letter-spacing: -0.01em;
-    color: #2c2c2c;
-    margin: 0 0 16px;
+  #shopify-section-{{ section.id }} h3.dcway-reg-header__subcat-title {
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif !important;
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: 0;
+    color: #212121;
+    margin: 20px 0;
+    text-transform: none;
+    line-height: 1.2;
   }
   #shopify-section-{{ section.id }} .dcway-reg-header__select {
     width: 100%;
@@ -177,6 +236,27 @@
     max-width: 800px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__collage {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+    max-width: 570px;
+    aspect-ratio: 570 / 380;
+    margin-left: auto;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__collage-cell {
+    overflow: hidden;
+    border-radius: 4px;
+    background: #eee;
+  }
+  #shopify-section-{{ section.id }} .dcway-reg-header__collage-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: block;
   }
 
@@ -228,11 +308,22 @@
         var label = subTitle.getAttribute('data-' + category + '-label');
         if (label) subTitle.textContent = label;
       }
-      // Toggle visibility of registration-grid groups marked with data-category
+      // Legacy: toggle visibility of registration-grid groups marked with data-category
       document.querySelectorAll('[data-reg-category]').forEach(function (group) {
         var groupCat = group.getAttribute('data-reg-category');
         group.hidden = groupCat && groupCat !== category;
       });
+      // New: notify dcway-registration-filter section
+      document.dispatchEvent(new CustomEvent('dcway:reg:category', { detail: { category: category } }));
+      // Emit the active select's current subcat too
+      var activeSelect = root.querySelector('.dcway-reg-header__select[data-category="' + category + '"]');
+      if (activeSelect) {
+        var opt = activeSelect.options[activeSelect.selectedIndex];
+        var subcat = opt ? (opt.getAttribute('data-subcat') || opt.value) : '';
+        if (subcat) {
+          document.dispatchEvent(new CustomEvent('dcway:reg:subcategory', { detail: { subcategory: subcat } }));
+        }
+      }
     }
 
     tabs.forEach(function (t) {
@@ -243,6 +334,12 @@
 
     selects.forEach(function (s) {
       s.addEventListener('change', function () {
+        var opt = s.options[s.selectedIndex];
+        var subcat = opt ? (opt.getAttribute('data-subcat') || opt.value) : '';
+        if (subcat) {
+          document.dispatchEvent(new CustomEvent('dcway:reg:subcategory', { detail: { subcategory: subcat } }));
+        }
+        // Legacy anchor scroll (kept for older registration-grid layouts)
         var anchor = s.value;
         if (!anchor) return;
         var el = document.getElementById(anchor);
@@ -254,7 +351,7 @@
 
 {% schema %}
 {
-  "name": "Registration header (DC Way)",
+  "name": "Registration header",
   "tag": "section",
   "class": "section dcway-section",
   "max_blocks": 20,
@@ -273,8 +370,28 @@
     },
     {
       "type": "image_picker",
+      "id": "hero_image_1",
+      "label": "Collage image 1 (top-left)"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image_2",
+      "label": "Collage image 2 (top-right)"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image_3",
+      "label": "Collage image 3 (bottom-left)"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image_4",
+      "label": "Collage image 4 (bottom-right)"
+    },
+    {
+      "type": "image_picker",
       "id": "hero_image",
-      "label": "Hero image"
+      "label": "Single hero image (fallback if no collage set)"
     },
     {
       "type": "text",
@@ -326,10 +443,16 @@
         },
         {
           "type": "text",
+          "id": "subcategory",
+          "label": "Subcategory slug",
+          "info": "Matches product tag reg-cat-{slug}. Use 'summer' or 'one-day-camp'.",
+          "default": "summer"
+        },
+        {
+          "type": "text",
           "id": "target_anchor",
-          "label": "Target anchor ID",
-          "info": "ID of the registration-grid group to scroll to (e.g. reg-group-camps-summer).",
-          "default": "reg-group-camps-summer"
+          "label": "Target anchor ID (legacy)",
+          "info": "Optional. Used only by legacy registration-grid layout."
         }
       ]
     },
@@ -345,17 +468,23 @@
         },
         {
           "type": "text",
+          "id": "subcategory",
+          "label": "Subcategory slug",
+          "info": "Matches product tag reg-cat-{slug}.",
+          "default": "skills-clinics"
+        },
+        {
+          "type": "text",
           "id": "target_anchor",
-          "label": "Target anchor ID",
-          "info": "ID of the registration-grid group to scroll to (e.g. reg-group-programs).",
-          "default": "reg-group-programs"
+          "label": "Target anchor ID (legacy)",
+          "info": "Optional. Used only by legacy registration-grid layout."
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Registration header (DC Way)"
+      "name": "Registration header"
     }
   ]
 }

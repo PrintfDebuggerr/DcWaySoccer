@@ -1,0 +1,666 @@
+{%- comment -%}
+  DC Way registration drilldown filter — WP-faithful Camps/Programs UX.
+
+  Mirrors WordPress reference at /registration:
+    Category tab (Camps | Programs)
+      -> Subcategory dropdown (Summer Camp | One Day Camp | <programs>)
+        -> Camp/program tile grid (e.g. Stuart-Hobson, Hill Center, ...)
+          -> Week tile grid (Week 1..10)
+            -> 3 product cards: Full Week / One Day / Before & After Care
+
+  Products are tagged so the page does pure client-side show/hide. Required tags:
+    reg
+    reg-cat-{summer|one-day-camp|program-slug}
+    reg-camp-{slug}            (camps only)
+    reg-week-{N}               (camps only)
+    reg-type-{full-week|one-day|before-after-care}
+
+  Metafields (namespace `dcway_registration`):
+    location_label   - "Stuart-Hobson Middle School (Soccer, Art & Explore Camp)"
+    dates_label      - "June 16, 18, 19"
+    ages_label       - "Ages 3-12"
+    card_order       - 1 / 2 / 3 (left-to-right slot)
+    card_type_label  - "Full Week" / "One Day" / "Before & After Care"
+    camp_label       - "Stuart-Hobson Soccer, Art & Explore Summer Camp" (filter heading)
+
+  Tab + dropdown live on registration-header.liquid; this section listens for the
+  events those emit (`dcway:reg:category`, `dcway:reg:subcategory`).
+{%- endcomment -%}
+
+{%- liquid
+  assign source = section.settings.products_collection
+  assign primary_orange = '#ff7200'
+-%}
+
+<div
+  class="dcway-reg-filter color-{{ section.settings.color_scheme }} gradient"
+  id="dcway-reg-filter-{{ section.id }}"
+  data-dcway-reg-filter
+>
+  <div class="dcway-container dcway-reg-filter__container">
+
+    {%- comment -%} ----- Camp / program tile grid ----- {%- endcomment -%}
+    <div class="dcway-reg-filter__group-grid" data-camp-grid role="tablist" aria-label="Choose a camp or program">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'group_tile' -%}
+          <button
+            type="button"
+            class="dcway-reg-filter__group-tile"
+            role="tab"
+            data-group-slug="{{ block.settings.slug }}"
+            data-reg-cat="{{ block.settings.category }}"
+            data-reg-subcat="{{ block.settings.subcategory }}"
+            data-camp-label="{{ block.settings.heading }}"
+            {{ block.shopify_attributes }}
+          >
+            {{ block.settings.label }}
+          </button>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} ----- Week tile grid (camps only) ----- {%- endcomment -%}
+    <div class="dcway-reg-filter__week-grid" data-week-grid role="tablist" aria-label="Choose a week">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'week_tile' -%}
+          <button
+            type="button"
+            class="dcway-reg-filter__week-tile"
+            role="tab"
+            data-week-num="{{ block.settings.number }}"
+            {{ block.shopify_attributes }}
+          >
+            {{ block.settings.label }}
+          </button>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} ----- Active selection heading ----- {%- endcomment -%}
+    <h2 class="dcway-reg-filter__active-heading" data-active-heading>
+      {{ section.settings.empty_heading | default: 'Choose a camp and week to see options.' }}
+    </h2>
+
+    {%- comment -%} ----- Product cards ----- {%- endcomment -%}
+    <div class="dcway-reg-filter__cards" data-cards-root>
+      {%- if source != blank and source.products_count > 0 -%}
+        {%- for product in source.products limit: 250 -%}
+          {%- liquid
+            assign p_camp = ''
+            assign p_week = ''
+            assign p_type = ''
+            assign p_cat = ''
+            for t in product.tags
+              if t contains 'reg-camp-'
+                assign p_camp = t | remove_first: 'reg-camp-'
+              elsif t contains 'reg-week-'
+                assign p_week = t | remove_first: 'reg-week-'
+              elsif t contains 'reg-type-'
+                assign p_type = t | remove_first: 'reg-type-'
+              elsif t contains 'reg-cat-'
+                assign p_cat = t | remove_first: 'reg-cat-'
+              endif
+            endfor
+            assign mf = product.metafields.dcway_registration
+            assign order = mf.card_order.value | default: 99
+            assign type_label = mf.card_type_label.value | default: product.title
+          -%}
+          <article
+            class="dcway-reg-filter__card"
+            data-card
+            data-card-camp="{{ p_camp }}"
+            data-card-week="{{ p_week }}"
+            data-card-type="{{ p_type }}"
+            data-card-cat="{{ p_cat }}"
+            data-card-order="{{ order }}"
+            data-product-handle="{{ product.handle }}"
+            hidden
+          >
+            <h3 class="dcway-reg-filter__card-title">{{ product.title }}</h3>
+
+            <div class="dcway-reg-filter__card-price">
+              <span class="dcway-reg-filter__card-price-label">from</span>
+              <span class="dcway-reg-filter__card-price-amount" data-card-price>
+                {%- comment -%}
+                  Use first variant as the "headline" anchor (mirrors WP behavior
+                  where Full Week card shows the Full Week base price even though
+                  cheaper add-ons exist in the dropdown).
+                {%- endcomment -%}
+                {{- product.variants.first.price | money_without_trailing_zeros -}}
+              </span>
+            </div>
+
+            {%- if mf.location_label -%}
+              <p class="dcway-reg-filter__card-meta">{{ mf.location_label }}</p>
+            {%- endif -%}
+            {%- if mf.dates_label -%}
+              <p class="dcway-reg-filter__card-meta">{{ mf.dates_label }}</p>
+            {%- endif -%}
+            {%- if mf.ages_label -%}
+              <p class="dcway-reg-filter__card-meta">{{ mf.ages_label }}</p>
+            {%- endif -%}
+
+            <form
+              class="dcway-reg-filter__form"
+              method="post"
+              action="{{ routes.cart_add_url }}"
+              data-card-form
+              data-product-id="{{ product.id }}"
+            >
+              <input type="hidden" name="quantity" value="1">
+
+              {%- assign first_option = product.options_with_values.first -%}
+              <select
+                class="dcway-reg-filter__select"
+                name="id"
+                data-card-variant-select
+                aria-label="Choose {{ first_option.name | default: 'option' }}"
+              >
+                <option value="">Select option</option>
+                {%- for v in product.variants -%}
+                  <option
+                    value="{{ v.id }}"
+                    data-price="{{ v.price }}"
+                    {% unless v.available %}disabled{% endunless %}
+                  >
+                    {{ v.title }}{% unless v.available %} - Sold out{% endunless %}
+                  </option>
+                {%- endfor -%}
+              </select>
+
+              <button
+                type="submit"
+                class="dcway-reg-filter__purchase"
+                data-card-purchase
+                disabled
+              >
+                Purchase
+              </button>
+            </form>
+          </article>
+        {%- endfor -%}
+      {%- endif -%}
+
+      {%- comment -%} 3 empty-state placeholders (filled by JS when matching products exist) {%- endcomment -%}
+      <div class="dcway-reg-filter__empty" data-empty-state hidden>
+        <p>No registration options available for this selection yet.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{%- style -%}
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter {
+    padding-block: 16px 48px;
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-inline: 20px;
+  }
+
+  /* ---------- Camp / program tile grid ---------- */
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__group-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__group-tile {
+    background: #fff;
+    color: #212121;
+    border: 0;
+    border-radius: 6px;
+    padding: 15px 30px;
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1.25;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    min-height: 116px;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__group-tile:hover {
+    transform: translateY(-1px);
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__group-tile.is-active {
+    background: {{ primary_orange }};
+    color: #fff;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__group-tile[hidden] {
+    display: none !important;
+  }
+
+  /* ---------- Week tile grid ---------- */
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__week-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__week-tile {
+    background: #fff;
+    color: #212121;
+    border: 0;
+    border-radius: 6px;
+    padding: 22px 10px;
+    font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    min-height: 65px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__week-tile.is-active {
+    background: {{ primary_orange }};
+    color: #fff;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__week-tile[hidden] {
+    display: none !important;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__week-grid[hidden] {
+    display: none;
+  }
+
+  /* ---------- Active heading ---------- */
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__active-heading {
+    color: {{ primary_orange }};
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0 0 24px;
+    line-height: 1.2;
+  }
+
+  /* ---------- Product cards ---------- */
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card {
+    background: #f5f0ec;
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card[hidden] {
+    display: none !important;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #212121;
+    margin: 0;
+    line-height: 1.3;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card-price {
+    margin: 4px 0 8px;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card-price-label {
+    display: block;
+    font-size: 14px;
+    color: #4a4a4a;
+    margin-bottom: 2px;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card-price-amount {
+    font-size: 60px;
+    font-weight: 800;
+    color: {{ primary_orange }};
+    line-height: 1;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card-meta {
+    font-size: 14px;
+    color: #2c2c2c;
+    margin: 0;
+    font-weight: 600;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__form {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__select {
+    width: 100%;
+    padding: 12px 36px 12px 14px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__purchase {
+    width: 100%;
+    padding: 16px;
+    background: #bdbdbd;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: 0;
+    border-radius: 4px;
+    cursor: not-allowed;
+    transition: background-color 0.15s ease;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__purchase:not([disabled]) {
+    background: {{ primary_orange }};
+    cursor: pointer;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__purchase:not([disabled]):hover {
+    background: #e66600;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__purchase.is-loading {
+    opacity: 0.7;
+    cursor: progress;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px 24px;
+    color: #6a6a6a;
+    background: #f5f0ec;
+    border-radius: 8px;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__empty[hidden] {
+    display: none !important;
+  }
+
+  @media (max-width: 900px) {
+    #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__group-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__week-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__cards {
+      grid-template-columns: 1fr;
+    }
+    #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__active-heading {
+      font-size: 22px;
+    }
+    #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card-price-amount {
+      font-size: 48px;
+    }
+  }
+{%- endstyle -%}
+
+<script>
+  (function () {
+    var root = document.getElementById('dcway-reg-filter-{{ section.id }}');
+    if (!root) return;
+
+    var groupTiles = root.querySelectorAll('[data-group-slug]');
+    var weekGrid = root.querySelector('[data-week-grid]');
+    var weekTiles = root.querySelectorAll('[data-week-num]');
+    var heading = root.querySelector('[data-active-heading]');
+    var cards = root.querySelectorAll('[data-card]');
+    var empty = root.querySelector('[data-empty-state]');
+
+    var state = {
+      category: 'camps',       // 'camps' | 'programs' — from registration-header
+      subcategory: 'summer',   // 'summer' | 'one-day-camp' | program slug
+      group: null,             // camp slug or program slug
+      week: null,              // '1'..'10' or null (programs don't use week)
+    };
+
+    function syncGroupTiles() {
+      groupTiles.forEach(function (t) {
+        var cat = t.getAttribute('data-reg-cat');
+        var subcat = t.getAttribute('data-reg-subcat');
+        var matches = cat === state.category && (subcat === '' || subcat === state.subcategory);
+        t.hidden = !matches;
+        t.classList.toggle('is-active', matches && t.getAttribute('data-group-slug') === state.group);
+      });
+    }
+
+    function syncWeekTiles() {
+      // Show week grid only for camp categories
+      var showWeeks = state.category === 'camps';
+      if (weekGrid) weekGrid.hidden = !showWeeks;
+      weekTiles.forEach(function (t) {
+        t.classList.toggle('is-active', t.getAttribute('data-week-num') === state.week);
+      });
+    }
+
+    function syncHeading() {
+      var activeTile = root.querySelector('.dcway-reg-filter__group-tile.is-active');
+      if (activeTile) {
+        heading.textContent = activeTile.getAttribute('data-camp-label') || activeTile.textContent.trim();
+      } else {
+        heading.textContent = 'Choose ' + (state.category === 'programs' ? 'a program' : 'a camp and week') + ' to see options.';
+      }
+    }
+
+    function syncCards() {
+      var anyVisible = false;
+      cards.forEach(function (c) {
+        var cat = c.getAttribute('data-card-cat');
+        var camp = c.getAttribute('data-card-camp');
+        var week = c.getAttribute('data-card-week');
+
+        var catOk = cat === state.subcategory || (state.category === 'programs' && cat === state.subcategory);
+        var groupOk = state.group && camp === state.group;
+        var weekOk = state.category === 'programs' ? true : (state.week && week === state.week);
+
+        var show = catOk && groupOk && weekOk;
+        c.hidden = !show;
+        if (show) anyVisible = true;
+      });
+      if (empty) empty.hidden = anyVisible || !state.group;
+    }
+
+    function setGroup(slug) {
+      state.group = slug;
+      syncGroupTiles();
+      syncHeading();
+      syncCards();
+    }
+
+    function setWeek(num) {
+      state.week = num;
+      syncWeekTiles();
+      syncCards();
+    }
+
+    function setCategory(cat) {
+      state.category = cat;
+      if (cat === 'camps') {
+        state.subcategory = 'summer';
+      } else {
+        state.subcategory = 'program';
+      }
+      state.group = null;
+      state.week = null;
+      syncGroupTiles();
+      syncWeekTiles();
+      syncHeading();
+      syncCards();
+    }
+
+    function setSubcategory(subcat) {
+      state.subcategory = subcat;
+      state.group = null;
+      syncGroupTiles();
+      syncHeading();
+      syncCards();
+    }
+
+    // Wire tile clicks
+    groupTiles.forEach(function (t) {
+      t.addEventListener('click', function () { setGroup(t.getAttribute('data-group-slug')); });
+    });
+    weekTiles.forEach(function (t) {
+      t.addEventListener('click', function () { setWeek(t.getAttribute('data-week-num')); });
+    });
+
+    // Wire variant selects + purchase buttons
+    cards.forEach(function (card) {
+      var select = card.querySelector('[data-card-variant-select]');
+      var price = card.querySelector('[data-card-price]');
+      var btn = card.querySelector('[data-card-purchase]');
+      var form = card.querySelector('[data-card-form]');
+      if (!select || !btn || !form) return;
+
+      select.addEventListener('change', function () {
+        var hasValue = !!select.value;
+        btn.disabled = !hasValue;
+        if (hasValue && price) {
+          var opt = select.options[select.selectedIndex];
+          // Shopify variant.price is in cents (e.g. 3000 = $30). Normalize to dollars.
+          var p = parseFloat(opt.getAttribute('data-price')) / 100;
+          if (!isNaN(p)) {
+            price.textContent = '$' + (p % 1 === 0 ? p.toFixed(0) : p.toFixed(2));
+          }
+        }
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!select.value || btn.disabled) return;
+        btn.classList.add('is-loading');
+        var fd = new FormData(form);
+        fetch('{{ routes.cart_add_url }}.js', { method: 'POST', body: fd })
+          .then(function (r) { return r.json(); })
+          .then(function () { window.location.href = '{{ routes.cart_url }}'; })
+          .catch(function () {
+            btn.classList.remove('is-loading');
+            window.alert('Could not add to cart. Please try again.');
+          });
+      });
+    });
+
+    // Listen to header tab + dropdown events (registration-header emits these)
+    document.addEventListener('dcway:reg:category', function (e) {
+      if (e.detail && e.detail.category) setCategory(e.detail.category);
+    });
+    document.addEventListener('dcway:reg:subcategory', function (e) {
+      if (e.detail && e.detail.subcategory) setSubcategory(e.detail.subcategory);
+    });
+
+    // Initial sync
+    syncGroupTiles();
+    syncWeekTiles();
+    syncHeading();
+    syncCards();
+
+    // Auto-select first visible group + week 1 if present (mirrors WP default state)
+    var firstGroup = Array.from(groupTiles).find(function (t) { return !t.hidden; });
+    if (firstGroup) setGroup(firstGroup.getAttribute('data-group-slug'));
+    var firstWeek = root.querySelector('[data-week-num="1"]');
+    if (firstWeek) setWeek('1');
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Registration filter",
+  "tag": "section",
+  "class": "section dcway-section",
+  "max_blocks": 30,
+  "settings": [
+    {
+      "type": "collection",
+      "id": "products_collection",
+      "label": "Registration products collection",
+      "info": "Smart collection containing all products tagged 'reg'. Section iterates this and shows/hides cards based on tag-based filters."
+    },
+    {
+      "type": "text",
+      "id": "empty_heading",
+      "label": "Empty-state heading",
+      "default": "Choose a camp and week to see options."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "group_tile",
+      "name": "Camp / program tile",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tile button label",
+          "default": "Stuart-Hobson Soccer, Art & Explore Summer Camp"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Section heading shown when this tile is active",
+          "default": "Stuart-Hobson Soccer, Art & Explore Summer Camp"
+        },
+        {
+          "type": "text",
+          "id": "slug",
+          "label": "Slug",
+          "info": "Matches the product tag reg-camp-{slug} or reg-program-{slug}.",
+          "default": "stuart-hobson"
+        },
+        {
+          "type": "select",
+          "id": "category",
+          "label": "Category",
+          "options": [
+            { "value": "camps", "label": "Camps" },
+            { "value": "programs", "label": "Programs" }
+          ],
+          "default": "camps"
+        },
+        {
+          "type": "text",
+          "id": "subcategory",
+          "label": "Subcategory",
+          "info": "Matches product tag reg-cat-{slug}. Use 'summer', 'one-day-camp', or a program slug.",
+          "default": "summer"
+        }
+      ]
+    },
+    {
+      "type": "week_tile",
+      "name": "Week tile",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tile label",
+          "default": "WEEK 1: JUNE 16, 18, 19"
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Week number",
+          "info": "Matches the product tag reg-week-{N}.",
+          "default": "1"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Registration filter"
+    }
+  ]
+}
+{% endschema %}

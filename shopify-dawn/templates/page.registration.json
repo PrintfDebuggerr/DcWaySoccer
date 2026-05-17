@@ -6,53 +6,113 @@
         "opt_summer": {
           "type": "camp_option",
           "settings": {
-            "label": "Summer Camps",
-            "target_anchor": "reg-group-camps-summer"
+            "label": "Summer Camp",
+            "subcategory": "summer",
+            "target_anchor": ""
           }
         },
         "opt_one_day": {
           "type": "camp_option",
           "settings": {
-            "label": "One-Day Camps",
-            "target_anchor": "reg-group-camps-one-day"
+            "label": "One Day Camp",
+            "subcategory": "one-day-camp",
+            "target_anchor": ""
           }
         },
-        "opt_programs": {
+        "prog_capitol_hill_league": {
           "type": "program_option",
           "settings": {
-            "label": "All Programs",
-            "target_anchor": "reg-group-programs"
+            "label": "Capitol Hill Spring League",
+            "subcategory": "capitol-hill-league",
+            "target_anchor": ""
           }
         },
-        "opt_clinics": {
+        "prog_skills_clinics": {
           "type": "program_option",
           "settings": {
-            "label": "Skills Clinics",
-            "target_anchor": "reg-group-programs-clinics"
+            "label": "Weekly Skills Clinics",
+            "subcategory": "skills-clinics",
+            "target_anchor": ""
           }
         },
-        "opt_private": {
+        "prog_adult_clinics": {
+          "type": "program_option",
+          "settings": {
+            "label": "Adult Skills Clinics",
+            "subcategory": "adult-clinics",
+            "target_anchor": ""
+          }
+        },
+        "prog_goalkeeping": {
+          "type": "program_option",
+          "settings": {
+            "label": "Goalkeeping School",
+            "subcategory": "goalkeeping",
+            "target_anchor": ""
+          }
+        },
+        "prog_kids_academy": {
+          "type": "program_option",
+          "settings": {
+            "label": "Kids Academy",
+            "subcategory": "kids-academy",
+            "target_anchor": ""
+          }
+        },
+        "prog_two_rivers": {
+          "type": "program_option",
+          "settings": {
+            "label": "Two Rivers After-School",
+            "subcategory": "two-rivers-after-school",
+            "target_anchor": ""
+          }
+        },
+        "prog_seaton": {
+          "type": "program_option",
+          "settings": {
+            "label": "Seaton After-School",
+            "subcategory": "seaton-after-school",
+            "target_anchor": ""
+          }
+        },
+        "prog_private": {
           "type": "program_option",
           "settings": {
             "label": "Private Lessons",
-            "target_anchor": "reg-group-programs-private"
+            "subcategory": "private-lessons",
+            "target_anchor": ""
           }
         },
-        "opt_after_school": {
+        "prog_youth_leadership": {
           "type": "program_option",
           "settings": {
-            "label": "After-School",
-            "target_anchor": "reg-group-programs-after-school"
+            "label": "Youth Leadership Programs",
+            "subcategory": "youth-leadership",
+            "target_anchor": ""
+          }
+        },
+        "prog_cit": {
+          "type": "program_option",
+          "settings": {
+            "label": "Counselor-in-Training",
+            "subcategory": "counselor-in-training",
+            "target_anchor": ""
           }
         }
       },
       "block_order": [
         "opt_summer",
         "opt_one_day",
-        "opt_programs",
-        "opt_clinics",
-        "opt_private",
-        "opt_after_school"
+        "prog_capitol_hill_league",
+        "prog_skills_clinics",
+        "prog_adult_clinics",
+        "prog_goalkeeping",
+        "prog_kids_academy",
+        "prog_two_rivers",
+        "prog_seaton",
+        "prog_private",
+        "prog_youth_leadership",
+        "prog_cit"
       ],
       "settings": {
         "heading_main": "REGISTRATION",
@@ -64,79 +124,139 @@
         "color_scheme": "scheme-1"
       }
     },
-    "registration_grid": {
-      "type": "registration-grid",
+    "registration_filter": {
+      "type": "dcway-registration-filter",
       "blocks": {
-        "summer_camps": {
-          "type": "group",
+        "camp_stuart_hobson": {
+          "type": "group_tile",
           "settings": {
-            "group_heading": "Summer Camps",
-            "group_subheading": "Weekly camps June through August.",
-            "reg_category": "camps",
-            "anchor_id": "reg-group-camps-summer",
-            "collection": "camps-summer",
-            "product_limit": 12,
-            "columns_desktop": 4,
-            "cta_label": "Register",
-            "show_price": true,
-            "show_meta": true,
-            "show_view_all": false,
-            "view_all_label": "View all",
-            "empty_state_text": "Nothing to register for here yet."
+            "label": "Stuart-Hobson Soccer, Art & Explore Summer Camp",
+            "heading": "Stuart-Hobson Soccer, Art & Explore Summer Camp",
+            "slug": "stuart-hobson",
+            "category": "camps",
+            "subcategory": "summer"
           }
         },
-        "one_day_camps": {
-          "type": "group",
+        "camp_hill_center": {
+          "type": "group_tile",
           "settings": {
-            "group_heading": "One-Day Camps",
-            "group_subheading": "Single-session camps during the school year.",
-            "reg_category": "camps",
-            "anchor_id": "reg-group-camps-one-day",
-            "collection": "camps-one-day",
-            "product_limit": 12,
-            "columns_desktop": 4,
-            "cta_label": "Register",
-            "show_price": true,
-            "show_meta": true,
-            "show_view_all": false,
-            "view_all_label": "View all",
-            "empty_state_text": "No one-day camps scheduled yet."
+            "label": "Hill Center Art & Soccer Summer Camp",
+            "heading": "Hill Center Art & Soccer Summer Camp",
+            "slug": "hill-center",
+            "category": "camps",
+            "subcategory": "summer"
           }
         },
-        "programs": {
-          "type": "group",
+        "camp_chisholm": {
+          "type": "group_tile",
           "settings": {
-            "group_heading": "Programs",
-            "group_subheading": "Year-round training, clinics, and leagues.",
-            "reg_category": "programs",
-            "anchor_id": "reg-group-programs",
-            "collection": "programs",
-            "product_limit": 12,
-            "columns_desktop": 4,
-            "cta_label": "Register",
-            "show_price": true,
-            "show_meta": true,
-            "show_view_all": false,
-            "view_all_label": "View all",
-            "empty_state_text": "Nothing to register for here yet."
+            "label": "Chisholm World Cup Summer Camp",
+            "heading": "Chisholm World Cup Summer Camp",
+            "slug": "chisholm",
+            "category": "camps",
+            "subcategory": "summer"
           }
+        },
+        "camp_brazilian_way": {
+          "type": "group_tile",
+          "settings": {
+            "label": "Brazilian Way Summer Camp",
+            "heading": "Brazilian Way Summer Camp",
+            "slug": "brazilian-way",
+            "category": "camps",
+            "subcategory": "summer"
+          }
+        },
+        "camp_preschool": {
+          "type": "group_tile",
+          "settings": {
+            "label": "Preschool Summer Camp",
+            "heading": "Preschool Summer Camp",
+            "slug": "preschool",
+            "category": "camps",
+            "subcategory": "summer"
+          }
+        },
+        "week_1": {
+          "type": "week_tile",
+          "settings": { "label": "WEEK 1: JUNE 16, 18, 19", "number": "1" }
+        },
+        "week_2": {
+          "type": "week_tile",
+          "settings": { "label": "WEEK 2: JUNE 22-26", "number": "2" }
+        },
+        "week_3": {
+          "type": "week_tile",
+          "settings": { "label": "WEEK 3: JUNE 29 - JULY 3", "number": "3" }
+        },
+        "week_4": {
+          "type": "week_tile",
+          "settings": { "label": "WEEK 4: JULY 6-10", "number": "4" }
+        },
+        "week_5": {
+          "type": "week_tile",
+          "settings": { "label": "WEEK 5: JULY 13-17", "number": "5" }
+        },
+        "week_6": {
+          "type": "week_tile",
+          "settings": { "label": "WEEK 6: JULY 20-24", "number": "6" }
+        },
+        "week_7": {
+          "type": "week_tile",
+          "settings": { "label": "WEEK 7: JULY 27-31", "number": "7" }
+        },
+        "week_8": {
+          "type": "week_tile",
+          "settings": { "label": "WEEK 8: AUGUST 3-7", "number": "8" }
+        },
+        "week_9": {
+          "type": "week_tile",
+          "settings": { "label": "WEEK 9: AUGUST 10-14", "number": "9" }
+        },
+        "week_10": {
+          "type": "week_tile",
+          "settings": { "label": "WEEK 10: AUGUST 17-21", "number": "10" }
         }
       },
       "block_order": [
-        "summer_camps",
-        "one_day_camps",
-        "programs"
+        "camp_stuart_hobson",
+        "camp_hill_center",
+        "camp_chisholm",
+        "camp_brazilian_way",
+        "camp_preschool",
+        "week_1",
+        "week_2",
+        "week_3",
+        "week_4",
+        "week_5",
+        "week_6",
+        "week_7",
+        "week_8",
+        "week_9",
+        "week_10"
       ],
       "settings": {
-        "heading": "",
-        "intro_text": "",
-        "columns_desktop": 4,
+        "products_collection": "registration-all",
+        "empty_heading": "Choose a camp and week to see options.",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "locations": {
+      "type": "locations-list",
+      "settings": {
+        "heading_lead": "OUR",
+        "heading_accent": "LOCATIONS",
+        "subtitle": "Your child's next soccer journey is closer than you think — explore our locations!",
+        "map_embed_url": "https://www.google.com/maps?q=1001+G+Street+SE+Washington+DC+20003&output=embed",
+        "map_title": "DC Way locations map",
+        "empty_state_text": "Locations coming soon.",
         "color_scheme": "scheme-1"
       }
     }
   },
   "order": [
     "registration_header",
-    "registration_grid"
+    "registration_filter",
+    "locations"
   ]
 }
