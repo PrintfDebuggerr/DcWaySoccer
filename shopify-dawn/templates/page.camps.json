@@ -1,206 +1,132 @@
 {
   "sections": {
-    "hero_intro": {
-      "type": "rich-text",
+    "camps_landing": {
+      "type": "dcway-camps-landing",
       "blocks": {
-        "eyebrow": {
-          "type": "caption",
+        "card_summer": {
+          "type": "camp_card",
           "settings": {
-            "caption": "Weekly camps · Mon–Fri",
-            "text_style": "caption-with-letter-spacing",
-            "text_size": "medium"
+            "image_fallback": "dcway-camp-summer.jpg",
+            "title": "Summer Camp",
+            "body": "<p>Get ready for the ultimate summer adventure! DC Way's Summer Camp is packed with action, fun, and unforgettable memories. From exciting drills to friendly competitions, your child will learn, grow, and make new friends in a vibrant, supportive atmosphere.</p>",
+            "link": "/pages/summer-camp",
+            "button_label": "Learn more"
           }
         },
-        "title": {
-          "type": "heading",
+        "card_art_soccer": {
+          "type": "camp_card",
           "settings": {
-            "heading": "CAMP SCHEDULE",
-            "heading_size": "h0"
+            "image_fallback": "dcway-camp-art-soccer-summer.jpg",
+            "title": "Art & Soccer Summer Camp",
+            "body": "<p>Your child will spend the summer celebrating the FIFA World Cup through art and soccer! Each week focuses on a different country – kids create art inspired by each nation and play soccer games that bring their styles to life. It's creativity, soccer, and learning about the world.</p>",
+            "link": "/pages/art-soccer-summer-camp",
+            "button_label": "Learn more"
           }
         },
-        "dates": {
-          "type": "heading",
+        "card_explore": {
+          "type": "camp_card",
           "settings": {
-            "heading": "June 17 – August 23",
-            "heading_size": "h2"
+            "image_fallback": "dcway-camp-soccer-art-explore.png",
+            "title": "Soccer, Art & Explore Summer Camp",
+            "body": "<p>Your child will spend the summer playing soccer, creating art, and exploring the world around them. Every day has a theme, a new discovery, and something to make and take home. It's three things kids love, all in one place.</p>",
+            "link": "/pages/soccer-art-explore-summer-camp",
+            "button_label": "Learn more"
           }
         },
-        "body": {
-          "type": "text",
+        "card_world_cup": {
+          "type": "camp_card",
           "settings": {
-            "text": "<p>Boys and girls ages 4–13. Pick a week and lock in your spot — we teach fundamental soccer skills in a fun, positive, non-competitive environment so kids stay active all summer long.</p>"
+            "image_fallback": "dcway-camp-world-cup.jpg",
+            "title": "World Cup Summer Camp",
+            "body": "<p>Get ready for summer 2026 – World Cup year! Your child will celebrate the biggest soccer tournament in the world with a different country theme each week. From Team USA to Italy, they'll play soccer games, learn about different playing styles, and compete in fun challenges all summer long.</p>",
+            "link": "/pages/world-cup-summer-camp",
+            "button_label": "Learn more"
           }
         },
-        "cta": {
-          "type": "button",
+        "card_brazilian": {
+          "type": "camp_card",
           "settings": {
-            "button_label": "Register now",
-            "button_link": "/pages/Registration",
-            "button_style_secondary": false
+            "image_fallback": "dcway-camp-brazilian-way.jpg",
+            "title": "Brazilian Way Summer Camp",
+            "body": "<p>Your child will spend the summer learning soccer the Brazilian way – with creativity, joy, and skill. Our Brazilian Way Camp combines authentic coaching from experienced Brazilian coaches with the energy and style that makes Brazilian soccer special.</p>",
+            "link": "/pages/brazilian-way-summer-camp",
+            "button_label": "Learn more"
+          }
+        },
+        "card_preschool": {
+          "type": "camp_card",
+          "settings": {
+            "image_fallback": "dcway-camp-preschool.jpg",
+            "title": "Preschool Summer Camp",
+            "body": "<p>Three days of soccer, art, and active play for our youngest campers. Our Preschool Summer Camp runs August 24 to 26 and is designed for ages 3 to 5. Small groups, experienced coaches, and a whole lot of fun to close out the summer.</p>",
+            "link": "/pages/preschool-summer-camp",
+            "button_label": "Learn more"
+          }
+        },
+        "card_art_day": {
+          "type": "camp_card",
+          "settings": {
+            "image_fallback": "dcway-camp-art-soccer-day.jpg",
+            "title": "Art & Soccer Day Camp",
+            "body": "<p>Experience the ultimate fusion of soccer, creativity, art, and cultural exploration at DC Way's Art & Soccer Day Camp! Our unique camp goes beyond the game, inspiring children to explore their artistic side while celebrating the global spirit of soccer.</p>",
+            "link": "/pages/art-soccer-day-camp",
+            "button_label": "Learn more"
+          }
+        },
+        "card_one_day": {
+          "type": "camp_card",
+          "settings": {
+            "image_fallback": "dcway-camp-one-day.jpg",
+            "title": "One Day Camp",
+            "body": "<p>Need a fun, action-packed day for your child? Our One Day Camp delivers all the excitement of soccer in just one day! Perfect for busy families, it's filled with fun games, exciting activities, and new friends. Join us to make the most of your child's day off!</p>",
+            "link": "/pages/one-day-camp",
+            "button_label": "Learn more"
+          }
+        },
+        "card_seaton": {
+          "type": "camp_card",
+          "settings": {
+            "image_fallback": "dcway-camp-seaton.jpg",
+            "title": "Seaton Art & Soccer Day Camp",
+            "body": "<p>Experience the ultimate fusion of soccer, creativity, art, and cultural exploration at Seaton Art & Soccer Day Camp! Our unique camp goes beyond the game, inspiring children to explore their artistic side while celebrating the global spirit of soccer.</p>",
+            "link": "/pages/seaton-art-soccer-day-camp",
+            "button_label": "Learn more"
           }
         }
       },
       "block_order": [
-        "eyebrow",
-        "title",
-        "dates",
-        "body",
-        "cta"
+        "card_summer",
+        "card_art_soccer",
+        "card_explore",
+        "card_world_cup",
+        "card_brazilian",
+        "card_preschool",
+        "card_art_day",
+        "card_one_day",
+        "card_seaton"
       ],
       "settings": {
-        "desktop_content_position": "center",
-        "content_alignment": "center",
+        "heading": "CAMPS",
         "color_scheme": "scheme-1",
-        "full_width": true,
-        "padding_top": 56,
-        "padding_bottom": 32
+        "padding_top": 48,
+        "padding_bottom": 64
       }
     },
-    "summer_camps_grid": {
-      "type": "camps-grid",
+    "locations": {
+      "type": "locations-list",
       "settings": {
-        "heading": "Summer Camps",
-        "intro_text": "<p>Choose a week — each runs Monday through Friday.</p>",
-        "collection": "camps-summer",
-        "product_limit": 12,
-        "columns_desktop": 4,
-        "cta_label": "View camp",
-        "show_price": true,
-        "show_meta": true,
-        "show_view_all": false,
-        "view_all_label": "View all camps",
-        "empty_state_text": "Summer camps coming soon.",
+        "heading_lead": "OUR",
+        "heading_accent": "LOCATIONS",
+        "subtitle": "Your child's next soccer journey is closer than you think — explore our locations!",
+        "map_embed_url": "https://www.google.com/maps?q=1001+G+Street+SE+Washington+DC+20003&output=embed",
+        "map_title": "DC Way locations map",
+        "empty_state_text": "Locations coming soon.",
         "color_scheme": "scheme-1"
-      }
-    },
-    "one_day_camps_grid": {
-      "type": "camps-grid",
-      "settings": {
-        "heading": "One-Day Camps",
-        "intro_text": "<p>School-year single-session camps for days off and holidays.</p>",
-        "collection": "camps-one-day",
-        "product_limit": 12,
-        "columns_desktop": 3,
-        "cta_label": "View camp",
-        "show_price": true,
-        "show_meta": true,
-        "show_view_all": false,
-        "view_all_label": "View all one-day camps",
-        "empty_state_text": "No one-day camps scheduled yet — check back soon.",
-        "color_scheme": "scheme-2"
-      }
-    },
-    "faq": {
-      "type": "collapsible-content",
-      "blocks": {
-        "q_offer": {
-          "type": "collapsible_row",
-          "settings": {
-            "heading": "What do we offer at Summer Camp?",
-            "icon": "question_mark",
-            "row_content": "<p>We offer weekly soccer camps for children Monday through Friday. We teach fundamental soccer skills in a fun, positive, non-competitive, and safe environment where children can grow, develop new skills, and stay active while having fun in the summer.</p>"
-          }
-        },
-        "q_ages": {
-          "type": "collapsible_row",
-          "settings": {
-            "heading": "What ages can attend?",
-            "icon": "question_mark",
-            "row_content": "<p>Boys and girls ages 4–13. We split campers into age- and skill-appropriate groups. Please note that 4-year-old children must be potty trained and able to follow directions.</p>"
-          }
-        },
-        "q_bring": {
-          "type": "collapsible_row",
-          "settings": {
-            "heading": "What should my child bring?",
-            "icon": "question_mark",
-            "row_content": "<p>Soccer cleats or sneakers, shin guards, a refillable water bottle, sunscreen, a hat, and a packed lunch. We provide soccer balls and all equipment.</p>"
-          }
-        },
-        "q_options": {
-          "type": "collapsible_row",
-          "settings": {
-            "heading": "What are the camp options and pricing?",
-            "icon": "question_mark",
-            "row_content": "<p><strong>Full Week</strong> — 9:00 am to 3:00 pm.<br><strong>Extended Full Week</strong> — 9:00 am to 5:30 pm with before- and after-care available.<br>Exact pricing is listed on each camp page.</p>"
-          }
-        },
-        "q_refund": {
-          "type": "collapsible_row",
-          "settings": {
-            "heading": "What is the refund and transfer policy?",
-            "icon": "question_mark",
-            "row_content": "<p>Cancellations made at least 14 days before the camp start date are eligible for a full refund less a processing fee. Within 14 days, we can transfer your spot to another week if availability allows. Reach out to us at <a href=\"/pages/contact\">our contact page</a> for details.</p>"
-          }
-        }
-      },
-      "block_order": [
-        "q_offer",
-        "q_ages",
-        "q_bring",
-        "q_options",
-        "q_refund"
-      ],
-      "settings": {
-        "caption": "",
-        "heading": "Frequently asked questions",
-        "heading_size": "h1",
-        "heading_alignment": "center",
-        "layout": "none",
-        "color_scheme": "scheme-1",
-        "open_first_collapsible_row": true,
-        "padding_top": 64,
-        "padding_bottom": 64
-      }
-    },
-    "register_cta": {
-      "type": "rich-text",
-      "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "Ready to lock in your week?",
-            "heading_size": "h1"
-          }
-        },
-        "text": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Spots fill quickly. Pick your week and register today.</p>"
-          }
-        },
-        "cta": {
-          "type": "button",
-          "settings": {
-            "button_label": "Go to registration",
-            "button_link": "/pages/Registration",
-            "button_style_secondary": false,
-            "button_label_2": "Contact us",
-            "button_link_2": "/pages/contact",
-            "button_style_secondary_2": true
-          }
-        }
-      },
-      "block_order": [
-        "heading",
-        "text",
-        "cta"
-      ],
-      "settings": {
-        "desktop_content_position": "center",
-        "content_alignment": "center",
-        "color_scheme": "scheme-2",
-        "full_width": true,
-        "padding_top": 64,
-        "padding_bottom": 64
       }
     }
   },
   "order": [
-    "hero_intro",
-    "summer_camps_grid",
-    "one_day_camps_grid",
-    "faq",
-    "register_cta"
+    "camps_landing",
+    "locations"
   ]
 }
