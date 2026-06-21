@@ -1,0 +1,299 @@
+{%- comment -%}
+  Dedicated Gallery page — full filterable grid of photos & videos, organized by
+  program/camp (task #1). Data: `gallery_image` metaobjects (category + video_url).
+  Merchant edits entries in admin → Content → Metaobjects → Gallery image.
+{%- endcomment -%}
+{%- liquid
+  assign entries = shop.metaobjects['gallery_image'].values | sort: 'sort_order'
+  assign count = entries.size
+
+  comment
+    Build unique, ordered category list (delimiter-guarded against substring matches).
+  endcomment
+  assign cats = '||'
+  for e in entries
+    assign c = e.category | default: 'Other'
+    assign needle = '||' | append: c | append: '||'
+    unless cats contains needle
+      assign cats = cats | append: c | append: '||'
+    endunless
+  endfor
+  assign cat_list = cats | split: '||'
+-%}
+
+<section class="dcway-galleryp color-{{ section.settings.color_scheme }}" data-dcway-galleryp>
+  <div class="dcway-galleryp__inner">
+    {%- if section.settings.heading_lead != blank or section.settings.heading_accent != blank -%}
+      <h2 class="dcway-galleryp__title">
+        {%- if section.settings.heading_lead != blank -%}<span class="dcway-galleryp__title-lead">{{ section.settings.heading_lead }}</span>{%- endif -%}
+        {%- if section.settings.heading_accent != blank -%}<span class="dcway-galleryp__title-accent">{{ section.settings.heading_accent }}</span>{%- endif -%}
+      </h2>
+    {%- endif -%}
+    {%- if section.settings.subtitle != blank -%}
+      <p class="dcway-galleryp__subtitle">{{ section.settings.subtitle }}</p>
+    {%- endif -%}
+
+    {%- if count > 0 -%}
+      {%- if section.settings.show_filters and cat_list.size > 1 -%}
+        <div class="dcway-galleryp__filters" role="tablist" aria-label="Filter gallery by program">
+          <button type="button" class="dcway-galleryp__filter is-active" data-filter="all" aria-pressed="true">
+            {{ section.settings.all_label | default: 'All' }}
+          </button>
+          {%- for c in cat_list -%}
+            {%- if c != blank -%}
+              <button type="button" class="dcway-galleryp__filter" data-filter="{{ c | handle }}" aria-pressed="false">{{ c }}</button>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      <div class="dcway-galleryp__grid" data-dcway-galleryp-grid>
+        {%- for entry in entries -%}
+          {%- assign cat = entry.category | default: 'Other' -%}
+          {%- assign is_video = false -%}
+          {%- if entry.video_url != blank -%}{%- assign is_video = true -%}{%- endif -%}
+          <figure
+            class="dcway-galleryp__card{% if is_video %} is-video{% endif %}"
+            data-category="{{ cat | handle }}"
+            {% if is_video %}data-video="{{ entry.video_url | escape }}" data-title="{{ entry.alt | escape }}"{% endif %}
+            {% if is_video %}role="button" tabindex="0" aria-label="Play video: {{ entry.alt | escape }}"{% endif %}
+          >
+            <div class="dcway-galleryp__media">
+              {%- if entry.photo != blank -%}
+                {{ entry.photo
+                  | image_url: width: 1000
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '400, 600, 800, 1000',
+                    sizes: '(max-width: 749px) 50vw, (max-width: 989px) 33vw, 25vw',
+                    class: 'dcway-galleryp__img',
+                    alt: entry.alt
+                }}
+              {%- else -%}
+                {{ 'collection-2' | placeholder_svg_tag: 'placeholder-svg dcway-galleryp__img' }}
+              {%- endif -%}
+
+              {%- if is_video -%}
+                <span class="dcway-galleryp__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+                </span>
+              {%- endif -%}
+
+              {%- if section.settings.show_caption_badge and cat != blank -%}
+                <span class="dcway-galleryp__badge">{{ cat }}</span>
+              {%- endif -%}
+            </div>
+          </figure>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <p class="dcway-galleryp__empty">{{ section.settings.empty_state_text }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Lightbox (shared) {%- endcomment -%}
+  <div class="dcway-galleryp__lightbox" data-dcway-galleryp-lightbox hidden>
+    <button type="button" class="dcway-galleryp__lightbox-close" data-dcway-galleryp-close aria-label="Close video">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="dcway-galleryp__lightbox-stage" data-dcway-galleryp-stage></div>
+  </div>
+</section>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-galleryp {
+    background: #fff;
+    color: #1a1a1a;
+    padding: clamp(40px, 5vw, 72px) clamp(20px, 4vw, 64px);
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__inner { max-width: 1320px; margin: 0 auto; }
+  #shopify-section-{{ section.id }} .dcway-galleryp__title {
+    margin: 0 0 12px;
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 1;
+    text-transform: uppercase;
+    display: flex; flex-wrap: wrap; column-gap: 0.22em;
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__title-lead { color: #1a1a1a; }
+  #shopify-section-{{ section.id }} .dcway-galleryp__title-accent { color: var(--dcway-orange, #ff7200); }
+  #shopify-section-{{ section.id }} .dcway-galleryp__subtitle {
+    margin: 0 0 clamp(20px, 2.5vw, 32px);
+    font-size: clamp(15px, 1.2vw, 19px); line-height: 1.5; color: #2a2a2a; max-width: 620px;
+  }
+
+  /* Filters */
+  #shopify-section-{{ section.id }} .dcway-galleryp__filters {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-bottom: clamp(22px, 2.5vw, 34px);
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__filter {
+    border: 2px solid var(--dcway-muted-bg-2, #e5e5e5);
+    background: #fff; color: var(--dcway-dark, #2c2c2c);
+    padding: 9px 20px; cursor: pointer;
+    font-weight: 700; font-size: 14px;
+    border-radius: var(--dcway-radius, 12px);
+    transition: all 0.18s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__filter:hover { border-color: var(--dcway-orange, #ff7200); color: var(--dcway-orange, #ff7200); }
+  #shopify-section-{{ section.id }} .dcway-galleryp__filter.is-active {
+    background: var(--dcway-orange, #ff7200); border-color: var(--dcway-orange, #ff7200); color: #fff;
+  }
+
+  /* Grid */
+  #shopify-section-{{ section.id }} .dcway-galleryp__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(12px, 1.4vw, 20px);
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__card {
+    margin: 0;
+    opacity: 1;
+    transition: opacity 0.25s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__card[hidden] { display: none; }
+  #shopify-section-{{ section.id }} .dcway-galleryp__card.is-video { cursor: pointer; }
+  #shopify-section-{{ section.id }} .dcway-galleryp__media {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border-radius: var(--dcway-radius, 12px);
+    background: rgba(0,0,0,0.05);
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__img {
+    position: absolute; inset: 0;
+    width: 100% !important; height: 100% !important;
+    object-fit: cover; display: block;
+    transition: transform 0.4s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__card:hover .dcway-galleryp__img { transform: scale(1.05); }
+  #shopify-section-{{ section.id }} .dcway-galleryp__play {
+    position: absolute; inset: 0; margin: auto;
+    width: 60px; height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,114,0,0.92); color: #fff; border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__play svg { width: 28px; height: 28px; margin-left: 3px; }
+  #shopify-section-{{ section.id }} .dcway-galleryp__badge {
+    position: absolute; left: 10px; bottom: 10px;
+    background: rgba(0,0,0,0.62); color: #fff;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.03em;
+    padding: 4px 10px; border-radius: 999px;
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__empty {
+    margin: 0; padding: 48px 0; text-align: center; color: rgba(0,0,0,0.55); font-style: italic;
+  }
+
+  /* Lightbox */
+  #shopify-section-{{ section.id }} .dcway-galleryp__lightbox {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.88);
+    display: flex; align-items: center; justify-content: center;
+    padding: clamp(16px, 4vw, 48px);
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__lightbox[hidden] { display: none; }
+  #shopify-section-{{ section.id }} .dcway-galleryp__lightbox-stage {
+    width: min(960px, 100%); aspect-ratio: 16 / 9;
+    border-radius: var(--dcway-radius, 12px); overflow: hidden; background: #000;
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__lightbox-stage iframe,
+  #shopify-section-{{ section.id }} .dcway-galleryp__lightbox-stage video {
+    width: 100%; height: 100%; border: 0; display: block;
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__lightbox-close {
+    position: absolute; top: clamp(12px, 3vw, 28px); right: clamp(12px, 3vw, 28px);
+    width: 44px; height: 44px; border: 0; cursor: pointer;
+    background: rgba(255,255,255,0.14); color: #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-galleryp__lightbox-close svg { width: 24px; height: 24px; }
+  #shopify-section-{{ section.id }} .dcway-galleryp__lightbox-close:hover { background: rgba(255,255,255,0.28); }
+
+  @media (max-width: 989px) {
+    #shopify-section-{{ section.id }} .dcway-galleryp__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-galleryp__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+
+<script>
+  (function () {
+    var root = document.querySelector('#shopify-section-{{ section.id }} [data-dcway-galleryp]');
+    if (!root) return;
+
+    // ---- Filter ----
+    var filters = root.querySelectorAll('.dcway-galleryp__filter');
+    var cards = root.querySelectorAll('.dcway-galleryp__card');
+    filters.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var f = btn.getAttribute('data-filter');
+        filters.forEach(function (b) { b.classList.remove('is-active'); b.setAttribute('aria-pressed', 'false'); });
+        btn.classList.add('is-active'); btn.setAttribute('aria-pressed', 'true');
+        cards.forEach(function (card) {
+          var show = f === 'all' || card.getAttribute('data-category') === f;
+          if (show) card.removeAttribute('hidden'); else card.setAttribute('hidden', '');
+        });
+      });
+    });
+
+    // ---- Video lightbox ----
+    var lightbox = root.querySelector('[data-dcway-galleryp-lightbox]');
+    var stage = root.querySelector('[data-dcway-galleryp-stage]');
+    var closeBtn = root.querySelector('[data-dcway-galleryp-close]');
+
+    function embedFor(url) {
+      var yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{6,})/);
+      if (yt) return '<iframe src="https://www.youtube.com/embed/' + yt[1] + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>';
+      var vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      if (vm) return '<iframe src="https://player.vimeo.com/video/' + vm[1] + '?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+      return '<video src="' + url.replace(/"/g, '&quot;') + '" controls autoplay playsinline></video>';
+    }
+    function openVideo(url) {
+      if (!stage || !lightbox) return;
+      stage.innerHTML = embedFor(url);
+      lightbox.removeAttribute('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeVideo() {
+      if (!stage || !lightbox) return;
+      stage.innerHTML = '';
+      lightbox.setAttribute('hidden', '');
+      document.body.style.overflow = '';
+    }
+
+    cards.forEach(function (card) {
+      if (!card.classList.contains('is-video')) return;
+      var url = card.getAttribute('data-video');
+      card.addEventListener('click', function () { openVideo(url); });
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openVideo(url); }
+      });
+    });
+    if (closeBtn) closeBtn.addEventListener('click', closeVideo);
+    if (lightbox) lightbox.addEventListener('click', function (e) { if (e.target === lightbox) closeVideo(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeVideo(); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Gallery page (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    { "type": "text", "id": "heading_lead", "label": "Heading (dark)", "default": "OUR" },
+    { "type": "text", "id": "heading_accent", "label": "Heading (orange)", "default": "GALLERY" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Photos and videos from every DC Way camp and program. Pick a program to see more." },
+    { "type": "checkbox", "id": "show_filters", "label": "Show program filter tabs", "default": true },
+    { "type": "text", "id": "all_label", "label": "\"All\" tab label", "default": "All" },
+    { "type": "checkbox", "id": "show_caption_badge", "label": "Show category badge on each item", "default": true },
+    { "type": "text", "id": "empty_state_text", "label": "Empty-state text", "default": "Photos and videos coming soon." },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+  ],
+  "presets": [{ "name": "Gallery page (DC Way)" }]
+}
+{% endschema %}

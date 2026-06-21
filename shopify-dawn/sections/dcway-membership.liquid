@@ -1,0 +1,326 @@
+<section class="dcway-membership color-{{ section.settings.color_scheme }}">
+  <div class="dcway-membership__inner">
+    {%- if section.settings.hero_heading != blank -%}
+      <h1 class="dcway-membership__hero">{{ section.settings.hero_heading | escape }}</h1>
+    {%- endif -%}
+
+    {%- if section.settings.intro_heading != blank -%}
+      <h2 class="dcway-membership__h-orange">{{ section.settings.intro_heading | escape }}</h2>
+    {%- endif -%}
+    {%- if section.settings.intro_body != blank -%}
+      <div class="dcway-membership__body rte">{{ section.settings.intro_body }}</div>
+    {%- endif -%}
+
+    <div class="dcway-membership__split">
+      <div class="dcway-membership__col">
+        {%- if section.settings.benefits_heading != blank -%}
+          <h2 class="dcway-membership__h-orange">{{ section.settings.benefits_heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.benefits_body != blank -%}
+          <div class="dcway-membership__body rte">{{ section.settings.benefits_body }}</div>
+        {%- endif -%}
+        {%- if section.settings.benefits_cta_label != blank -%}
+          <a class="dcway-membership__cta" href="{{ section.settings.benefits_cta_link | default: '#' }}">
+            {{ section.settings.benefits_cta_label | escape }}
+          </a>
+        {%- endif -%}
+      </div>
+
+      <div class="dcway-membership__media">
+        {%- if section.settings.hero_image != blank -%}
+          {{ section.settings.hero_image
+            | image_url: width: 1200
+            | image_tag:
+              loading: 'lazy',
+              widths: '400, 600, 800, 1000, 1200',
+              sizes: '(max-width: 989px) 90vw, 540px',
+              class: 'dcway-membership__img',
+              alt: section.settings.hero_image.alt | default: 'DC Way Soccer membership'
+          }}
+        {%- else -%}
+          <div class="dcway-membership__img dcway-membership__img--placeholder">
+            {{ 'collection-2' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if section.settings.why_heading != blank -%}
+      <h2 class="dcway-membership__h-orange">{{ section.settings.why_heading | escape }}</h2>
+    {%- endif -%}
+    {%- if section.settings.why_body != blank -%}
+      <div class="dcway-membership__body rte">{{ section.settings.why_body }}</div>
+    {%- endif -%}
+
+    {%- if section.settings.ready_heading != blank -%}
+      <h2 class="dcway-membership__h-orange">{{ section.settings.ready_heading | escape }}</h2>
+    {%- endif -%}
+    {%- if section.settings.ready_body != blank -%}
+      <div class="dcway-membership__body rte">{{ section.settings.ready_body }}</div>
+    {%- endif -%}
+    {%- if section.settings.ready_cta_label != blank -%}
+      <a class="dcway-membership__cta" href="{{ section.settings.ready_cta_link | default: '#' }}">
+        {{ section.settings.ready_cta_label | escape }}
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-membership {
+    padding: {{ section.settings.padding_top }}px 16px {{ section.settings.padding_bottom }}px;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__inner {
+    max-width: var(--dcway-container-max, 1170px);
+    margin-inline: auto;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__hero {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    color: var(--dcway-dark, #2c2c2c);
+    margin: 0 0 40px;
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 1;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__h-orange {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    color: var(--dcway-orange, #ff7200);
+    font-size: clamp(28px, 3.4vw, 42px);
+    line-height: 1.15;
+    letter-spacing: 0.005em;
+    margin: 40px 0 20px;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__body {
+    color: var(--dcway-text, #333);
+    font-size: clamp(17px, 1.25vw, 19px);
+    line-height: 1.7;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__body p { margin: 0 0 18px; }
+  #shopify-section-{{ section.id }} .dcway-membership__body p:last-child { margin-bottom: 0; }
+  #shopify-section-{{ section.id }} .dcway-membership__body ul {
+    margin: 0 0 18px;
+    padding-left: 24px;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__body li {
+    margin: 0 0 10px;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__body strong { color: var(--dcway-dark, #2c2c2c); }
+  #shopify-section-{{ section.id }} .dcway-membership__split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(24px, 4vw, 56px);
+    align-items: start;
+    margin-top: 8px;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__split .dcway-membership__h-orange {
+    margin-top: 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__media {
+    position: relative;
+    width: 100%;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--dcway-radius, 12px);
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__img--placeholder {
+    background: var(--dcway-muted-bg, #f2f2f2);
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__img--placeholder svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__cta {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 18px 40px;
+    background: var(--dcway-orange, #ff7200);
+    color: #fff;
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(16px, 1.2vw, 19px);
+    letter-spacing: var(--dcway-tracking-button, 0.04em);
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: var(--dcway-radius, 12px);
+    transition: background-color 150ms ease-out, transform 150ms ease-out;
+  }
+  #shopify-section-{{ section.id }} .dcway-membership__cta:hover {
+    background: var(--dcway-orange-hover, #e66700);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 989px) {
+    #shopify-section-{{ section.id }} .dcway-membership__split {
+      grid-template-columns: 1fr;
+    }
+    #shopify-section-{{ section.id }} .dcway-membership__media {
+      order: -1;
+    }
+  }
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-membership__hero {
+      margin-bottom: 24px;
+    }
+    #shopify-section-{{ section.id }} .dcway-membership__h-orange {
+      margin: 28px 0 14px;
+    }
+    #shopify-section-{{ section.id }} .dcway-membership__cta {
+      width: 100%;
+      text-align: center;
+      padding: 16px 24px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Membership (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "text",
+      "id": "hero_heading",
+      "label": "Page title",
+      "default": "MEMBERSHIP"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Side photo (Benefits column)"
+    },
+    {
+      "type": "header",
+      "content": "Intro"
+    },
+    {
+      "type": "text",
+      "id": "intro_heading",
+      "label": "Heading (orange)",
+      "default": "Join the DC Way Family: Become a Member Today!"
+    },
+    {
+      "type": "richtext",
+      "id": "intro_body",
+      "label": "Body",
+      "default": "<p>Are you ready to be part of something bigger? At DC Way, we're more than just a soccer club. We're a thriving community where young athletes and their families come together, support one another, and experience the joy of soccer, growth, and friendship. Becoming a DC Way member means joining a network that values the development of every player both on and off the field.</p><p>By signing up for a membership, you'll enjoy exclusive benefits, making every game, camp, and program even more rewarding. Not only will you save on all our programs throughout the year, but you'll also be part of a community that supports and celebrates your soccer journey.</p><p>To become a member, please <strong>create an account first.</strong> It's quick, easy, and the first step toward unlocking your membership benefits.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Membership Benefits (left column)"
+    },
+    {
+      "type": "text",
+      "id": "benefits_heading",
+      "label": "Heading (orange)",
+      "default": "Membership Benefits"
+    },
+    {
+      "type": "richtext",
+      "id": "benefits_body",
+      "label": "Body",
+      "default": "<ul><li>10% Discount on all programs for one year</li><li>DC Way Goody Bag</li><li>Membership Fee: $100</li></ul><p>Join us and start enjoying the benefits today!</p>"
+    },
+    {
+      "type": "text",
+      "id": "benefits_cta_label",
+      "label": "Button label",
+      "default": "JOIN NOW"
+    },
+    {
+      "type": "url",
+      "id": "benefits_cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Why Become a Member?"
+    },
+    {
+      "type": "text",
+      "id": "why_heading",
+      "label": "Heading (orange)",
+      "default": "Why Become a Member?"
+    },
+    {
+      "type": "richtext",
+      "id": "why_body",
+      "label": "Body",
+      "default": "<ul><li><strong>Exclusive Discounts</strong>: Members receive a 10% discount on every program for an entire year, giving you access to incredible savings while supporting your child's development in soccer and beyond.</li><li><strong>Goody Bag:</strong> As a thank you for joining, each member receives a special goody bag filled with fun surprises—perfect for celebrating your DC Way pride.</li><li><strong>Year-Round Community</strong>: Becoming a member means joining a community dedicated to your child's growth. You're not just saving on soccer programs; you're connecting with a supportive network of families, coaches, and young players who share your passion.</li></ul>"
+    },
+    {
+      "type": "header",
+      "content": "Ready to Join?"
+    },
+    {
+      "type": "text",
+      "id": "ready_heading",
+      "label": "Heading (orange)",
+      "default": "Ready to Join?"
+    },
+    {
+      "type": "richtext",
+      "id": "ready_body",
+      "label": "Body",
+      "default": "<p>Joining as a member of DC Way isn't just a purchase; it's an investment in your child's love for soccer and personal growth. It's about making the most out of every game, every camp, and every opportunity to learn and connect. Secure your membership today, and give your child the chance to experience the DC Way difference all year long. We're thrilled to welcome you to our family!</p>"
+    },
+    {
+      "type": "text",
+      "id": "ready_cta_label",
+      "label": "Button label",
+      "default": "JOIN NOW"
+    },
+    {
+      "type": "url",
+      "id": "ready_cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 80
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Membership (DC Way)"
+    }
+  ]
+}
+{% endschema %}

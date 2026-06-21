@@ -212,7 +212,7 @@
     background: #fff;
     color: #212121;
     border: 0;
-    border-radius: 6px;
+    border-radius: var(--dcway-radius, 12px);
     padding: 15px 30px;
     font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
     font-weight: 700;
@@ -247,7 +247,7 @@
     background: #fff;
     color: #212121;
     border: 0;
-    border-radius: 6px;
+    border-radius: var(--dcway-radius, 12px);
     padding: 22px 10px;
     font-family: "Nunito Sans", Tahoma, Arial, sans-serif;
     font-weight: 700;
@@ -288,7 +288,7 @@
   }
   #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card {
     background: #f5f0ec;
-    border-radius: 8px;
+    border-radius: var(--dcway-radius, 12px);
     padding: 24px;
     display: flex;
     flex-direction: column;
@@ -337,7 +337,7 @@
     padding: 12px 36px 12px 14px;
     font-size: 14px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: var(--dcway-radius, 12px);
     background: #fff;
     appearance: none;
     background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
@@ -355,7 +355,7 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     border: 0;
-    border-radius: 4px;
+    border-radius: var(--dcway-radius, 12px);
     cursor: not-allowed;
     transition: background-color 0.15s ease;
   }
@@ -376,7 +376,7 @@
     padding: 48px 24px;
     color: #6a6a6a;
     background: #f5f0ec;
-    border-radius: 8px;
+    border-radius: var(--dcway-radius, 12px);
   }
   #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__empty[hidden] {
     display: none !important;

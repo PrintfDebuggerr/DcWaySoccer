@@ -30,9 +30,17 @@
   --dcway-section-py-mobile: 40px;
   --dcway-card-gap: 20px;
 
+  /* Rounded-corner system — subtle, consistent across cards, buttons, media.
+     One token for the whole site (task #1). Not sharp, not pill. */
+  --dcway-radius: 12px;
+  --dcway-radius-sm: 8px;
+
   /* Typography helpers */
   --dcway-tracking-button: 0.04em;
 }
+
+/* Opt-in rounded-corner helper for media/cards/buttons inside custom sections. */
+.dcway-rounded { border-radius: var(--dcway-radius); overflow: hidden; }
 
 /* Opt-in helper: brand container clamp. Apply to a .dcway-container wrapper
    inside a custom section when its content needs to honor DC Way's 1170 max-width
@@ -69,10 +77,3 @@
   white-space: nowrap;
 }
 
-/* Membership page — WP parity: section headings render in DC Way orange.
-   Why: original WP page wraps every H3 in <span style="color:#ff6600">. */
-.page-membership .rich-text__heading,
-.page-membership .image-with-text__heading,
-.page-membership .multicolumn .title {
-  color: var(--dcway-orange);
-}

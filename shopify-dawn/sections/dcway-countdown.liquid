@@ -1,0 +1,207 @@
+{%- comment -%}
+  Countdown timer — set end date/time in the editor. Auto-hides (or shows an
+  expired message) when the deadline passes. Usable on any page (task #24).
+{%- endcomment -%}
+<section
+  class="dcway-countdown color-{{ section.settings.color_scheme }}"
+  data-dcway-countdown
+  data-deadline="{{ section.settings.end_date }}T{{ section.settings.end_time | default: '23:59' }}:00"
+  data-tz-offset="{{ section.settings.utc_offset }}"
+  data-on-expire="{{ section.settings.on_expire }}"
+  {% if section.settings.expired_text == blank %}data-no-expired-text{% endif %}
+  hidden
+>
+  <div class="dcway-container dcway-countdown__inner">
+    {%- if section.settings.heading != blank -%}
+      <p class="dcway-countdown__heading dcway-uppercase">{{ section.settings.heading }}</p>
+    {%- endif -%}
+
+    <div class="dcway-countdown__clock" aria-live="off">
+      <div class="dcway-countdown__unit"><span data-cd="days">0</span><small>{{ section.settings.label_days }}</small></div>
+      <div class="dcway-countdown__sep">:</div>
+      <div class="dcway-countdown__unit"><span data-cd="hours">0</span><small>{{ section.settings.label_hours }}</small></div>
+      <div class="dcway-countdown__sep">:</div>
+      <div class="dcway-countdown__unit"><span data-cd="minutes">0</span><small>{{ section.settings.label_minutes }}</small></div>
+      <div class="dcway-countdown__sep">:</div>
+      <div class="dcway-countdown__unit"><span data-cd="seconds">0</span><small>{{ section.settings.label_seconds }}</small></div>
+    </div>
+
+    <p class="dcway-countdown__expired" hidden>{{ section.settings.expired_text }}</p>
+
+    {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+      <a href="{{ section.settings.button_link }}" class="dcway-countdown__btn dcway-uppercase">{{ section.settings.button_label }}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-countdown {
+    background: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+    padding: clamp(20px, 3vw, 36px) 0;
+  }
+  #shopify-section-{{ section.id }} .dcway-countdown__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(14px, 2.4vw, 32px);
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-countdown__heading {
+    margin: 0;
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(18px, 2.2vw, 28px);
+  }
+  #shopify-section-{{ section.id }} .dcway-countdown__clock {
+    display: flex;
+    align-items: center;
+    gap: clamp(6px, 1vw, 14px);
+  }
+  #shopify-section-{{ section.id }} .dcway-countdown__unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: clamp(52px, 7vw, 76px);
+    padding: clamp(8px, 1vw, 12px) clamp(6px, 1vw, 10px);
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: var(--dcway-radius, 12px);
+  }
+  #shopify-section-{{ section.id }} .dcway-countdown__unit span {
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(26px, 4vw, 44px);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  #shopify-section-{{ section.id }} .dcway-countdown__unit small {
+    margin-top: 4px;
+    font-size: clamp(10px, 1vw, 12px);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.85;
+  }
+  #shopify-section-{{ section.id }} .dcway-countdown__sep {
+    font-size: clamp(22px, 3vw, 36px);
+    font-weight: 800;
+    opacity: 0.5;
+    align-self: flex-start;
+    margin-top: clamp(8px, 1vw, 12px);
+  }
+  #shopify-section-{{ section.id }} .dcway-countdown__expired {
+    margin: 0;
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(18px, 2.2vw, 26px);
+  }
+  #shopify-section-{{ section.id }} .dcway-countdown__btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 26px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--dcway-dark, #2c2c2c);
+    background: #fff;
+    border-radius: var(--dcway-radius, 12px);
+    transition: opacity 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-countdown__btn:hover { opacity: 0.88; }
+
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-countdown__sep { display: none; }
+  }
+</style>
+
+<script>
+  (function () {
+    var root = document.querySelector('#shopify-section-{{ section.id }} [data-dcway-countdown]');
+    if (!root) return;
+
+    var deadlineStr = root.getAttribute('data-deadline');
+    var offset = root.getAttribute('data-tz-offset') || '+00:00';
+    // Build an ISO string with explicit timezone offset so it's deadline-accurate for all visitors.
+    var iso = deadlineStr + offset;
+    var target = new Date(iso).getTime();
+    if (isNaN(target)) { return; } // no/invalid date set → stay hidden
+
+    var onExpire = root.getAttribute('data-on-expire');
+    var hasExpiredText = !root.hasAttribute('data-no-expired-text');
+    var clock = root.querySelector('.dcway-countdown__clock');
+    var expiredEl = root.querySelector('.dcway-countdown__expired');
+    var out = {
+      days: root.querySelector('[data-cd="days"]'),
+      hours: root.querySelector('[data-cd="hours"]'),
+      minutes: root.querySelector('[data-cd="minutes"]'),
+      seconds: root.querySelector('[data-cd="seconds"]')
+    };
+    var timer;
+
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+    function expire() {
+      clearInterval(timer);
+      if (onExpire === 'hide' || !hasExpiredText) {
+        root.setAttribute('hidden', '');
+        return;
+      }
+      root.removeAttribute('hidden');
+      if (clock) clock.setAttribute('hidden', '');
+      if (expiredEl) expiredEl.removeAttribute('hidden');
+    }
+
+    function tick() {
+      var diff = target - Date.now();
+      if (diff <= 0) { expire(); return; }
+      var d = Math.floor(diff / 86400000);
+      var h = Math.floor((diff % 86400000) / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      if (out.days) out.days.textContent = d;
+      if (out.hours) out.hours.textContent = pad(h);
+      if (out.minutes) out.minutes.textContent = pad(m);
+      if (out.seconds) out.seconds.textContent = pad(s);
+    }
+
+    root.removeAttribute('hidden');
+    tick();
+    timer = setInterval(tick, 1000);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Countdown (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Early Bird pricing ends in" },
+    { "type": "header", "content": "Deadline" },
+    { "type": "text", "id": "end_date", "label": "End date (YYYY-MM-DD)", "info": "Example: 2026-08-31", "default": "2026-08-31" },
+    { "type": "text", "id": "end_time", "label": "End time (HH:MM, 24h)", "default": "23:59" },
+    { "type": "text", "id": "utc_offset", "label": "UTC offset", "info": "Washington DC: -04:00 (EDT, Mar–Nov) or -05:00 (EST, Nov–Mar).", "default": "-04:00" },
+    {
+      "type": "select", "id": "on_expire", "label": "When the deadline passes",
+      "options": [
+        { "value": "hide", "label": "Hide the timer" },
+        { "value": "message", "label": "Show expired message" }
+      ],
+      "default": "hide"
+    },
+    { "type": "text", "id": "expired_text", "label": "Expired message", "default": "Registration is now closed." },
+    { "type": "header", "content": "Unit labels" },
+    { "type": "text", "id": "label_days", "label": "Days label", "default": "Days" },
+    { "type": "text", "id": "label_hours", "label": "Hours label", "default": "Hrs" },
+    { "type": "text", "id": "label_minutes", "label": "Minutes label", "default": "Min" },
+    { "type": "text", "id": "label_seconds", "label": "Seconds label", "default": "Sec" },
+    { "type": "header", "content": "Button (optional)" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Register Now" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#ff7200" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#ffffff" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+  ],
+  "presets": [{ "name": "Countdown (DC Way)" }]
+}
+{% endschema %}

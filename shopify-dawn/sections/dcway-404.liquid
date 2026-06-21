@@ -1,0 +1,171 @@
+{%- comment -%} Branded 404 — friendly message + clear nav back to Home / Camps + search. {%- endcomment -%}
+<section class="dcway-404 color-{{ section.settings.color_scheme }}">
+  <div class="dcway-container dcway-404__inner">
+    {%- if section.settings.show_ball -%}
+      <img
+        class="dcway-404__ball"
+        src="{{ 'dcway-ball-flying.svg' | asset_url }}"
+        alt=""
+        aria-hidden="true"
+        width="120"
+        height="120"
+        loading="lazy"
+      >
+    {%- endif -%}
+
+    <p class="dcway-404__code dcway-uppercase">{{ section.settings.code | default: '404' }}</p>
+    <h1 class="dcway-404__title dcway-uppercase">{{ section.settings.heading }}</h1>
+    <p class="dcway-404__body">{{ section.settings.body_text }}</p>
+
+    {%- if section.settings.show_search -%}
+      <form action="{{ routes.search_url }}" method="get" role="search" class="dcway-404__search">
+        <input
+          type="search"
+          name="q"
+          placeholder="{{ section.settings.search_placeholder | escape }}"
+          class="dcway-404__search-input"
+          aria-label="{{ section.settings.search_placeholder | escape }}"
+        >
+        <button type="submit" class="dcway-404__search-btn dcway-uppercase">{{ section.settings.search_button }}</button>
+      </form>
+    {%- endif -%}
+
+    <div class="dcway-404__actions">
+      <a href="{{ routes.root_url }}" class="dcway-404__btn dcway-404__btn--primary dcway-uppercase">
+        {{ section.settings.primary_label }}
+      </a>
+      {%- if section.settings.secondary_label != blank -%}
+        <a href="{{ section.settings.secondary_link }}" class="dcway-404__btn dcway-404__btn--ghost dcway-uppercase">
+          {{ section.settings.secondary_label }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  #shopify-section-{{ section.id }} .dcway-404 {
+    background: var(--dcway-white, #fff);
+    color: var(--dcway-text, #333);
+    padding: clamp(56px, 9vw, 120px) 0;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .dcway-404__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 680px;
+  }
+  #shopify-section-{{ section.id }} .dcway-404__ball {
+    width: clamp(80px, 12vw, 120px);
+    height: auto;
+    margin-bottom: 8px;
+  }
+  #shopify-section-{{ section.id }} .dcway-404__code {
+    margin: 0;
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(72px, 16vw, 150px);
+    line-height: 0.9;
+    color: var(--dcway-orange, #ff7200);
+  }
+  #shopify-section-{{ section.id }} .dcway-404__title {
+    margin: 8px 0 0;
+    font-family: var(--font-heading-family), 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(26px, 4vw, 40px);
+    color: var(--dcway-dark, #2c2c2c);
+  }
+  #shopify-section-{{ section.id }} .dcway-404__body {
+    margin: 14px 0 0;
+    font-size: clamp(15px, 1.2vw, 18px);
+    line-height: 1.55;
+    color: var(--dcway-muted, #737373);
+  }
+  #shopify-section-{{ section.id }} .dcway-404__search {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 460px;
+    margin-top: 28px;
+  }
+  #shopify-section-{{ section.id }} .dcway-404__search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 12px 16px;
+    font-size: 15px;
+    border: 1px solid var(--dcway-muted-bg-2, #e5e5e5);
+    border-radius: var(--dcway-radius, 12px);
+    background: var(--dcway-muted-bg, #f2f2f2);
+  }
+  #shopify-section-{{ section.id }} .dcway-404__search-btn {
+    flex: 0 0 auto;
+    border: 0;
+    cursor: pointer;
+    padding: 12px 22px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--dcway-orange, #ff7200);
+    border-radius: var(--dcway-radius, 12px);
+    transition: background 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-404__search-btn:hover { background: var(--dcway-orange-hover, #e66700); }
+  #shopify-section-{{ section.id }} .dcway-404__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 28px;
+  }
+  #shopify-section-{{ section.id }} .dcway-404__btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 13px 30px;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    border-radius: var(--dcway-radius, 12px);
+    transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .dcway-404__btn--primary {
+    background: var(--dcway-orange, #ff7200);
+    color: #fff;
+  }
+  #shopify-section-{{ section.id }} .dcway-404__btn--primary:hover { background: var(--dcway-orange-hover, #e66700); }
+  #shopify-section-{{ section.id }} .dcway-404__btn--ghost {
+    background: transparent;
+    color: var(--dcway-dark, #2c2c2c);
+    border: 2px solid var(--dcway-dark, #2c2c2c);
+  }
+  #shopify-section-{{ section.id }} .dcway-404__btn--ghost:hover { background: var(--dcway-dark, #2c2c2c); color: #fff; }
+
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-404__search { flex-direction: column; }
+    #shopify-section-{{ section.id }} .dcway-404__btn { flex: 1 1 auto; justify-content: center; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "404 (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    { "type": "text", "id": "code", "label": "Big code", "default": "404" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "This page took a wrong turn" },
+    { "type": "textarea", "id": "body_text", "label": "Body", "default": "The page you're looking for isn't here — but the field is. Head back home or browse our camps to find your child's next session." },
+    { "type": "header", "content": "Search" },
+    { "type": "checkbox", "id": "show_search", "label": "Show search box", "default": true },
+    { "type": "text", "id": "search_placeholder", "label": "Search placeholder", "default": "Search camps, programs, pages…" },
+    { "type": "text", "id": "search_button", "label": "Search button", "default": "Search" },
+    { "type": "header", "content": "Buttons" },
+    { "type": "text", "id": "primary_label", "label": "Primary button (→ Home)", "default": "Back to Home" },
+    { "type": "text", "id": "secondary_label", "label": "Secondary button label", "default": "Browse Camps" },
+    { "type": "url", "id": "secondary_link", "label": "Secondary button link" },
+    { "type": "header", "content": "Decoration" },
+    { "type": "checkbox", "id": "show_ball", "label": "Show flying ball", "default": true },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+  ],
+  "presets": [{ "name": "404 (DC Way)" }]
+}
+{% endschema %}

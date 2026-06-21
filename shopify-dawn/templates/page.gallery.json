@@ -25,7 +25,11 @@
           }
         }
       },
-      "block_order": ["eyebrow", "title", "body"],
+      "block_order": [
+        "eyebrow",
+        "title",
+        "body"
+      ],
       "settings": {
         "desktop_content_position": "center",
         "content_alignment": "center",
@@ -36,12 +40,15 @@
       }
     },
     "albums": {
-      "type": "gallery-grid",
+      "type": "dcway-gallery-albums",
       "settings": {
-        "heading": "Albums",
-        "columns_desktop": 3,
-        "show_date": true,
-        "empty_state_text": "Albums coming soon — check back after our next event.",
+        "heading_lead": "",
+        "heading_accent": "",
+        "subtitle": "",
+        "show_filters": true,
+        "all_label": "All",
+        "show_caption_badge": true,
+        "empty_state_text": "Photos and videos coming soon.",
         "color_scheme": "scheme-1"
       }
     },
@@ -51,7 +58,8 @@
         "heading": "Our Locations",
         "columns_desktop": 3,
         "empty_state_text": "Locations coming soon.",
-        "color_scheme": "scheme-1"
+        "color_scheme": "scheme-1",
+        "map_embed_url": "https://maps.google.com/maps?q=Shirley%20Chisholm%20(Tyler)%20Elementary%20School%201001%20G%20Street%20SE,%2020003&t=m&z=12&output=embed&iwloc=near"
       }
     }
   },

@@ -10,8 +10,12 @@
 {
   "sections": {
     "main": {
-      "type": "main-404",
-      "settings": {}
+      "type": "dcway-404",
+      "settings": {
+        "secondary_label": "Browse Camps",
+        "secondary_link": "/pages/Camps",
+        "color_scheme": "scheme-1"
+      }
     }
   },
   "order": [

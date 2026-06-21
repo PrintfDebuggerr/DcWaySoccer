@@ -179,43 +179,73 @@
         },
         "week_1": {
           "type": "week_tile",
-          "settings": { "label": "WEEK 1: JUNE 16, 18, 19", "number": "1" }
+          "settings": {
+            "label": "WEEK 1: JUNE 16, 18, 19",
+            "number": "1"
+          }
         },
         "week_2": {
           "type": "week_tile",
-          "settings": { "label": "WEEK 2: JUNE 22-26", "number": "2" }
+          "settings": {
+            "label": "WEEK 2: JUNE 22-26",
+            "number": "2"
+          }
         },
         "week_3": {
           "type": "week_tile",
-          "settings": { "label": "WEEK 3: JUNE 29 - JULY 3", "number": "3" }
+          "settings": {
+            "label": "WEEK 3: JUNE 29 - JULY 3",
+            "number": "3"
+          }
         },
         "week_4": {
           "type": "week_tile",
-          "settings": { "label": "WEEK 4: JULY 6-10", "number": "4" }
+          "settings": {
+            "label": "WEEK 4: JULY 6-10",
+            "number": "4"
+          }
         },
         "week_5": {
           "type": "week_tile",
-          "settings": { "label": "WEEK 5: JULY 13-17", "number": "5" }
+          "settings": {
+            "label": "WEEK 5: JULY 13-17",
+            "number": "5"
+          }
         },
         "week_6": {
           "type": "week_tile",
-          "settings": { "label": "WEEK 6: JULY 20-24", "number": "6" }
+          "settings": {
+            "label": "WEEK 6: JULY 20-24",
+            "number": "6"
+          }
         },
         "week_7": {
           "type": "week_tile",
-          "settings": { "label": "WEEK 7: JULY 27-31", "number": "7" }
+          "settings": {
+            "label": "WEEK 7: JULY 27-31",
+            "number": "7"
+          }
         },
         "week_8": {
           "type": "week_tile",
-          "settings": { "label": "WEEK 8: AUGUST 3-7", "number": "8" }
+          "settings": {
+            "label": "WEEK 8: AUGUST 3-7",
+            "number": "8"
+          }
         },
         "week_9": {
           "type": "week_tile",
-          "settings": { "label": "WEEK 9: AUGUST 10-14", "number": "9" }
+          "settings": {
+            "label": "WEEK 9: AUGUST 10-14",
+            "number": "9"
+          }
         },
         "week_10": {
           "type": "week_tile",
-          "settings": { "label": "WEEK 10: AUGUST 17-21", "number": "10" }
+          "settings": {
+            "label": "WEEK 10: AUGUST 17-21",
+            "number": "10"
+          }
         }
       },
       "block_order": [
@@ -247,14 +277,34 @@
         "heading_lead": "OUR",
         "heading_accent": "LOCATIONS",
         "subtitle": "Your child's next soccer journey is closer than you think — explore our locations!",
-        "map_embed_url": "https://www.google.com/maps?q=1001+G+Street+SE+Washington+DC+20003&output=embed",
+        "map_embed_url": "https://maps.google.com/maps?q=Shirley%20Chisholm%20(Tyler)%20Elementary%20School%201001%20G%20Street%20SE,%2020003&t=m&z=12&output=embed&iwloc=near",
         "map_title": "DC Way locations map",
         "empty_state_text": "Locations coming soon.",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "countdown": {
+      "type": "dcway-countdown",
+      "settings": {
+        "heading": "Summer Camp Early Bird pricing ends in",
+        "end_date": "2026-08-31",
+        "end_time": "23:59",
+        "utc_offset": "-04:00",
+        "on_expire": "hide",
+        "expired_text": "Early Bird pricing has ended.",
+        "label_days": "Days",
+        "label_hours": "Hrs",
+        "label_minutes": "Min",
+        "label_seconds": "Sec",
+        "button_label": "",
+        "bg_color": "#ff7200",
+        "text_color": "#ffffff",
         "color_scheme": "scheme-1"
       }
     }
   },
   "order": [
+    "countdown",
     "registration_header",
     "registration_filter",
     "locations"

@@ -70,6 +70,25 @@
       </ul>
     </div>
   </div>
+
+  {%- assign has_policies = false -%}
+  {%- for p in shop.policies -%}{%- if p != blank -%}{%- assign has_policies = true -%}{%- endif -%}{%- endfor -%}
+  {%- if has_policies or section.settings.show_copyright -%}
+    <div class="dcway-container dcway-footer__legal">
+      {%- if has_policies -%}
+        <ul class="dcway-footer__policies" role="list">
+          {%- for policy in shop.policies -%}
+            {%- if policy != blank -%}
+              <li><a href="{{ policy.url }}">{{ policy.title | escape }}</a></li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      {%- if section.settings.show_copyright -%}
+        <p class="dcway-footer__copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
 </footer>
 
 {%- style -%}
@@ -84,6 +103,33 @@
   }
   #shopify-section-{{ section.id }} .dcway-footer a:hover {
     text-decoration: underline;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__legal {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.25);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+    font-size: 14px;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__policies {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+  }
+  #shopify-section-{{ section.id }} .dcway-footer__copyright {
+    margin: 0;
+    opacity: 0.9;
+  }
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-footer__legal { justify-content: center; text-align: center; }
+    #shopify-section-{{ section.id }} .dcway-footer__policies { justify-content: center; }
   }
   #shopify-section-{{ section.id }} .dcway-footer__inner {
     display: grid;
@@ -248,6 +294,20 @@
       "id": "hours_value",
       "label": "Hours value",
       "default": "8 am–8 pm"
+    },
+    {
+      "type": "header",
+      "content": "Legal row"
+    },
+    {
+      "type": "paragraph",
+      "content": "Policy links are pulled automatically from Settings → Policies (Privacy policy, Refund, Terms, etc.)."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_copyright",
+      "label": "Show copyright line",
+      "default": true
     }
   ],
   "presets": [

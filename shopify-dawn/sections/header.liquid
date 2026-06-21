@@ -78,8 +78,21 @@
       </ul>
     </nav>
 
-    <!-- Right cluster: cart + login -->
+    <!-- Right cluster: search, cart, login -->
     <div class="dcway-header__actions">
+      <button
+        type="button"
+        class="dcway-header__search-toggle"
+        aria-label="Search"
+        aria-expanded="false"
+        data-dcway-search-toggle
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+          <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
       <a href="{{ routes.cart_url }}" class="dcway-header__cart" aria-label="Cart">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" fill="currentColor"/>
@@ -97,6 +110,39 @@
       {%- endif -%}
     </div>
   </div>
+
+  <!-- Predictive search panel -->
+  <div class="dcway-header__search" data-dcway-search-panel hidden>
+    <div class="dcway-header__search-inner">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="dcway-header__search-form">
+        <span class="dcway-header__search-field">
+          <svg class="dcway-header__search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+            <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input
+            type="search"
+            name="q"
+            class="dcway-header__search-input"
+            placeholder="{{ 'general.search.search' | t | default: 'Search camps, programs, pages…' }}"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            aria-label="Search"
+            data-dcway-search-input
+          >
+          <button type="button" class="dcway-header__search-clear" aria-label="Clear search" data-dcway-search-clear hidden>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </span>
+        <button type="button" class="dcway-header__search-close" aria-label="Close search" data-dcway-search-close>
+          {{ 'accessibility.close' | t | default: 'Close' }}
+        </button>
+      </form>
+      <div class="dcway-header__search-results" data-dcway-search-results aria-live="polite" role="listbox"></div>
+    </div>
+  </div>
+  <div class="dcway-header__search-backdrop" data-dcway-search-backdrop hidden></div>
 
   <!-- Mobile drawer -->
   <div class="dcway-header__drawer" data-dcway-header-drawer aria-hidden="true">
@@ -158,6 +204,38 @@
           });
         });
 
+        // Predictive search
+        this.searchToggle = this.querySelector('[data-dcway-search-toggle]');
+        this.searchPanel = this.querySelector('[data-dcway-search-panel]');
+        this.searchInput = this.querySelector('[data-dcway-search-input]');
+        this.searchResults = this.querySelector('[data-dcway-search-results]');
+        this.searchClose = this.querySelector('[data-dcway-search-close]');
+        this.searchClear = this.querySelector('[data-dcway-search-clear]');
+        this.searchBackdrop = this.querySelector('[data-dcway-search-backdrop]');
+        this.searchActive = -1;
+        if (this.searchToggle && this.searchPanel && this.searchInput) {
+          this.searchToggle.addEventListener('click', () => this.toggleSearch());
+          if (this.searchClose) this.searchClose.addEventListener('click', () => this.closeSearch());
+          if (this.searchBackdrop) this.searchBackdrop.addEventListener('click', () => this.closeSearch());
+          if (this.searchClear) this.searchClear.addEventListener('click', () => {
+            this.searchInput.value = '';
+            this.searchClear.setAttribute('hidden', '');
+            this.renderInitial();
+            this.searchInput.focus();
+          });
+          document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.closeSearch(); });
+          var debounce;
+          this.searchInput.addEventListener('input', () => {
+            clearTimeout(debounce);
+            var q = this.searchInput.value.trim();
+            if (this.searchClear) this.searchClear.toggleAttribute('hidden', q.length === 0);
+            if (q.length < 2) { this.renderInitial(); return; }
+            this.renderLoading();
+            debounce = setTimeout(() => this.runSearch(q), 250);
+          });
+          this.searchInput.addEventListener('keydown', (e) => this.onSearchKey(e));
+        }
+
         // Drop-shadow when scrolled past header (sticky pos handled by CSS).
         if (this.dataset.sticky !== 'false') {
           window.addEventListener('scroll', () => {
@@ -171,6 +249,110 @@
         this.drawer.setAttribute('aria-hidden', String(open));
         this.toggleBtn.setAttribute('aria-expanded', String(!open));
         document.body.style.overflow = open ? '' : 'hidden';
+      }
+      toggleSearch() {
+        if (this.searchPanel.hasAttribute('hidden')) this.openSearch();
+        else this.closeSearch();
+      }
+      openSearch() {
+        this.searchPanel.removeAttribute('hidden');
+        if (this.searchBackdrop) this.searchBackdrop.removeAttribute('hidden');
+        this.searchToggle.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+        if (!this.searchInput.value.trim()) this.renderInitial();
+        var input = this.searchInput;
+        requestAnimationFrame(() => input.focus());
+      }
+      closeSearch() {
+        if (!this.searchPanel || this.searchPanel.hasAttribute('hidden')) return;
+        this.searchPanel.setAttribute('hidden', '');
+        if (this.searchBackdrop) this.searchBackdrop.setAttribute('hidden', '');
+        this.searchToggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      }
+      renderInitial() {
+        this.searchActive = -1;
+        this.searchResults.innerHTML = '<p class="dcway-header__search-hint">Start typing to find camps, programs, blog posts and pages.</p>';
+      }
+      renderLoading() {
+        this.searchResults.innerHTML = '<p class="dcway-header__search-loading">Searching…</p>';
+      }
+      money(v) {
+        if (v == null || v === '') return '';
+        var n = parseFloat(v);
+        if (isNaN(n)) return '';
+        return '$' + (n % 1 === 0 ? n.toFixed(0) : n.toFixed(2));
+      }
+      onSearchKey(e) {
+        var items = this.searchResults.querySelectorAll('.dcway-header__search-result');
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          if (!items.length) return;
+          e.preventDefault();
+          this.searchActive += (e.key === 'ArrowDown' ? 1 : -1);
+          if (this.searchActive < 0) this.searchActive = items.length - 1;
+          if (this.searchActive >= items.length) this.searchActive = 0;
+          items.forEach((el, i) => el.classList.toggle('is-active', i === this.searchActive));
+          items[this.searchActive].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+          if (this.searchActive >= 0 && items[this.searchActive]) {
+            e.preventDefault();
+            window.location.href = items[this.searchActive].getAttribute('href');
+          }
+        }
+      }
+      runSearch(q) {
+        var url = '{{ routes.predictive_search_url }}' + '.json?q=' + encodeURIComponent(q)
+          + '&resources[type]=product,page,article&resources[limit]=6';
+        var self = this;
+        fetch(url, { headers: { 'Accept': 'application/json' } })
+          .then((r) => r.json())
+          .then((data) => self.renderResults(data, q))
+          .catch(() => {});
+      }
+      renderResults(data, q) {
+        this.searchActive = -1;
+        var results = (data && data.resources && data.resources.results) || {};
+        var groups = [
+          { key: 'products', label: 'Programs & Camps' },
+          { key: 'pages', label: 'Pages' },
+          { key: 'articles', label: 'Blog' }
+        ];
+        var esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        var self = this;
+        var arrow = '<svg class="dcway-header__search-arrow" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M6.5 3.5L12 9l-5.5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        var html = '';
+        var total = 0;
+        groups.forEach((g) => {
+          var items = results[g.key] || [];
+          if (!items.length) return;
+          html += '<div class="dcway-header__search-group"><p class="dcway-header__search-group-title">' + g.label + '</p>';
+          items.forEach((item) => {
+            total++;
+            var img = (item.featured_image && item.featured_image.url) || item.image || '';
+            var sub = '';
+            if (g.key === 'products') {
+              var bits = [];
+              if (item.type) bits.push(esc(item.type));
+              var price = self.money(item.price);
+              var priceHtml = price ? '<span class="dcway-header__search-price">' + price + '</span>' : '';
+              var subInner = bits.join(' · ');
+              if (subInner && priceHtml) sub = '<span class="dcway-header__search-sub">' + subInner + ' · ' + priceHtml + '</span>';
+              else if (priceHtml) sub = '<span class="dcway-header__search-sub">' + priceHtml + '</span>';
+              else if (subInner) sub = '<span class="dcway-header__search-sub">' + subInner + '</span>';
+            }
+            html += '<a class="dcway-header__search-result" href="' + esc(item.url) + '">'
+              + (img ? '<img src="' + esc(img) + '" alt="" loading="lazy">' : '<span class="dcway-header__search-result-noimg"></span>')
+              + '<span class="dcway-header__search-info"><span class="dcway-header__search-rtitle">' + esc(item.title) + '</span>' + sub + '</span>'
+              + arrow + '</a>';
+          });
+          html += '</div>';
+        });
+        if (!total) {
+          html = '<p class="dcway-header__search-empty">No results for &ldquo;' + esc(q) + '&rdquo;. Press Enter to search everything.</p>';
+        } else {
+          html += '<a class="dcway-header__search-seeall" href="{{ routes.search_url }}?q=' + encodeURIComponent(q) + '">See all results for &ldquo;' + esc(q) + '&rdquo; &rarr;</a>';
+        }
+        this.searchResults.innerHTML = html;
       }
     });
   }
@@ -193,6 +375,7 @@
   }
   .dcway-header {
     display: block;
+    position: relative;
     background: var(--dcway-orange, #FF7200);
     color: #fff;
     width: 100%;
@@ -361,6 +544,123 @@
     border-radius: 9px;
   }
   .dcway-header__cart-count[hidden] { display: none; }
+
+  /* ---------- Predictive search ---------- */
+  .dcway-header__search-toggle {
+    background: transparent; border: 0; color: #fff; padding: 0;
+    width: 40px; height: 40px; cursor: pointer; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background 0.18s ease;
+  }
+  .dcway-header__search-toggle svg { width: 22px; height: 22px; }
+  .dcway-header__search-toggle:hover { background: rgba(255,255,255,0.18); }
+
+  .dcway-header__search-backdrop {
+    position: absolute; top: 100%; left: 0; right: 0; height: 100vh;
+    background: rgba(20,20,20,0.45); z-index: 110;
+    opacity: 0; transition: opacity 0.2s ease;
+  }
+  .dcway-header__search-backdrop:not([hidden]) { opacity: 1; }
+
+  .dcway-header__search {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: #fff; color: var(--dcway-dark, #2c2c2c);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    border-top: 3px solid var(--dcway-orange, #ff7200);
+    z-index: 120;
+  }
+  .dcway-header__search:not([hidden]) { animation: dcwaySearchDrop 0.22s cubic-bezier(.22,.61,.36,1); }
+  @keyframes dcwaySearchDrop {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .dcway-header__search-inner {
+    max-width: 900px; margin: 0 auto;
+    padding: 20px clamp(16px, 3vw, 32px) 24px;
+  }
+  .dcway-header__search-form { display: flex; align-items: center; gap: 14px; }
+  .dcway-header__search-field {
+    flex: 1 1 auto; min-width: 0;
+    display: flex; align-items: center; gap: 12px;
+    background: var(--dcway-muted-bg, #f2f2f2);
+    border: 2px solid transparent;
+    border-radius: var(--dcway-radius, 12px);
+    padding: 0 14px; height: 52px;
+    transition: border-color 0.18s ease, background 0.18s ease;
+  }
+  .dcway-header__search-field:focus-within {
+    background: #fff; border-color: var(--dcway-orange, #ff7200);
+  }
+  .dcway-header__search-icon { width: 22px; height: 22px; color: var(--dcway-orange, #ff7200); flex: 0 0 auto; }
+  .dcway-header__search-input {
+    flex: 1 1 auto; min-width: 0; border: 0; outline: 0;
+    font-size: 17px; background: transparent; color: inherit; height: 100%;
+  }
+  .dcway-header__search-input::-webkit-search-cancel-button { display: none; }
+  .dcway-header__search-clear {
+    background: rgba(0,0,0,0.08); border: 0; cursor: pointer; color: var(--dcway-dark, #2c2c2c);
+    width: 26px; height: 26px; border-radius: 50%; flex: 0 0 auto;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .dcway-header__search-clear svg { width: 16px; height: 16px; }
+  .dcway-header__search-clear[hidden] { display: none; }
+  .dcway-header__search-close {
+    background: transparent; border: 0; cursor: pointer; flex: 0 0 auto;
+    color: var(--dcway-muted, #737373); font-weight: 700; font-size: 14px;
+    text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px;
+  }
+  .dcway-header__search-close:hover { color: var(--dcway-dark, #2c2c2c); }
+
+  .dcway-header__search-results {
+    margin-top: 18px; display: flex; flex-direction: column; gap: 20px;
+    max-height: 64vh; overflow-y: auto;
+  }
+  .dcway-header__search-group-title {
+    margin: 0 0 8px; font-size: 12px; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--dcway-muted, #737373); font-weight: 700;
+  }
+  .dcway-header__search-result {
+    display: flex; align-items: center; gap: 14px; padding: 8px 10px;
+    border-radius: var(--dcway-radius-sm, 8px); text-decoration: none;
+    color: var(--dcway-dark, #2c2c2c); transition: background 0.14s ease;
+  }
+  .dcway-header__search-result:hover,
+  .dcway-header__search-result.is-active {
+    background: var(--dcway-muted-bg, #f2f2f2);
+  }
+  .dcway-header__search-result img,
+  .dcway-header__search-result-noimg {
+    width: 52px; height: 52px; border-radius: var(--dcway-radius-sm, 8px);
+    object-fit: cover; flex: 0 0 auto; background: var(--dcway-muted-bg-2, #e5e5e5);
+  }
+  .dcway-header__search-info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .dcway-header__search-rtitle {
+    font-size: 15px; font-weight: 700; line-height: 1.25;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .dcway-header__search-sub { font-size: 13px; color: var(--dcway-muted, #737373); }
+  .dcway-header__search-price { color: var(--dcway-orange, #ff7200); font-weight: 700; }
+  .dcway-header__search-arrow { width: 16px; height: 16px; color: var(--dcway-muted, #737373); flex: 0 0 auto; opacity: 0; transition: opacity 0.14s ease; }
+  .dcway-header__search-result:hover .dcway-header__search-arrow,
+  .dcway-header__search-result.is-active .dcway-header__search-arrow { opacity: 1; }
+
+  .dcway-header__search-seeall {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 4px; padding: 10px 4px;
+    font-weight: 700; font-size: 14px; text-decoration: none;
+    color: var(--dcway-orange, #ff7200);
+  }
+  .dcway-header__search-seeall:hover { color: var(--dcway-orange-hover, #e66700); }
+  .dcway-header__search-empty,
+  .dcway-header__search-hint,
+  .dcway-header__search-loading {
+    margin: 4px 0; color: var(--dcway-muted, #737373); font-size: 14px;
+  }
+
+  @media (max-width: 749px) {
+    .dcway-header__search-close { display: none; }
+    .dcway-header__search-inner { padding: 14px 16px 18px; }
+  }
 
   .dcway-header__login {
     display: inline-flex;
