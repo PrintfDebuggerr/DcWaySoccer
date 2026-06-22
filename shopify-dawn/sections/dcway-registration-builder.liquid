@@ -50,11 +50,14 @@
 
     <div class="dcway-regb__grid">
       <form class="dcway-regb__form" data-regb-form>
-        {%- comment -%} 1. Child {%- endcomment -%}
+        {%- comment -%} 1. Child — dropdown from account children (dcway.children), else free text {%- endcomment -%}
         <div class="dcway-regb__step">
           <label class="dcway-regb__label" for="regb-child-{{ section.id }}">
             Choose Your Child {% if logged_in %}<span class="dcway-regb__req">*</span>{% endif %}
           </label>
+          <select class="dcway-regb__text" data-regb-child-select aria-label="Choose your child" hidden>
+            <option value="">Select your child…</option>
+          </select>
           <input
             type="text"
             id="regb-child-{{ section.id }}"
@@ -64,6 +67,15 @@
             autocomplete="off"
           >
         </div>
+        <script type="application/json" data-regb-children>
+          {%- if section.settings.preview_children != blank -%}
+            {{ section.settings.preview_children }}
+          {%- elsif customer and customer.metafields.dcway.children -%}
+            {{ customer.metafields.dcway.children.value | json }}
+          {%- else -%}
+            []
+          {%- endif -%}
+        </script>
 
         {%- comment -%} 2. Registration Type {%- endcomment -%}
         <div class="dcway-regb__step">
@@ -308,8 +320,45 @@
     var locBtns = root.querySelectorAll('[data-regb-loc]');
     var optionsWrap = root.querySelector('[data-regb-options]');
     var childInput = root.querySelector('[data-regb-child]');
+    var childSelect = root.querySelector('[data-regb-child-select]');
     var submitBtn = root.querySelector('[data-regb-submit]');
     var note = root.querySelector('[data-regb-note]');
+
+    // ---- Children dropdown (from account metafield dcway.children) ----
+    function ageFromDob(dob) {
+      if (!dob) return null;
+      var d = new Date(dob); if (isNaN(d.getTime())) return null;
+      var t = new Date(), a = t.getFullYear() - d.getFullYear();
+      var m = t.getMonth() - d.getMonth();
+      if (m < 0 || (m === 0 && t.getDate() < d.getDate())) a--;
+      return a >= 0 ? a : null;
+    }
+    (function initChildren() {
+      var el = root.querySelector('[data-regb-children]');
+      var kids = [];
+      try { kids = JSON.parse(el.textContent) || []; } catch (e) { kids = []; }
+      if (!childSelect || !kids.length) return; // guest / no children → keep free-text input
+      kids.forEach(function (c) {
+        var age = ageFromDob(c.dob);
+        var o = document.createElement('option');
+        o.value = c.name || '';
+        o.textContent = (c.name || 'Child') + (age != null ? ' (age ' + age + ')' : '');
+        childSelect.appendChild(o);
+      });
+      var add = document.createElement('option');
+      add.value = '__new__'; add.textContent = '+ Add a new child';
+      childSelect.appendChild(add);
+      childSelect.hidden = false;
+      childInput.hidden = true;
+      childSelect.addEventListener('change', function () {
+        if (childSelect.value === '__new__') {
+          childInput.hidden = false; childInput.value = ''; state.child = ''; childInput.focus();
+        } else {
+          childInput.hidden = true; state.child = childSelect.value;
+        }
+        update();
+      });
+    })();
 
     // helper: does a product exist for (week, loc) with at least one option of current type?
     function productFor(week, loc) {
@@ -531,6 +580,7 @@
     { "type": "product", "id": "care_product", "label": "Before/After Care product" },
     { "type": "product_list", "id": "addon_products", "label": "Add-on products (T-shirt, Ball, Shin Guards)", "limit": 6 },
     { "type": "checkbox", "id": "require_child_when_logged_in", "label": "Require child name when logged in", "default": true },
+    { "type": "textarea", "id": "preview_children", "label": "Preview children JSON (QA only)", "info": "Leave blank in production. When blank, the picker reads customer.metafields.dcway.children. Example: [{\"name\":\"Ada\",\"dob\":\"2017-05-14\"}]" },
     { "type": "header", "content": "Membership pricing" },
     { "type": "paragraph", "content": "Shows member pricing to logged-in members (tagged by your membership app). The actual discount is enforced by the app at checkout." },
     { "type": "text", "id": "member_tag", "label": "Member customer tag", "default": "member" },
