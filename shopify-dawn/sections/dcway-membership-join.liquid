@@ -1,0 +1,168 @@
+{%- comment -%}
+  Membership join / status card (Faz 3, task #14).
+  - Active member (tagged by membership app): status card (active + expiry/savings if metafields set).
+  - Non-member: price + benefits + working JOIN NOW (adds the membership product to cart).
+  Discount enforcement is handled by the membership app; this is the purchase + status UI.
+{%- endcomment -%}
+{%- liquid
+  assign prod = section.settings.membership_product
+  assign variant = prod.selected_or_first_available_variant | default: prod.variants.first
+
+  assign is_member = false
+  if section.settings.force_member_preview
+    assign is_member = true
+  elsif customer and section.settings.member_tag != blank and customer.tags contains section.settings.member_tag
+    assign is_member = true
+  endif
+
+  assign ns = section.settings.expiry_namespace | default: 'dcway'
+  assign key = section.settings.expiry_key | default: 'membership_expires'
+  assign expiry = customer.metafields[ns][key].value
+  assign saved_key = section.settings.savings_key | default: 'membership_savings'
+  assign saved = customer.metafields[ns][saved_key].value
+-%}
+
+<section id="dcway-mjoin-{{ section.id }}" class="dcway-mjoin color-{{ section.settings.color_scheme }}">
+  <div class="dcway-mjoin__inner">
+    {%- if is_member -%}
+      <div class="dcway-mjoin__card dcway-mjoin__card--active">
+        <span class="dcway-mjoin__badge">★ Active Member</span>
+        <h2 class="dcway-mjoin__title">{{ section.settings.active_heading | default: "You're a DC Way member" }}</h2>
+        <p class="dcway-mjoin__lead">{{ section.settings.active_body | default: 'Your 10% member discount is applied automatically to every camp and program.' }}</p>
+        <ul class="dcway-mjoin__status">
+          <li><span>Status</span><strong class="dcway-mjoin__ok">Active</strong></li>
+          {%- if expiry != blank -%}
+            <li><span>Expires</span><strong>{{ expiry | date: '%B %-d, %Y' }}</strong></li>
+          {%- endif -%}
+          {%- if saved != blank -%}
+            <li><span>Total saved</span><strong>{{ saved | money }}</strong></li>
+          {%- endif -%}
+        </ul>
+        <a class="dcway-mjoin__btn dcway-mjoin__btn--ghost" href="{{ routes.account_url }}">View my account</a>
+      </div>
+    {%- else -%}
+      <div class="dcway-mjoin__card">
+        {%- if section.settings.eyebrow != blank -%}<span class="dcway-mjoin__eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+        <h2 class="dcway-mjoin__title">{{ section.settings.heading | default: 'DC Way Membership' }}</h2>
+        <div class="dcway-mjoin__price">
+          {%- if variant != blank -%}{{ variant.price | money }}{%- else -%}$100{%- endif -%}
+          <span class="dcway-mjoin__per">/ year</span>
+        </div>
+        {%- if section.settings.benefits != blank -%}
+          <div class="dcway-mjoin__benefits rte">{{ section.settings.benefits }}</div>
+        {%- endif -%}
+
+        {%- if variant != blank -%}
+          <button
+            type="button"
+            class="dcway-mjoin__btn"
+            data-dcway-mjoin-buy
+            data-variant-id="{{ variant.id }}"
+          >{{ section.settings.cta_label | default: 'Join Now' }}</button>
+          <p class="dcway-mjoin__note" data-dcway-mjoin-note hidden></p>
+        {%- else -%}
+          <p class="dcway-mjoin__note" hidden></p>
+          <p class="dcway-mjoin__soldout">Membership is not available right now.</p>
+        {%- endif -%}
+
+        {%- unless customer -%}
+          <p class="dcway-mjoin__hint">{{ section.settings.guest_hint | default: 'Tip: log in or create an account first so your membership is saved to your profile.' }}
+            <a href="{{ routes.account_login_url }}">Log in</a>
+          </p>
+        {%- endunless -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% style %}
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin { background:#fff; padding: clamp(24px,4vw,48px) clamp(16px,4vw,48px); }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__inner { max-width: 560px; margin:0 auto; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__card {
+    border:2px solid var(--dcway-muted-bg-2,#e5e5e5); border-radius:var(--dcway-radius,12px);
+    padding: clamp(24px,3vw,36px); text-align:center;
+  }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__card--active { border-color:var(--dcway-orange,#ff7200); background:rgba(255,114,0,.05); }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__eyebrow,
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__badge {
+    display:inline-block; font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:13px;
+    color:var(--dcway-orange,#ff7200); margin-bottom:10px;
+  }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__title { margin:0 0 8px; font-family:var(--font-heading-family),'Barlow Condensed',sans-serif; font-weight:800; text-transform:uppercase; font-size:clamp(26px,3vw,38px); line-height:1.05; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__lead { margin:0 0 18px; color:var(--dcway-muted,#737373); }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__price { font-family:var(--font-heading-family),'Barlow Condensed',sans-serif; font-weight:800; font-size:clamp(44px,6vw,64px); color:var(--dcway-orange,#ff7200); line-height:1; margin:6px 0 18px; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__per { font-size:18px; color:var(--dcway-muted,#737373); font-weight:700; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__benefits { text-align:left; margin:0 auto 22px; max-width:380px; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__benefits ul { list-style:none; margin:0; padding:0; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__benefits li { position:relative; padding:6px 0 6px 30px; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__benefits li::before { content:'✓'; position:absolute; left:0; top:6px; color:var(--dcway-orange,#ff7200); font-weight:800; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__status { list-style:none; margin:0 0 20px; padding:0; text-align:left; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__status li { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--dcway-muted-bg-2,#e5e5e5); }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__status span { color:var(--dcway-muted,#737373); }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__ok { color:var(--dcway-orange,#ff7200); }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__btn {
+    display:inline-block; width:100%; border:0; cursor:pointer; border-radius:var(--dcway-radius,12px);
+    background:var(--dcway-orange,#ff7200); color:#fff; font-weight:800; text-transform:uppercase; letter-spacing:.04em;
+    font-size:16px; padding:16px 24px; text-decoration:none; transition:background .15s ease;
+  }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__btn:hover { background:var(--dcway-orange-hover,#e66700); }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__btn--ghost { background:transparent; border:2px solid var(--dcway-orange,#ff7200); color:var(--dcway-orange,#ff7200); }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__btn--ghost:hover { background:var(--dcway-orange,#ff7200); color:#fff; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__btn.is-loading { opacity:.7; pointer-events:none; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__note { margin:12px 0 0; font-size:13px; color:#c0392b; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__hint { margin:14px 0 0; font-size:13px; color:var(--dcway-muted,#737373); }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__hint a { color:var(--dcway-orange,#ff7200); font-weight:700; }
+  #dcway-mjoin-{{ section.id }} .dcway-mjoin__soldout { margin:0; color:var(--dcway-muted,#737373); font-style:italic; }
+{% endstyle %}
+
+<script>
+  (function () {
+    var root = document.getElementById('dcway-mjoin-{{ section.id }}');
+    if (!root) return;
+    var btn = root.querySelector('[data-dcway-mjoin-buy]');
+    if (!btn) return;
+    var note = root.querySelector('[data-dcway-mjoin-note]');
+    var CART_URL = {{ routes.cart_url | json }};
+    btn.addEventListener('click', function () {
+      var id = Number(btn.getAttribute('data-variant-id'));
+      btn.classList.add('is-loading');
+      var label = btn.textContent; btn.textContent = 'Adding…';
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ items: [{ id: id, quantity: 1, properties: { '_membership': 'annual' } }] })
+      }).then(function (r) { if (!r.ok) return r.json().then(function (e) { throw e; }); return r.json(); })
+        .then(function () { window.location.href = CART_URL; })
+        .catch(function (err) {
+          btn.classList.remove('is-loading'); btn.textContent = label;
+          if (note) { note.hidden = false; note.textContent = (err && err.description) || 'Could not add membership. Please try again.'; }
+        });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Membership join (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    { "type": "product", "id": "membership_product", "label": "Membership product" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Become a Member" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "DC Way Membership" },
+    { "type": "text", "id": "cta_label", "label": "Buy button label", "default": "Join Now" },
+    { "type": "richtext", "id": "benefits", "label": "Benefits list", "default": "<ul><li>10% discount on all programs for one year</li><li>DC Way Goody Bag</li><li>Year-round community</li></ul>" },
+    { "type": "text", "id": "guest_hint", "label": "Guest hint" },
+    { "type": "header", "content": "Member status (logged-in members)" },
+    { "type": "text", "id": "member_tag", "label": "Member customer tag", "default": "member" },
+    { "type": "text", "id": "active_heading", "label": "Active heading", "default": "You're a DC Way member" },
+    { "type": "textarea", "id": "active_body", "label": "Active body", "default": "Your 10% member discount is applied automatically to every camp and program." },
+    { "type": "text", "id": "expiry_namespace", "label": "Expiry metafield namespace", "default": "dcway", "info": "Set by your membership app (optional)." },
+    { "type": "text", "id": "expiry_key", "label": "Expiry metafield key", "default": "membership_expires" },
+    { "type": "text", "id": "savings_key", "label": "Savings metafield key", "default": "membership_savings" },
+    { "type": "checkbox", "id": "force_member_preview", "label": "Preview member status (QA only)", "default": false },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+  ],
+  "presets": [{ "name": "Membership join (DC Way)" }]
+}
+{% endschema %}

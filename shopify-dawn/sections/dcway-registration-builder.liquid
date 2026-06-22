@@ -1,0 +1,544 @@
+{%- comment -%}
+  DC Way Registration Builder (Faz 2, task #3)
+  Single guided form: Child → Type → Week → Location → Option → Before/After Care → Add-Ons.
+  Live total, required-field gating, week→location availability, one /cart/add.js (base + add-ons
+  as separate line items grouped by _reg_group). Base products come from a collection; each base
+  product is tagged reg-camp-<slug> (location) + reg-week-<n>. Add-ons reuse merch products.
+{%- endcomment -%}
+
+{%- liquid
+  assign coll = collections[section.settings.base_collection]
+  assign care = section.settings.care_product
+  assign logged_in = false
+  if customer
+    assign logged_in = true
+  endif
+
+  comment
+    Member detection (app-agnostic): membership app tags the customer (default 'member').
+    force_member_preview lets us preview/QA member pricing without a real member account.
+  endcomment
+  assign is_member = false
+  if section.settings.force_member_preview
+    assign is_member = true
+  elsif customer and section.settings.member_tag != blank and customer.tags contains section.settings.member_tag
+    assign is_member = true
+  endif
+  assign member_pct = section.settings.member_discount_percent | default: 10
+-%}
+
+<section
+  id="dcway-reg-builder-{{ section.id }}"
+  class="dcway-regb color-{{ section.settings.color_scheme }}"
+  data-dcway-regb
+  data-require-child="{% if section.settings.require_child_when_logged_in and logged_in %}true{% else %}false{% endif %}"
+  data-member="{{ is_member }}"
+  data-rate="{{ member_pct }}"
+>
+  <div class="dcway-regb__inner">
+    <header class="dcway-regb__head">
+      {%- if section.settings.eyebrow != blank -%}<p class="dcway-regb__eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h2 class="dcway-regb__title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.subtitle != blank -%}<p class="dcway-regb__sub">{{ section.settings.subtitle }}</p>{%- endif -%}
+    </header>
+
+    {%- if is_member -%}
+      <div class="dcway-regb__member-banner">★ You're a DC Way member — {{ member_pct }}% off is applied automatically.</div>
+    {%- elsif section.settings.membership_url != blank -%}
+      <a class="dcway-regb__member-promo" href="{{ section.settings.membership_url }}">Members save {{ member_pct }}% on every camp &amp; program — <u>become a member</u>.</a>
+    {%- endif -%}
+
+    <div class="dcway-regb__grid">
+      <form class="dcway-regb__form" data-regb-form>
+        {%- comment -%} 1. Child {%- endcomment -%}
+        <div class="dcway-regb__step">
+          <label class="dcway-regb__label" for="regb-child-{{ section.id }}">
+            Choose Your Child {% if logged_in %}<span class="dcway-regb__req">*</span>{% endif %}
+          </label>
+          <input
+            type="text"
+            id="regb-child-{{ section.id }}"
+            class="dcway-regb__text"
+            placeholder="Child's full name"
+            data-regb-child
+            autocomplete="off"
+          >
+        </div>
+
+        {%- comment -%} 2. Registration Type {%- endcomment -%}
+        <div class="dcway-regb__step">
+          <span class="dcway-regb__label">Registration Type <span class="dcway-regb__req">*</span></span>
+          <div class="dcway-regb__chips" data-regb-types role="group" aria-label="Registration type">
+            <button type="button" class="dcway-regb__chip" data-regb-type="full">Full Week</button>
+            <button type="button" class="dcway-regb__chip" data-regb-type="single">Single Day</button>
+          </div>
+        </div>
+
+        {%- comment -%} 3. Week {%- endcomment -%}
+        <div class="dcway-regb__step">
+          <span class="dcway-regb__label">Choose Your Week <span class="dcway-regb__req">*</span></span>
+          <div class="dcway-regb__chips dcway-regb__chips--wrap" data-regb-weeks role="group" aria-label="Week">
+            {%- for n in (1..10) -%}
+              <button type="button" class="dcway-regb__chip" data-regb-week="{{ n }}">Week {{ n }}</button>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        {%- comment -%} 4. Location {%- endcomment -%}
+        <div class="dcway-regb__step">
+          <span class="dcway-regb__label">Location <span class="dcway-regb__req">*</span></span>
+          <div class="dcway-regb__chips dcway-regb__chips--wrap" data-regb-locations role="group" aria-label="Location">
+            {%- comment -%} slugs must match reg-camp-<slug> product tags {%- endcomment -%}
+            <button type="button" class="dcway-regb__chip" data-regb-loc="hill-center">Hill Center</button>
+            <button type="button" class="dcway-regb__chip" data-regb-loc="stuart-hobson">Stuart-Hobson Middle School</button>
+            <button type="button" class="dcway-regb__chip" data-regb-loc="chisholm">Chisholm Elementary School</button>
+            <button type="button" class="dcway-regb__chip" data-regb-loc="gallaudet">Gallaudet University</button>
+          </div>
+        </div>
+
+        {%- comment -%} 5. Option (base variants, filled by JS from resolved product) {%- endcomment -%}
+        <div class="dcway-regb__step">
+          <span class="dcway-regb__label">Option <span class="dcway-regb__req">*</span></span>
+          <div class="dcway-regb__options" data-regb-options>
+            <p class="dcway-regb__hint" data-regb-options-hint>Select a type, week and location to see available options.</p>
+          </div>
+        </div>
+
+        {%- comment -%} 6. Before / After Care {%- endcomment -%}
+        {%- if care != blank and care.variants.size > 0 -%}
+          <div class="dcway-regb__step">
+            <span class="dcway-regb__label">Before / After Care</span>
+            <div class="dcway-regb__addons">
+              {%- for v in care.variants -%}
+                <label class="dcway-regb__addon">
+                  <input type="checkbox" data-regb-care data-vid="{{ v.id }}" data-price="{{ v.price }}">
+                  <span class="dcway-regb__addon-name">{{ v.title }}</span>
+                  <span class="dcway-regb__addon-price">+{{ v.price | money_without_trailing_zeros }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} 7. Add-Ons (merch products with size variants) {%- endcomment -%}
+        {%- assign addons = section.settings.addon_products.value | default: section.settings.addon_products -%}
+        {%- if section.settings.addon_products != blank -%}
+          <div class="dcway-regb__step">
+            <span class="dcway-regb__label">Add-Ons</span>
+            <div class="dcway-regb__addons">
+              {%- for prod in section.settings.addon_products -%}
+                {%- if prod.variants.size > 0 -%}
+                  <div class="dcway-regb__addon dcway-regb__addon--withsize" data-regb-addon>
+                    <label class="dcway-regb__addon-main">
+                      <input type="checkbox" data-regb-addon-check>
+                      <span class="dcway-regb__addon-name">{{ prod.title }}</span>
+                      <span class="dcway-regb__addon-price">+{{ prod.variants.first.price | money_without_trailing_zeros }}</span>
+                    </label>
+                    <select class="dcway-regb__size" data-regb-addon-size aria-label="{{ prod.title }} size" disabled>
+                      {%- for v in prod.variants -%}
+                        <option value="{{ v.id }}" data-price="{{ v.price }}">{{ v.title }}</option>
+                      {%- endfor -%}
+                    </select>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </form>
+
+      {%- comment -%} Summary rail {%- endcomment -%}
+      <aside class="dcway-regb__summary" data-regb-summary>
+        <h3 class="dcway-regb__summary-title">Your Registration</h3>
+        <ul class="dcway-regb__lines" data-regb-lines>
+          <li class="dcway-regb__line dcway-regb__line--empty" data-regb-empty>Make your selections to build the registration.</li>
+        </ul>
+        <div class="dcway-regb__total-row">
+          <span>Total</span>
+          <span class="dcway-regb__total" data-regb-total>$0</span>
+        </div>
+        <button type="button" class="dcway-regb__submit" data-regb-submit disabled>
+          <span data-regb-submit-label>Add to Cart</span>
+        </button>
+        <p class="dcway-regb__note" data-regb-note hidden></p>
+        {%- if is_member -%}<p class="dcway-regb__secure">Member {{ member_pct }}% discount is finalised at checkout.</p>{%- endif -%}
+        <p class="dcway-regb__secure">Required: Type, Week, Location &amp; Option.</p>
+      </aside>
+    </div>
+  </div>
+
+  {%- comment -%} ---- Data catalog for JS ---- {%- endcomment -%}
+  <script type="application/json" data-regb-catalog>
+    {
+      "products": [
+        {%- assign first_p = true -%}
+        {%- if coll != blank -%}
+          {%- for product in coll.products -%}
+            {%- assign loc = '' -%}
+            {%- assign wk = '' -%}
+            {%- for tag in product.tags -%}
+              {%- if tag contains 'reg-camp-' -%}{%- assign loc = tag | remove: 'reg-camp-' -%}{%- endif -%}
+              {%- if tag contains 'reg-week-' -%}{%- assign wk = tag | remove: 'reg-week-' -%}{%- endif -%}
+            {%- endfor -%}
+            {%- if loc != blank and wk != blank -%}
+              {%- unless first_p -%},{%- endunless -%}{%- assign first_p = false -%}
+              {
+                "handle": {{ product.handle | json }},
+                "location": {{ loc | json }},
+                "week": {{ wk | json }},
+                "options": [
+                  {%- for v in product.variants -%}
+                    {%- assign vtype = 'full' -%}
+                    {%- if v.title contains 'Session' -%}{%- assign vtype = 'single' -%}{%- endif -%}
+                    {%- unless forloop.first -%},{%- endunless -%}
+                    { "id": {{ v.id }}, "title": {{ v.title | json }}, "price": {{ v.price }}, "type": {{ vtype | json }}, "available": {{ v.available }} }
+                  {%- endfor -%}
+                ]
+              }
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      ]
+    }
+  </script>
+</section>
+
+{% style %}
+  #dcway-reg-builder-{{ section.id }} .dcway-regb { background: #fff; color: var(--dcway-dark,#2c2c2c); padding: clamp(32px,5vw,64px) clamp(16px,4vw,48px); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__inner { max-width: 1100px; margin: 0 auto; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__head { margin-bottom: clamp(20px,3vw,32px); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__eyebrow { margin:0 0 6px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:13px; color:var(--dcway-orange,#ff7200); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__title { margin:0; font-family:var(--font-heading-family),'Barlow Condensed',sans-serif; font-weight:800; text-transform:uppercase; font-size:clamp(32px,4vw,52px); line-height:1; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__sub { margin:10px 0 0; color:var(--dcway-muted,#737373); font-size:16px; max-width:640px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__member-banner { margin:16px 0 0; background:rgba(255,114,0,.1); color:var(--dcway-orange-hover,#e66700); border:1px solid var(--dcway-orange,#ff7200); border-radius:var(--dcway-radius,12px); padding:12px 16px; font-weight:700; font-size:14px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__member-promo { display:inline-block; margin:16px 0 0; color:var(--dcway-orange,#ff7200); font-weight:700; font-size:14px; text-decoration:none; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__strike { color:var(--dcway-muted,#737373); font-weight:600; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__line--save span { color:var(--dcway-orange,#ff7200); font-weight:700; }
+
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__grid { display:grid; grid-template-columns: 1fr 340px; gap: clamp(24px,3vw,44px); align-items:start; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__step { margin-bottom: clamp(20px,2.4vw,28px); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__label { display:block; margin:0 0 10px; font-weight:700; font-size:16px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__req { color:var(--dcway-orange,#ff7200); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__text { width:100%; height:48px; border:2px solid var(--dcway-muted-bg-2,#e5e5e5); border-radius:var(--dcway-radius,12px); padding:0 14px; font-size:16px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__text:focus { outline:0; border-color:var(--dcway-orange,#ff7200); }
+
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__chips { display:flex; gap:10px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__chips--wrap { flex-wrap:wrap; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__chip {
+    border:2px solid var(--dcway-muted-bg-2,#e5e5e5); background:#fff; color:var(--dcway-dark,#2c2c2c);
+    padding:10px 18px; border-radius:var(--dcway-radius,12px); cursor:pointer; font-weight:700; font-size:14px; transition:all .15s ease;
+  }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__chip:hover:not(:disabled) { border-color:var(--dcway-orange,#ff7200); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__chip.is-active { background:var(--dcway-orange,#ff7200); border-color:var(--dcway-orange,#ff7200); color:#fff; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__chip:disabled { opacity:.38; cursor:not-allowed; text-decoration:line-through; }
+
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__options { display:flex; flex-direction:column; gap:10px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__opt {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    border:2px solid var(--dcway-muted-bg-2,#e5e5e5); border-radius:var(--dcway-radius,12px); padding:12px 16px; cursor:pointer;
+  }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__opt:hover { border-color:var(--dcway-orange,#ff7200); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__opt.is-active { border-color:var(--dcway-orange,#ff7200); background:rgba(255,114,0,.06); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__opt input { accent-color:var(--dcway-orange,#ff7200); width:18px; height:18px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__opt-name { flex:1 1 auto; font-weight:600; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__opt-price { font-weight:800; color:var(--dcway-orange,#ff7200); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__hint { margin:0; color:var(--dcway-muted,#737373); font-size:14px; font-style:italic; }
+
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__addons { display:flex; flex-direction:column; gap:10px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__addon { display:flex; align-items:center; gap:12px; border:2px solid var(--dcway-muted-bg-2,#e5e5e5); border-radius:var(--dcway-radius,12px); padding:12px 16px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__addon-main { display:flex; align-items:center; gap:12px; flex:1 1 auto; cursor:pointer; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__addon input[type=checkbox] { accent-color:var(--dcway-orange,#ff7200); width:18px; height:18px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__addon-name { flex:1 1 auto; font-weight:600; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__addon-price { font-weight:700; color:var(--dcway-orange,#ff7200); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__size { height:40px; border:2px solid var(--dcway-muted-bg-2,#e5e5e5); border-radius:var(--dcway-radius-sm,8px); padding:0 10px; font-size:14px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__size:disabled { opacity:.4; }
+
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__summary { position:sticky; top:90px; background:var(--dcway-muted-bg,#f2f2f2); border-radius:var(--dcway-radius,12px); padding:24px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__summary-title { margin:0 0 14px; font-size:18px; font-weight:800; text-transform:uppercase; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__lines { list-style:none; margin:0 0 14px; padding:0; display:flex; flex-direction:column; gap:8px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__line { display:flex; justify-content:space-between; gap:10px; font-size:14px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__line--empty { color:var(--dcway-muted,#737373); font-style:italic; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__line span:last-child { font-weight:700; white-space:nowrap; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__line-sub { color:var(--dcway-muted,#737373); font-size:12px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__total-row { display:flex; justify-content:space-between; align-items:center; border-top:2px solid var(--dcway-muted-bg-2,#e5e5e5); padding-top:14px; font-weight:800; font-size:18px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__total { color:var(--dcway-orange,#ff7200); font-size:24px; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__submit {
+    width:100%; margin-top:16px; border:0; cursor:pointer; border-radius:var(--dcway-radius,12px);
+    background:var(--dcway-orange,#ff7200); color:#fff; font-weight:800; text-transform:uppercase; letter-spacing:.04em;
+    font-size:16px; padding:16px; transition:background .15s ease;
+  }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__submit:hover:not(:disabled) { background:var(--dcway-orange-hover,#e66700); }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__submit:disabled { background:var(--dcway-muted-bg-2,#e5e5e5); color:var(--dcway-muted,#737373); cursor:not-allowed; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__submit.is-loading { opacity:.7; pointer-events:none; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__note { margin:10px 0 0; font-size:13px; color:#c0392b; }
+  #dcway-reg-builder-{{ section.id }} .dcway-regb__secure { margin:10px 0 0; font-size:12px; color:var(--dcway-muted,#737373); text-align:center; }
+
+  @media (max-width: 849px) {
+    #dcway-reg-builder-{{ section.id }} .dcway-regb__grid { grid-template-columns:1fr; }
+    #dcway-reg-builder-{{ section.id }} .dcway-regb__summary { position:static; }
+  }
+{% endstyle %}
+
+<script>
+  (function () {
+    var root = document.getElementById('dcway-reg-builder-{{ section.id }}');
+    if (!root) return;
+    var catEl = root.querySelector('[data-regb-catalog]');
+    var catalog = { products: [] };
+    try { catalog = JSON.parse(catEl.textContent); } catch (e) {}
+
+    var CART_URL = {{ routes.cart_url | json }};
+    var LOC_NAMES = {
+      'hill-center': 'Hill Center', 'stuart-hobson': 'Stuart-Hobson Middle School',
+      'chisholm': 'Chisholm Elementary School', 'gallaudet': 'Gallaudet University'
+    };
+
+    var state = { child: '', type: null, week: null, loc: null, optionId: null, product: null };
+    var requireChild = root.getAttribute('data-require-child') === 'true';
+    var isMember = root.getAttribute('data-member') === 'true';
+    var memberRate = (parseFloat(root.getAttribute('data-rate')) || 0) / 100;
+
+    function money(c) { var n = c / 100; return '$' + (n % 1 === 0 ? n.toFixed(0) : n.toFixed(2)); }
+    // Member 10% applies to registration items (base + care), not merch gear.
+    function regPrice(c) { return isMember ? Math.round(c * (1 - memberRate)) : c; }
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+    var typeBtns = root.querySelectorAll('[data-regb-type]');
+    var weekBtns = root.querySelectorAll('[data-regb-week]');
+    var locBtns = root.querySelectorAll('[data-regb-loc]');
+    var optionsWrap = root.querySelector('[data-regb-options]');
+    var childInput = root.querySelector('[data-regb-child]');
+    var submitBtn = root.querySelector('[data-regb-submit]');
+    var note = root.querySelector('[data-regb-note]');
+
+    // helper: does a product exist for (week, loc) with at least one option of current type?
+    function productFor(week, loc) {
+      return catalog.products.find(function (p) { return p.week === String(week) && p.location === loc; }) || null;
+    }
+    function weekHasAny(week) {
+      return catalog.products.some(function (p) { return p.week === String(week); });
+    }
+    function locAvailable(loc) {
+      if (!state.week) return false;
+      var p = productFor(state.week, loc);
+      if (!p) return false;
+      if (!state.type) return true;
+      return p.options.some(function (o) { return o.type === state.type; });
+    }
+
+    function setActive(list, attr, val) {
+      list.forEach(function (b) { b.classList.toggle('is-active', b.getAttribute(attr) === String(val)); });
+    }
+
+    // ---- Week availability paint ----
+    function paintWeeks() {
+      weekBtns.forEach(function (b) {
+        var wk = b.getAttribute('data-regb-week');
+        b.disabled = !weekHasAny(wk);
+      });
+    }
+    function paintLocations() {
+      locBtns.forEach(function (b) {
+        var loc = b.getAttribute('data-regb-loc');
+        b.disabled = !locAvailable(loc);
+        if (b.disabled) b.classList.remove('is-active');
+      });
+    }
+
+    function renderOptions() {
+      optionsWrap.innerHTML = '';
+      state.optionId = null;
+      state.product = (state.week && state.loc) ? productFor(state.week, state.loc) : null;
+      if (!state.type || !state.week || !state.loc || !state.product) {
+        optionsWrap.innerHTML = '<p class="dcway-regb__hint">Select a type, week and location to see available options.</p>';
+        update(); return;
+      }
+      var opts = state.product.options.filter(function (o) { return o.type === state.type; });
+      if (!opts.length) {
+        optionsWrap.innerHTML = '<p class="dcway-regb__hint">No options for this combination.</p>';
+        update(); return;
+      }
+      opts.forEach(function (o) {
+        var id = 'opt-' + o.id;
+        var label = document.createElement('label');
+        label.className = 'dcway-regb__opt';
+        var priceHtml = isMember
+          ? '<span class="dcway-regb__opt-price"><s class="dcway-regb__strike">' + money(o.price) + '</s> ' + money(regPrice(o.price)) + '</span>'
+          : '<span class="dcway-regb__opt-price">' + money(o.price) + '</span>';
+        label.innerHTML = '<input type="radio" name="regb-option-{{ section.id }}" value="' + o.id + '" data-price="' + o.price + '">'
+          + '<span class="dcway-regb__opt-name">' + esc(o.title) + '</span>'
+          + priceHtml;
+        var input = label.querySelector('input');
+        input.addEventListener('change', function () {
+          state.optionId = o.id;
+          root.querySelectorAll('.dcway-regb__opt').forEach(function (el) { el.classList.remove('is-active'); });
+          label.classList.add('is-active');
+          update();
+        });
+        optionsWrap.appendChild(label);
+      });
+      update();
+    }
+
+    // ---- Add-on wiring (size selects enable on check) ----
+    root.querySelectorAll('[data-regb-addon]').forEach(function (row) {
+      var check = row.querySelector('[data-regb-addon-check]');
+      var size = row.querySelector('[data-regb-addon-size]');
+      check.addEventListener('change', function () { size.disabled = !check.checked; update(); });
+      size.addEventListener('change', update);
+    });
+    root.querySelectorAll('[data-regb-care]').forEach(function (c) { c.addEventListener('change', update); });
+    if (childInput) childInput.addEventListener('input', function () { state.child = childInput.value.trim(); update(); });
+
+    // ---- Type / Week / Location handlers ----
+    typeBtns.forEach(function (b) { b.addEventListener('click', function () {
+      state.type = b.getAttribute('data-regb-type'); setActive(typeBtns, 'data-regb-type', state.type);
+      paintLocations(); if (state.loc && !locAvailable(state.loc)) { state.loc = null; setActive(locBtns,'data-regb-loc',null); }
+      renderOptions();
+    }); });
+    weekBtns.forEach(function (b) { b.addEventListener('click', function () {
+      if (b.disabled) return;
+      state.week = b.getAttribute('data-regb-week'); setActive(weekBtns, 'data-regb-week', state.week);
+      state.loc = null; setActive(locBtns, 'data-regb-loc', null);
+      paintLocations(); renderOptions();
+    }); });
+    locBtns.forEach(function (b) { b.addEventListener('click', function () {
+      if (b.disabled) return;
+      state.loc = b.getAttribute('data-regb-loc'); setActive(locBtns, 'data-regb-loc', state.loc);
+      renderOptions();
+    }); });
+
+    // ---- Collect selected add-ons ----
+    function selectedCare() {
+      return Array.prototype.map.call(root.querySelectorAll('[data-regb-care]:checked'), function (c) {
+        return { id: c.getAttribute('data-vid'), price: parseInt(c.getAttribute('data-price'), 10), title: c.closest('.dcway-regb__addon').querySelector('.dcway-regb__addon-name').textContent };
+      });
+    }
+    function selectedAddons() {
+      var out = [];
+      root.querySelectorAll('[data-regb-addon]').forEach(function (row) {
+        var check = row.querySelector('[data-regb-addon-check]');
+        if (!check.checked) return;
+        var size = row.querySelector('[data-regb-addon-size]');
+        var opt = size.options[size.selectedIndex];
+        out.push({ id: size.value, price: parseInt(opt.getAttribute('data-price'), 10), title: row.querySelector('.dcway-regb__addon-name').textContent + ' — ' + opt.textContent });
+      });
+      return out;
+    }
+
+    // ---- Live total + summary + gating ----
+    function update() {
+      var lines = [];
+      var total = 0;
+      var baseOpt = null;
+      if (state.product && state.optionId) {
+        baseOpt = state.product.options.filter(function(o){return String(o.id)===String(state.optionId);})[0];
+      }
+      var savings = 0;
+      if (baseOpt) {
+        var bp = regPrice(baseOpt.price); savings += baseOpt.price - bp; total += bp;
+        lines.push({ name: baseOpt.title, sub: LOC_NAMES[state.loc] + ' · Week ' + state.week, price: bp, orig: baseOpt.price });
+      }
+      selectedCare().forEach(function (c) { var p = regPrice(c.price); savings += c.price - p; total += p; lines.push({ name: c.title, price: p, orig: c.price }); });
+      selectedAddons().forEach(function (a) { total += a.price; lines.push({ name: a.title, price: a.price }); });
+
+      var linesEl = root.querySelector('[data-regb-lines]');
+      if (!lines.length) {
+        linesEl.innerHTML = '<li class="dcway-regb__line dcway-regb__line--empty">Make your selections to build the registration.</li>';
+      } else {
+        var html = lines.map(function (l) {
+          var priceCell = (l.orig && l.orig !== l.price)
+            ? '<span><s class="dcway-regb__strike">' + money(l.orig) + '</s> ' + money(l.price) + '</span>'
+            : '<span>' + money(l.price) + '</span>';
+          return '<li class="dcway-regb__line"><span>' + esc(l.name) + (l.sub ? '<br><span class="dcway-regb__line-sub">' + esc(l.sub) + '</span>' : '') + '</span>' + priceCell + '</li>';
+        }).join('');
+        if (isMember && savings > 0) {
+          html += '<li class="dcway-regb__line dcway-regb__line--save"><span>Membership ' + Math.round(memberRate * 100) + '% off</span><span>−' + money(savings) + '</span></li>';
+        }
+        linesEl.innerHTML = html;
+      }
+      root.querySelector('[data-regb-total]').textContent = money(total);
+
+      var childOk = !requireChild || (state.child && state.child.length > 0);
+      var ready = !!(state.type && state.week && state.loc && state.optionId && childOk);
+      submitBtn.disabled = !ready;
+      if (note) {
+        if (requireChild && !childOk && (state.type || state.optionId)) { note.hidden = false; note.textContent = 'Please enter your child’s name.'; }
+        else { note.hidden = true; note.textContent = ''; }
+      }
+    }
+
+    // ---- Add to cart (base + add-ons as separate line items, grouped) ----
+    submitBtn.addEventListener('click', function () {
+      if (submitBtn.disabled) return;
+      var baseOpt = state.product.options.filter(function(o){return String(o.id)===String(state.optionId);})[0];
+      if (!baseOpt) return;
+      var group = 'reg-' + state.week + '-' + state.loc + '-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 10000);
+      var shared = {};
+      if (state.child) shared['Child'] = state.child;
+      shared['Week'] = 'Week ' + state.week;
+      shared['Location'] = LOC_NAMES[state.loc];
+      shared['_reg_group'] = group;
+
+      var baseProps = {}; for (var k in shared) baseProps[k] = shared[k];
+      baseProps['Session'] = baseOpt.title;
+
+      var items = [{ id: Number(baseOpt.id), quantity: 1, properties: baseProps }];
+      selectedCare().forEach(function (c) {
+        var pr = {}; for (var k in shared) pr[k] = shared[k]; pr['Add-on'] = 'Care';
+        items.push({ id: Number(c.id), quantity: 1, properties: pr });
+      });
+      selectedAddons().forEach(function (a) {
+        var pr = {}; for (var k in shared) pr[k] = shared[k]; pr['Add-on'] = 'Gear';
+        items.push({ id: Number(a.id), quantity: 1, properties: pr });
+      });
+
+      submitBtn.classList.add('is-loading');
+      submitBtn.querySelector('[data-regb-submit-label]').textContent = 'Adding…';
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ items: items })
+      }).then(function (r) {
+        if (!r.ok) return r.json().then(function (e) { throw e; });
+        return r.json();
+      }).then(function () {
+        window.location.href = CART_URL;
+      }).catch(function (err) {
+        submitBtn.classList.remove('is-loading');
+        submitBtn.querySelector('[data-regb-submit-label]').textContent = 'Add to Cart';
+        if (note) { note.hidden = false; note.textContent = (err && err.description) || 'Could not add to cart. Please try again.'; }
+      });
+    });
+
+    // init
+    paintWeeks();
+    paintLocations();
+    update();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Reg builder (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Register Now" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "2026 Summer Camp" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "Build your child's registration in a few clicks. The price updates as you choose." },
+    { "type": "collection", "id": "base_collection", "label": "Base camp products (collection)", "info": "Products tagged reg-camp-<location-slug> and reg-week-<n>. Variants = session options." },
+    { "type": "product", "id": "care_product", "label": "Before/After Care product" },
+    { "type": "product_list", "id": "addon_products", "label": "Add-on products (T-shirt, Ball, Shin Guards)", "limit": 6 },
+    { "type": "checkbox", "id": "require_child_when_logged_in", "label": "Require child name when logged in", "default": true },
+    { "type": "header", "content": "Membership pricing" },
+    { "type": "paragraph", "content": "Shows member pricing to logged-in members (tagged by your membership app). The actual discount is enforced by the app at checkout." },
+    { "type": "text", "id": "member_tag", "label": "Member customer tag", "default": "member" },
+    { "type": "range", "id": "member_discount_percent", "label": "Member discount %", "min": 0, "max": 50, "step": 1, "unit": "%", "default": 10 },
+    { "type": "url", "id": "membership_url", "label": "Membership page link (for non-members)" },
+    { "type": "checkbox", "id": "force_member_preview", "label": "Preview member pricing (QA only — turn off in production)", "default": false },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+  ],
+  "presets": [{ "name": "Reg builder (DC Way)" }]
+}
+{% endschema %}

@@ -46,10 +46,24 @@
         "empty_state_text": "Locations coming soon.",
         "color_scheme": "scheme-1"
       }
+    },
+    "membership_join": {
+      "type": "dcway-membership-join",
+      "settings": {
+        "membership_product": "dc-way-membership",
+        "eyebrow": "Become a Member",
+        "heading": "DC Way Membership",
+        "cta_label": "Join Now",
+        "benefits": "<ul><li>10% discount on all programs for one year</li><li>DC Way Goody Bag</li><li>Year-round community</li></ul>",
+        "member_tag": "member",
+        "force_member_preview": false,
+        "color_scheme": "scheme-1"
+      }
     }
   },
   "order": [
     "membership",
+    "membership_join",
     "gallery",
     "locations"
   ]

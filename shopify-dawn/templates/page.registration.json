@@ -124,151 +124,25 @@
         "color_scheme": "scheme-1"
       }
     },
-    "registration_filter": {
-      "type": "dcway-registration-filter",
-      "blocks": {
-        "camp_stuart_hobson": {
-          "type": "group_tile",
-          "settings": {
-            "label": "Stuart-Hobson Soccer, Art & Explore Summer Camp",
-            "heading": "Stuart-Hobson Soccer, Art & Explore Summer Camp",
-            "slug": "stuart-hobson",
-            "category": "camps",
-            "subcategory": "summer"
-          }
-        },
-        "camp_hill_center": {
-          "type": "group_tile",
-          "settings": {
-            "label": "Hill Center Art & Soccer Summer Camp",
-            "heading": "Hill Center Art & Soccer Summer Camp",
-            "slug": "hill-center",
-            "category": "camps",
-            "subcategory": "summer"
-          }
-        },
-        "camp_chisholm": {
-          "type": "group_tile",
-          "settings": {
-            "label": "Chisholm World Cup Summer Camp",
-            "heading": "Chisholm World Cup Summer Camp",
-            "slug": "chisholm",
-            "category": "camps",
-            "subcategory": "summer"
-          }
-        },
-        "camp_brazilian_way": {
-          "type": "group_tile",
-          "settings": {
-            "label": "Brazilian Way Summer Camp",
-            "heading": "Brazilian Way Summer Camp",
-            "slug": "brazilian-way",
-            "category": "camps",
-            "subcategory": "summer"
-          }
-        },
-        "camp_preschool": {
-          "type": "group_tile",
-          "settings": {
-            "label": "Preschool Summer Camp",
-            "heading": "Preschool Summer Camp",
-            "slug": "preschool",
-            "category": "camps",
-            "subcategory": "summer"
-          }
-        },
-        "week_1": {
-          "type": "week_tile",
-          "settings": {
-            "label": "WEEK 1: JUNE 16, 18, 19",
-            "number": "1"
-          }
-        },
-        "week_2": {
-          "type": "week_tile",
-          "settings": {
-            "label": "WEEK 2: JUNE 22-26",
-            "number": "2"
-          }
-        },
-        "week_3": {
-          "type": "week_tile",
-          "settings": {
-            "label": "WEEK 3: JUNE 29 - JULY 3",
-            "number": "3"
-          }
-        },
-        "week_4": {
-          "type": "week_tile",
-          "settings": {
-            "label": "WEEK 4: JULY 6-10",
-            "number": "4"
-          }
-        },
-        "week_5": {
-          "type": "week_tile",
-          "settings": {
-            "label": "WEEK 5: JULY 13-17",
-            "number": "5"
-          }
-        },
-        "week_6": {
-          "type": "week_tile",
-          "settings": {
-            "label": "WEEK 6: JULY 20-24",
-            "number": "6"
-          }
-        },
-        "week_7": {
-          "type": "week_tile",
-          "settings": {
-            "label": "WEEK 7: JULY 27-31",
-            "number": "7"
-          }
-        },
-        "week_8": {
-          "type": "week_tile",
-          "settings": {
-            "label": "WEEK 8: AUGUST 3-7",
-            "number": "8"
-          }
-        },
-        "week_9": {
-          "type": "week_tile",
-          "settings": {
-            "label": "WEEK 9: AUGUST 10-14",
-            "number": "9"
-          }
-        },
-        "week_10": {
-          "type": "week_tile",
-          "settings": {
-            "label": "WEEK 10: AUGUST 17-21",
-            "number": "10"
-          }
-        }
-      },
-      "block_order": [
-        "camp_stuart_hobson",
-        "camp_hill_center",
-        "camp_chisholm",
-        "camp_brazilian_way",
-        "camp_preschool",
-        "week_1",
-        "week_2",
-        "week_3",
-        "week_4",
-        "week_5",
-        "week_6",
-        "week_7",
-        "week_8",
-        "week_9",
-        "week_10"
-      ],
+    "registration_builder": {
+      "type": "dcway-registration-builder",
       "settings": {
-        "products_collection": "registration-all",
-        "empty_heading": "Choose a camp and week to see options.",
-        "color_scheme": "scheme-1"
+        "eyebrow": "Register Now",
+        "heading": "2026 Summer Camp",
+        "subtitle": "Build your child's registration in a few clicks. The price updates as you choose.",
+        "base_collection": "registration-all",
+        "care_product": "reg-care",
+        "addon_products": [
+          "dc-way-youth-panna-tshirt",
+          "dc-way-custom-ball",
+          "dc-way-shin-guards"
+        ],
+        "require_child_when_logged_in": true,
+        "color_scheme": "scheme-1",
+        "membership_url": "/pages/membership",
+        "member_tag": "member",
+        "member_discount_percent": 10,
+        "force_member_preview": false
       }
     },
     "locations": {
@@ -306,7 +180,7 @@
   "order": [
     "countdown",
     "registration_header",
-    "registration_filter",
+    "registration_builder",
     "locations"
   ]
 }
