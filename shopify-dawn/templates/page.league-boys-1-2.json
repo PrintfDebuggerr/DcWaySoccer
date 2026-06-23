@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "league_table": {
+      "type": "dcway-custom-table",
+      "settings": {
+        "group": "boys-league-1-2",
+        "heading_lead": "1st–2nd Grade Boys",
+        "heading_accent": "League",
+        "subtitle": "Game-day schedule and scores. Fields and times are confirmed each week — check back for updated results.",
+        "color_scheme": "scheme-1",
+        "padding_top": 56,
+        "padding_bottom": 64
+      }
+    }
+  },
+  "order": [
+    "league_table"
+  ]
+}

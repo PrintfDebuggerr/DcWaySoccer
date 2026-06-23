@@ -1,0 +1,84 @@
+{%- comment -%}
+  Renders ONE `dcway_table` metaobject as an HTML table.
+  Params:
+    entry      — a dcway_table metaobject (heading, columns, rows, note, accent_last_col)
+    section_id — owning section id (for scoped classes; not strictly required)
+
+  Parsing notes:
+    • Liquid's `split` drops *trailing* empty items. We append a sentinel ("|†") before
+      splitting so trailing empty cells (e.g. an unplayed game's blank score) are preserved,
+      then ignore the sentinel via `forloop.last`.
+    • An empty header cell merges into the previous header via colspan (so "Time|Field|Game||Scores"
+      renders "Game" spanning the two team columns).
+{%- endcomment -%}
+
+{%- liquid
+  assign sentinel = '|†'
+  assign cols_raw = entry.columns | strip
+  assign has_header = false
+  if cols_raw != blank
+    assign has_header = true
+    assign cols = cols_raw | append: sentinel | split: '|'
+    assign ncol = cols.size | minus: 1
+  endif
+  assign row_lines = entry.rows | strip | newline_to_br | split: '<br />'
+  assign accent = entry.accent_last_col
+-%}
+
+<div class="dcway-tbl{% unless has_header %} dcway-tbl--noheader{% endunless %}">
+  {%- if entry.heading != blank -%}
+    <h3 class="dcway-tbl__heading">{{ entry.heading }}</h3>
+  {%- endif -%}
+  <div class="dcway-tbl__scroll">
+    <table class="dcway-tbl__table">
+      {%- if has_header -%}
+        <thead>
+          <tr>
+            {%- for c in cols -%}
+              {%- unless forloop.last -%}
+                {%- assign label = c | strip -%}
+                {%- if label != blank -%}
+                  {%- comment -%}Count following empty header cells → colspan.{%- endcomment -%}
+                  {%- assign span = 1 -%}
+                  {%- assign next = forloop.index -%}
+                  {%- assign last_idx = ncol | minus: 1 -%}
+                  {%- if next <= last_idx -%}
+                    {%- for k in (next..last_idx) -%}
+                      {%- assign peek = cols[k] | strip -%}
+                      {%- if peek == blank -%}
+                        {%- assign span = span | plus: 1 -%}
+                      {%- else -%}
+                        {%- break -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  {%- endif -%}
+                  <th{% if span > 1 %} colspan="{{ span }}"{% endif %}>{{ label }}</th>
+                {%- endif -%}
+              {%- endunless -%}
+            {%- endfor -%}
+          </tr>
+        </thead>
+      {%- endif -%}
+      <tbody>
+        {%- for line in row_lines -%}
+          {%- assign cells_raw = line | strip -%}
+          {%- if cells_raw == blank -%}{%- continue -%}{%- endif -%}
+          {%- assign cells = cells_raw | append: sentinel | split: '|' -%}
+          {%- assign ncell = cells.size | minus: 1 -%}
+          <tr>
+            {%- for cell in cells -%}
+              {%- unless forloop.last -%}
+                {%- assign is_last = false -%}
+                {%- if accent and forloop.index == ncell -%}{%- assign is_last = true -%}{%- endif -%}
+                <td{% if is_last %} class="is-accent"{% endif %}>{{ cell | strip }}</td>
+              {%- endunless -%}
+            {%- endfor -%}
+          </tr>
+        {%- endfor -%}
+      </tbody>
+    </table>
+  </div>
+  {%- if entry.note != blank -%}
+    <p class="dcway-tbl__note">{{ entry.note }}</p>
+  {%- endif -%}
+</div>

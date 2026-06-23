@@ -1,0 +1,163 @@
+{%- comment -%}
+  Custom table builder (task #22). Renders metaobject-driven, admin-editable tables —
+  e.g. league fixtures / game-day schedules. Two modes:
+    • Group  — render every `dcway_table` whose `group` matches, ordered by `sort_order`
+               (a league page shows the teams roster + all game days in sequence).
+    • Single — render one specific table picked in the editor.
+  Data: `dcway_table` metaobjects. Merchant edits in admin → Content → Metaobjects → Custom table.
+    columns  = pipe-separated header labels ("Time|Field|Game||Scores"); empty cell → colspan merge.
+    rows     = one row per line, cells separated by "|".
+  See docs/CUSTOM-TABLES.md.
+{%- endcomment -%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} { padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px; }
+  #shopify-section-{{ section.id }} .dcway-tbl__inner { max-width: var(--dcway-container-max); margin-inline: auto; padding-inline: 16px; }
+  #shopify-section-{{ section.id }} .dcway-tbl__head { text-align: center; margin-bottom: 32px; }
+  #shopify-section-{{ section.id }} .dcway-tbl__title { margin: 0; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; color: var(--dcway-dark); line-height: 1.1; }
+  #shopify-section-{{ section.id }} .dcway-tbl__title-accent { color: var(--dcway-orange); }
+  #shopify-section-{{ section.id }} .dcway-tbl__subtitle { margin: 10px auto 0; max-width: 640px; color: var(--dcway-muted); font-size: 1rem; line-height: 1.5; }
+
+  #shopify-section-{{ section.id }} .dcway-tbl { margin: 0 auto 36px; max-width: 860px; }
+  #shopify-section-{{ section.id }} .dcway-tbl:last-child { margin-bottom: 0; }
+  #shopify-section-{{ section.id }} .dcway-tbl__heading { margin: 0 0 12px; font-size: 1.15rem; font-weight: 700; color: var(--dcway-dark); }
+  #shopify-section-{{ section.id }} .dcway-tbl__scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--dcway-radius); border: 1px solid var(--dcway-muted-bg-2); }
+  #shopify-section-{{ section.id }} table.dcway-tbl__table { width: 100%; border-collapse: collapse; font-size: 0.95rem; background: var(--dcway-white); }
+  #shopify-section-{{ section.id }} .dcway-tbl__table thead th { background: var(--dcway-orange); color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: var(--dcway-tracking-button); font-size: 0.8rem; padding: 12px 14px; text-align: left; white-space: nowrap; }
+  #shopify-section-{{ section.id }} .dcway-tbl__table tbody td { padding: 11px 14px; border-top: 1px solid var(--dcway-muted-bg); color: var(--dcway-text); }
+  #shopify-section-{{ section.id }} .dcway-tbl__table tbody tr:nth-child(even) td { background: var(--dcway-muted-bg); }
+  #shopify-section-{{ section.id }} .dcway-tbl__table td.is-accent { font-weight: 700; color: var(--dcway-orange); white-space: nowrap; }
+  #shopify-section-{{ section.id }} .dcway-tbl--noheader .dcway-tbl__table tbody td { text-align: center; font-weight: 600; }
+  #shopify-section-{{ section.id }} .dcway-tbl__note { margin: 8px 2px 0; font-size: 0.82rem; color: var(--dcway-muted); }
+  #shopify-section-{{ section.id }} .dcway-tbl__empty { text-align: center; color: var(--dcway-muted); padding: 24px; }
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .dcway-tbl__table { font-size: 0.88rem; }
+    #shopify-section-{{ section.id }} .dcway-tbl__table thead th,
+    #shopify-section-{{ section.id }} .dcway-tbl__table tbody td { padding: 9px 11px; }
+  }
+{%- endstyle -%}
+
+<section class="dcway-tbl color-{{ section.settings.color_scheme }}">
+  <div class="dcway-tbl__inner">
+    {%- if section.settings.heading_lead != blank or section.settings.heading_accent != blank -%}
+      <div class="dcway-tbl__head">
+        <h2 class="dcway-tbl__title">
+          {{- section.settings.heading_lead -}}
+          {%- if section.settings.heading_accent != blank %} <span class="dcway-tbl__title-accent">{{ section.settings.heading_accent }}</span>{% endif -%}
+        </h2>
+        {%- if section.settings.subtitle != blank -%}
+          <p class="dcway-tbl__subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- liquid
+      # Resolve which metaobjects to render.
+      assign single = section.settings.single_table
+      assign group = section.settings.group | strip
+      assign all = shop.metaobjects['dcway_table'].values | sort: 'sort_order'
+    -%}
+
+    {%- if single != blank -%}
+      {%- render 'dcway-table', entry: single, section_id: section.id -%}
+    {%- elsif section.settings.group != blank -%}
+      {%- assign rendered = 0 -%}
+      {%- for entry in all -%}
+        {%- assign g = entry.group | strip -%}
+        {%- if g == group -%}
+          {%- render 'dcway-table', entry: entry, section_id: section.id -%}
+          {%- assign rendered = rendered | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if rendered == 0 -%}
+        <p class="dcway-tbl__empty">No tables found for group “{{ section.settings.group }}”.</p>
+      {%- endif -%}
+    {%- else -%}
+      <p class="dcway-tbl__empty">Pick a table or enter a group key in the section settings.</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom table",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Source"
+    },
+    {
+      "type": "text",
+      "id": "group",
+      "label": "Group key",
+      "info": "Renders every Custom-table metaobject sharing this group, ordered by Display order. e.g. boys-league-1-2",
+      "default": "boys-league-1-2"
+    },
+    {
+      "type": "metaobject",
+      "id": "single_table",
+      "metaobject_type": "dcway_table",
+      "label": "Single table (overrides group)",
+      "info": "Pick one table to render just that one. Leave empty to use the group key above."
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading_lead",
+      "label": "Heading",
+      "default": "1st–2nd Grade Boys"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading accent (orange)",
+      "default": "League"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom table"
+    }
+  ]
+}
+{% endschema %}

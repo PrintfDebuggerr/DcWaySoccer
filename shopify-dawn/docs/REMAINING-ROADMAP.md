@@ -79,7 +79,9 @@ customer-fields app (Helium Customer Fields). Pick one, then build:
 - ⬜ Discount codes admin (#21) — native; stacking-with-membership needs the discount app's rules
 
 ### G. Site-wide features (tasks #22–33)
-- ⬜ Custom table builder (#22) — theme: metaobject-driven table section (buildable)
+- ✅ Custom table builder (#22) — `dcway-custom-table` section + `dcway-table` snippet + `dcway_table`
+  metaobject (pipe-delimited columns/rows, group bundling, colspan-merge, accent column). Boys-league-1-2
+  fixtures seeded; `/pages/league-boys-1-2` live. Docs: `docs/CUSTOM-TABLES.md`.
 - ✅ Search (#23) · ✅ Countdown (#24) · ✅ Newsletter (#25, footer) · ✅ 404 (#28) · ✅ Cookie (#27)
 - 🟡 SEO basics (#26): meta/alt/sitemap native; **clean URLs `/summer-camp` impossible on Shopify** (dropped)
 - ⬜ Page speed pass (#29) — image/section audit; mostly Shopify CDN auto
