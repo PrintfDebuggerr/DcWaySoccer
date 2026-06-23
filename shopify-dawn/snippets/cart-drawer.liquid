@@ -561,19 +561,40 @@
 
         <!-- CTAs -->
 
+        {%- liquid
+          assign has_reg = false
+          for item in cart.items
+            if item.product.tags contains 'reg'
+              assign has_reg = true
+              break
+            endif
+          endfor
+        -%}
         <div class="cart__ctas" {{ block.shopify_attributes }}>
-          <button
-            type="submit"
-            id="CartDrawer-Checkout"
-            class="cart__checkout-button button"
-            name="checkout"
-            form="CartDrawer-Form"
-            {% if cart == empty %}
-              disabled
-            {% endif %}
-          >
-            {{ 'sections.cart.checkout' | t }}
-          </button>
+          {%- if has_reg -%}
+            {%- comment -%} Registration items → collect parent/child/waivers first (task #6) {%- endcomment -%}
+            <a
+              href="{{ pages['checkout-form'].url | default: '/pages/checkout-form' }}"
+              id="CartDrawer-Checkout"
+              class="cart__checkout-button button"
+              {% if cart == empty %}aria-disabled="true" tabindex="-1"{% endif %}
+            >
+              Continue to Registration Form
+            </a>
+          {%- else -%}
+            <button
+              type="submit"
+              id="CartDrawer-Checkout"
+              class="cart__checkout-button button"
+              name="checkout"
+              form="CartDrawer-Form"
+              {% if cart == empty %}
+                disabled
+              {% endif %}
+            >
+              {{ 'sections.cart.checkout' | t }}
+            </button>
+          {%- endif -%}
         </div>
       </div>
     </div>

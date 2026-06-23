@@ -58,3 +58,38 @@
     display: none;
   }
 {% endstyle %}
+
+{%- comment -%}
+  Task #6 follow-up: route registration carts through the pre-checkout form instead of
+  direct checkout. The notification's checkout button is static (only the "view cart" label
+  re-renders on add), so we decide at click time: fetch /cart.js, and if any line item is a
+  registration item (builder sets the `_reg_group` property; reg products are handled `reg-*`),
+  send the parent to the form; otherwise proceed to native checkout.
+{%- endcomment -%}
+<script>
+  (function () {
+    var FORM_URL = {{ pages['checkout-form'].url | default: '/pages/checkout-form' | json }};
+    function cartJs() {
+      var base = (window.routes && window.routes.cart_url) ? window.routes.cart_url : '/cart';
+      return base + '.js';
+    }
+    function isReg(items) {
+      return (items || []).some(function (it) {
+        var hasProp = it.properties && Object.prototype.hasOwnProperty.call(it.properties, '_reg_group');
+        var handleReg = it.handle && it.handle.indexOf('reg-') === 0;
+        return hasProp || handleReg;
+      });
+    }
+    document.addEventListener('submit', function (e) {
+      var form = e.target;
+      if (!form || form.id !== 'cart-notification-form') return;
+      e.preventDefault();
+      fetch(cartJs(), { headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (c) {
+          window.location.href = isReg(c.items) ? FORM_URL : '/checkout';
+        })
+        .catch(function () { window.location.href = '/checkout'; });
+    }, true);
+  })();
+</script>
