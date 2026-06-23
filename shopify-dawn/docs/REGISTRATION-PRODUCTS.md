@@ -1,141 +1,80 @@
-# Registration Page — Adding Camps, Weeks, and Programs
+# Filling the Registration Catalog (merchant guide)
 
-This guide explains how to add new registration items (camp weeks, one-day camps, or programs) so they appear on the `/pages/registration` page. No code changes required — everything is driven by **product tags + metafields** in Shopify admin.
+> **Updated for the Registration Builder (Faz 2).** The old drilldown-filter model (11-variant
+> "Session" option + 6 metafields) is replaced. The `/pages/registration` page now uses the
+> **Registration Builder** — parents pick Type → Week → Location → Option → Care → Add-ons and see a
+> live price. **The DC Way team fills the product catalog; no developer/code needed.**
 
-## How the page works
+## How the builder decides what's available
 
-The registration page filters products by tag:
+The builder reads every product in the **Registration (all)** smart collection (rule: `tag = reg`) and
+builds the catalog automatically:
 
-1. The user picks a tab: **Camps** or **Programs**.
-2. They pick a subcategory in the dropdown (e.g. *Summer Camp*, *One Day Camp*, *Goalkeeping School*).
-3. They pick a camp tile (e.g. *Stuart-Hobson*).
-4. They pick a week tile (e.g. *Week 1: June 16, 18, 19*).
-5. Up to **3 cards** appear: *Full Week / One Day / Before & After Care*.
+- A product's **location** comes from its `reg-camp-<slug>` tag.
+- A product's **week** comes from its `reg-week-<N>` tag.
+- The **Options** parents can pick are the product's **variants** (the price-bearing choices).
+- A week button lights up if ANY product has that `reg-week-N` tag. A location lights up for the
+  selected week only if a product exists with that `reg-camp-<slug>` + `reg-week-N`. Everything else is
+  automatically greyed out. **Add a product → its Week+Location combo turns on. No code change.**
 
-Each card is a separate product. The filter logic shows only the products whose tags match the selections.
+The 4 location slugs and weeks 1–10 are fixed in the page. Use exactly these location slugs:
 
-## Quick start: adding a new camp week (recommended workflow)
+| Location | tag slug |
+|---|---|
+| Hill Center | `reg-camp-hill-center` |
+| Stuart-Hobson Middle School | `reg-camp-stuart-hobson` |
+| Chisholm Elementary School | `reg-camp-chisholm` |
+| Gallaudet University | `reg-camp-gallaudet` |
 
-The fastest way is to **duplicate the existing sample product** and edit it.
+*(Adding a brand-new location or an 11th week DOES need a small theme tweak — tell the developer.)*
 
-1. In Shopify admin, go to **Products**.
-2. Find the product **2026 Stuart-Hobson Soccer, Art & Explore Summer Camp - Week 1 (Full Week)**.
-3. Click **More actions → Duplicate**.
-4. Edit the duplicate:
+---
 
-| Field | What to change | Example |
-|---|---|---|
-| **Title** | Update camp name, week number, type | `2026 Hill Center Art & Soccer Summer Camp - Week 2 (Full Week)` |
-| **Handle** | Update slug (auto-generated when title changes) | `reg-hill-center-week-2-full-week` |
-| **Tags** | Replace `reg-camp-stuart-hobson` and `reg-week-1` with the new values | `reg`, `reg-cat-summer`, `reg-camp-hill-center`, `reg-week-2`, `reg-type-full-week` |
-| **Variants** | Update each variant price | `Full Week (9-3 pm)` → `$285` |
-| **Metafields** (see below) | Update *Location*, *Dates*, *Ages* | `Hill Center Middle School`, `June 22-26`, `Ages 5-12` |
+## Add one camp week (the whole workflow)
 
-5. Click **Save**.
+**Fastest: duplicate the sample product** `2026 Stuart-Hobson … Week 1`.
 
-Done. The product is now live on the registration page. The Online Store collection **Registration (all)** auto-includes it (smart collection with rule `tag = reg`).
+1. Shopify admin → **Products** → open `reg-stuart-hobson-week-1-full-week`.
+2. **More actions → Duplicate**. Set status **Active**.
+3. **Title** → e.g. `2026 Hill Center Art & Soccer Summer Camp — Week 2`.
+4. **Tags** → keep `reg`; set the location + week tags for THIS product:
+   - `reg` (required — puts it in the Registration collection)
+   - `reg-camp-hill-center` (the location, from the table above)
+   - `reg-week-2` (the week number)
+   - *(optional)* `reg-cat-summer`
+5. **Variants → Option** — keep the **4 options** and set each price for this camp:
+   - `Full Week (9 am-3 pm)`
+   - `Extended Full Week (9 am-5:30 pm)`
+   - `First Session (9 am-12 pm)`
+   - `Second Session (12 pm-3 pm)`
+   > The builder shows **Full Week / Extended** under "Full Week" type and **First/Second Session**
+   > under "Single Day" type. Keep these 4 option names (the words "Full Week" and "Session" drive the
+   > Type filter). Don't bake add-ons into options — add-ons are separate (below).
+6. **Save.** Done — the builder now offers Week 2 + Hill Center with these prices.
 
-## Required tags
+Repeat for every camp × week × location you offer.
 
-Every registration product must have **all five** tags:
+---
 
-| Tag | Purpose | Examples |
-|---|---|---|
-| `reg` | Marks the product as a registration item (used by the smart collection) | `reg` |
-| `reg-cat-{slug}` | Subcategory | `reg-cat-summer`, `reg-cat-one-day-camp`, `reg-cat-goalkeeping`, `reg-cat-capitol-hill-league` |
-| `reg-camp-{slug}` | Which camp (camps only) | `reg-camp-stuart-hobson`, `reg-camp-hill-center`, `reg-camp-chisholm`, `reg-camp-brazilian-way`, `reg-camp-preschool` |
-| `reg-week-{N}` | Which week (camps only) | `reg-week-1` ... `reg-week-10` |
-| `reg-type-{slug}` | Which card slot (left/middle/right) | `reg-type-full-week`, `reg-type-one-day`, `reg-type-before-after-care` |
+## Add-ons & Care — set up ONCE, shared by all camps
 
-Use lowercase and hyphens. **The slug values must match** what's configured in the registration page theme settings (camp tile slugs, week numbers, dropdown subcategories).
+These are **separate products** added as their own cart line items; you do NOT recreate them per camp:
 
-## Required metafields
+- **Before/After Care** — product `reg-care` (variants: Before Care $10, After Care $15). Edit prices here.
+- **T-shirt** — `dc-way-youth-panna-tshirt` (sizes) · **Soccer Ball** — `dc-way-custom-ball` (sizes) ·
+  **Shin Guards** — `dc-way-shin-guards` (sizes).
 
-These show up under the product's title on the card. Set them under **Product → Metafields → Show all → dcway_registration**:
+To add a new add-on type: create the merch product (with size variants) and add it to the builder's
+**Add-on products** setting (Theme editor → Registration page → Registration builder).
 
-| Key | Type | Example |
-|---|---|---|
-| `location_label` | Single-line text | `Stuart-Hobson Middle School (Soccer, Art & Explore Camp)` |
-| `dates_label` | Single-line text | `June 16, 18, 19` |
-| `ages_label` | Single-line text | `Ages 3-12` |
-| `card_order` | Integer | `1` for Full Week, `2` for One Day, `3` for Before & After Care |
-| `card_type_label` | Single-line text | `Full Week` / `One Day` / `Before & After Care` |
-| `camp_label` | Single-line text | `Stuart-Hobson Soccer, Art & Explore Summer Camp` (heading shown when this camp is selected) |
+---
 
-## Variants
+## Tips & gotchas
 
-Each card has a dropdown of session options. These are **product variants** under a single option called `Session`. Example for a Full Week card:
-
-- Full Week (9-3 pm) — `$305`
-- Full Week + T-shirt — `$320`
-- Full Week + Soccer Ball — `$335`
-- Extended Full Week (9-5:30 pm) — `$355`
-- Extended Full Week + T-shirt — `$370`
-- First Session (9-12 pm) — `$185`
-- First Session + T-shirt — `$200`
-- Second Session (12-3 pm) — `$185`
-- Second Session + T-shirt — `$200`
-- Before Care (8-9 am) — `$45`
-- After Care (3-5:30 pm) — `$75`
-
-Keep variant count below **50 per product** (Shopify limit). If you need more, split into a separate product (e.g. add a *Premium* type).
-
-## Adding a brand new camp (not just a new week)
-
-If the camp doesn't exist yet:
-
-1. Create the products as above with the new `reg-camp-{slug}` tag.
-2. Go to **Online Store → Themes → Customize → Pages → registration**.
-3. In the **Registration filter** section, click **Add block → Camp / program tile**.
-4. Fill in:
-   - **Tile button label**: shown in the camp grid
-   - **Section heading**: shown above the cards when this tile is active
-   - **Slug**: must match `reg-camp-{slug}` (without the `reg-camp-` prefix)
-   - **Category**: `Camps`
-   - **Subcategory**: `summer` or `one-day-camp`
-5. Save.
-
-## Adding a new week
-
-1. Go to **Online Store → Themes → Customize → Pages → registration**.
-2. **Registration filter** section → **Add block → Week tile**.
-3. Fill in:
-   - **Tile label**: e.g. `WEEK 11: AUGUST 24-28`
-   - **Week number**: e.g. `11`
-4. Save.
-5. Tag the matching products with `reg-week-11`.
-
-## Adding a new program (not a camp)
-
-Programs work like camps but don't use week tiles:
-
-1. Create the product with these tags: `reg`, `reg-cat-{program-slug}`, `reg-camp-{program-slug}`, `reg-type-{type}` (no `reg-week-*` tag).
-2. Add a dropdown option block to **Registration header** with the program label + subcategory slug.
-3. Add a camp/program tile block to **Registration filter** with `category: programs` + matching subcategory.
-
-## Troubleshooting
-
-- **My new product doesn't show up.** Verify all 5 tags are present and spelled correctly (case-sensitive, lowercase, hyphens). Confirm the product is **Active** and **Published to Online Store**.
-- **The price shows wrong.** The "from $X" is the lowest variant price. Check each variant's price.
-- **The "Purchase" button is greyed out.** That's intentional — it activates only after the customer picks a variant.
-- **A card appears in the wrong slot (left/middle/right).** Adjust the `card_order` metafield (1 = left, 2 = middle, 3 = right).
-
-## Anchor: how it all fits together
-
-```
-Customer picks Camps tab     → reg-cat-summer  OR  reg-cat-one-day-camp
-            └─ Subcategory   → reg-cat-{slug}
-                └─ Camp tile → reg-camp-{slug}
-                    └─ Week  → reg-week-{N}
-                        └─ Shows products matching ALL four
-                            └─ Sorted left-to-right by card_order metafield
-```
-
-Programs skip the week step:
-
-```
-Customer picks Programs tab  → reg-cat-{program-slug}
-            └─ Dropdown      → reg-cat-{program-slug}
-                └─ Tile      → reg-camp-{program-slug}
-                    └─ Shows products matching ALL three
-```
+- **Keep variant Option names exactly** as the 4 above so the Full Week / Single Day filter works.
+- **Price is per variant**, in dollars. The member 10% shows automatically for logged-in members
+  (the discount itself is applied by the membership app at checkout).
+- **Photos / dates / ages**: optional product fields; the builder doesn't require metafields anymore.
+- After saving, check `/pages/registration`: your Week+Location should light up and prices should match.
+- **Programs** (Capitol Hill League, clinics, leagues) are NOT summer-camp-shaped; the current builder is
+  camp-centric. Programs are handled as their own products/pages — discuss structure with the developer.
