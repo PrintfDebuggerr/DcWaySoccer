@@ -86,7 +86,8 @@ customer-fields app (Helium Customer Fields). Pick one, then build:
 - 🟡 SEO basics (#26): meta/alt/sitemap native; **clean URLs `/summer-camp` impossible on Shopify** (dropped)
 - ⬜ Page speed pass (#29) — image/section audit; mostly Shopify CDN auto
 - ⬜ GA4 (#30) 👤 · Facebook Pixel (#31) 👤 — Google/Meta channels + theme
-- ⬜ Live chat / WhatsApp widget (#32) — theme snippet or Tidio app
+- ✅ Live chat / WhatsApp widget (#32) — `dcway-whatsapp` snippet (floating wa.me button, brand green),
+  admin-configurable via Theme settings (number/message/tooltip/side/mobile). No app. Rendered in theme.liquid.
 - ⬜ Referral program (#33) — app (ReferralCandy) 💳
 
 ---

@@ -1451,5 +1451,53 @@
         "default": "scheme-1"
       }
     ]
+  },
+  {
+    "name": "DC Way — WhatsApp / Chat",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "dcway_whatsapp_enabled",
+        "label": "Show WhatsApp button",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "dcway_whatsapp_number",
+        "label": "WhatsApp number",
+        "info": "Digits only, with country code, no +, spaces or dashes. e.g. 15714901275 for +1 (571) 490-1275.",
+        "default": "15714901275"
+      },
+      {
+        "type": "textarea",
+        "id": "dcway_whatsapp_message",
+        "label": "Pre-filled message",
+        "info": "Text the chat opens with.",
+        "default": "Hi DC Way! I have a question about your programs."
+      },
+      {
+        "type": "text",
+        "id": "dcway_whatsapp_tooltip",
+        "label": "Tooltip text (optional)",
+        "info": "Small label shown next to the button on desktop. Leave blank to hide.",
+        "default": "Chat with us"
+      },
+      {
+        "type": "select",
+        "id": "dcway_whatsapp_position",
+        "label": "Position",
+        "options": [
+          { "value": "right", "label": "Bottom right" },
+          { "value": "left", "label": "Bottom left" }
+        ],
+        "default": "right"
+      },
+      {
+        "type": "checkbox",
+        "id": "dcway_whatsapp_show_mobile",
+        "label": "Show on mobile",
+        "default": true
+      }
+    ]
   }
 ]
