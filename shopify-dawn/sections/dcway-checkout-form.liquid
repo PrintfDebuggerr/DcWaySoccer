@@ -1,0 +1,353 @@
+{%- comment -%}
+  Pre-checkout form (task #6). Sits between cart and Shopify's hosted checkout (no Plus).
+  Parent → Child → program-specific sections (cart-tag triggered) → waivers.
+  On submit: writes everything to cart attributes (/cart/update.js) then redirects to /checkout.
+  Program sections + waivers are admin-managed metaobjects (dcway_checkout_section / dcway_waiver).
+{%- endcomment -%}
+{%- liquid
+  assign waivers = shop.metaobjects.dcway_waiver.values | sort: 'sort_order'
+  assign sections = shop.metaobjects.dcway_checkout_section.values | sort: 'sort_order'
+
+  assign cart_tags = '|'
+  for item in cart.items
+    for t in item.product.tags
+      assign cart_tags = cart_tags | append: t | append: '|'
+    endfor
+  endfor
+-%}
+
+<section id="dcway-cof-{{ section.id }}" class="dcway-cof color-{{ section.settings.color_scheme }}" data-dcway-cof>
+  <div class="dcway-cof__inner">
+    <header class="dcway-cof__head">
+      <h1 class="dcway-cof__title">{{ section.settings.heading | default: 'Registration Details' }}</h1>
+      <p class="dcway-cof__sub">{{ section.settings.subtitle | default: 'Tell us about the camper, then continue to secure payment.' }}</p>
+    </header>
+
+    {%- if cart.item_count == 0 -%}
+      <div class="dcway-cof__empty">
+        <p>Your cart is empty.</p>
+        <a class="dcway-cof__btn" href="{{ routes.all_products_collection_url }}">Browse programs</a>
+      </div>
+    {%- else -%}
+      <form class="dcway-cof__form" data-cof-form novalidate>
+        <div class="dcway-cof__grid">
+          <div class="dcway-cof__main">
+
+            {%- comment -%} Parent {%- endcomment -%}
+            <fieldset class="dcway-cof__block">
+              <legend class="dcway-cof__legend">1. Parent / Guardian</legend>
+              <div class="dcway-cof__row">
+                <label class="dcway-cof__field">
+                  <span>Full name <i>*</i></span>
+                  <input type="text" data-cof name="Parent Name" required value="{{ customer.name | strip | escape }}">
+                </label>
+                <label class="dcway-cof__field">
+                  <span>Email <i>*</i></span>
+                  <input type="email" data-cof name="Parent Email" required value="{{ customer.email | escape }}">
+                </label>
+              </div>
+              <div class="dcway-cof__row">
+                <label class="dcway-cof__field">
+                  <span>Phone <i>*</i></span>
+                  <input type="tel" data-cof name="Parent Phone" required value="{{ customer.default_address.phone | escape }}">
+                </label>
+                <label class="dcway-cof__field">
+                  <span>Address</span>
+                  <input type="text" data-cof name="Parent Address" value="{{ customer.default_address.summary | escape }}">
+                </label>
+              </div>
+            </fieldset>
+
+            {%- comment -%} Child {%- endcomment -%}
+            <fieldset class="dcway-cof__block">
+              <legend class="dcway-cof__legend">2. Child</legend>
+              <div class="dcway-cof__childpick" data-cof-childpick hidden>
+                <label class="dcway-cof__field">
+                  <span>Choose a saved child</span>
+                  <select data-cof-childselect><option value="">— Select —</option></select>
+                </label>
+              </div>
+              <div class="dcway-cof__row">
+                <label class="dcway-cof__field">
+                  <span>Child's name <i>*</i></span>
+                  <input type="text" data-cof name="Child Name" required>
+                </label>
+                <label class="dcway-cof__field">
+                  <span>Date of birth <i>*</i></span>
+                  <input type="date" data-cof name="Child DOB" data-cof-dob required>
+                </label>
+              </div>
+              <div class="dcway-cof__row">
+                <label class="dcway-cof__field">
+                  <span>Age</span>
+                  <input type="text" data-cof-age readonly placeholder="—">
+                </label>
+                <label class="dcway-cof__field">
+                  <span>School start year <span class="dcway-cof__hint2">(year started Preschool)</span></span>
+                  <input type="number" data-cof name="Child School Start Year" data-cof-sy min="2000" max="2030" placeholder="e.g. 2021">
+                </label>
+              </div>
+              <div class="dcway-cof__row">
+                <label class="dcway-cof__field">
+                  <span>Grade</span>
+                  <input type="text" data-cof-grade readonly placeholder="—">
+                </label>
+                <label class="dcway-cof__field">
+                  <span>Gender</span>
+                  <input type="text" data-cof name="Child Gender">
+                </label>
+              </div>
+              <div class="dcway-cof__row">
+                <label class="dcway-cof__field">
+                  <span>School</span>
+                  <input type="text" data-cof name="Child School">
+                </label>
+                <label class="dcway-cof__field">
+                  <span>Allergies</span>
+                  <input type="text" data-cof name="Child Allergies">
+                </label>
+              </div>
+              <label class="dcway-cof__field">
+                <span>Medical issues</span>
+                <input type="text" data-cof name="Child Medical">
+              </label>
+            </fieldset>
+
+            {%- comment -%} Program-specific sections (cart-tag triggered) {%- endcomment -%}
+            {%- assign sec_index = 2 -%}
+            {%- for sec in sections -%}
+              {%- assign trig = sec.trigger_tag | default: '' -%}
+              {%- assign show = false -%}
+              {%- if trig == blank -%}{%- assign show = true -%}
+              {%- else -%}
+                {%- assign needle = '|' | append: trig | append: '|' -%}
+                {%- if cart_tags contains needle -%}{%- assign show = true -%}{%- endif -%}
+              {%- endif -%}
+              {%- if show -%}
+                {%- assign sec_index = sec_index | plus: 1 -%}
+                <fieldset class="dcway-cof__block">
+                  <legend class="dcway-cof__legend">{{ sec_index }}. {{ sec.title | escape }}</legend>
+                  {%- if sec.instructions != blank -%}<p class="dcway-cof__instr">{{ sec.instructions }}</p>{%- endif -%}
+                  {%- assign field_lines = sec.fields | newline_to_br | strip_newlines | split: '<br />' -%}
+                  {%- for raw in field_lines -%}
+                    {%- assign fl = raw | strip -%}
+                    {%- if fl != blank -%}
+                      {%- assign req = false -%}
+                      {%- if fl contains '*' -%}{%- assign req = true -%}{%- assign fl = fl | remove: '*' | strip -%}{%- endif -%}
+                      <label class="dcway-cof__field">
+                        <span>{{ fl | escape }}{% if req %} <i>*</i>{% endif %}</span>
+                        <input type="text" data-cof name="{{ sec.title | escape }}: {{ fl | escape }}" {% if req %}required{% endif %}>
+                      </label>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </fieldset>
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- comment -%} Waivers {%- endcomment -%}
+            {%- if waivers.size > 0 -%}
+              <fieldset class="dcway-cof__block">
+                <legend class="dcway-cof__legend">Waivers</legend>
+                {%- for w in waivers -%}
+                  <div class="dcway-cof__waiver">
+                    <p class="dcway-cof__waiver-title">{{ w.title | escape }}</p>
+                    {%- if w.body != blank -%}<p class="dcway-cof__waiver-body">{{ w.body | escape }}</p>{%- endif -%}
+                    <label class="dcway-cof__check">
+                      <input type="checkbox" data-cof-waiver name="Waiver: {{ w.title | escape }}"
+                        {% if w.required == false %}{% else %}data-required="true"{% endif %} value="Agreed">
+                      <span>I have read and agree to the {{ w.title | escape }}{% unless w.required == false %} <i>*</i>{% endunless %}</span>
+                    </label>
+                  </div>
+                {%- endfor -%}
+              </fieldset>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Summary rail {%- endcomment -%}
+          <aside class="dcway-cof__summary">
+            <h2 class="dcway-cof__summary-title">Order Summary</h2>
+            <ul class="dcway-cof__items">
+              {%- for item in cart.items -%}
+                <li class="dcway-cof__item">
+                  <span class="dcway-cof__item-name">{{ item.product.title | escape }}{% if item.variant.title != 'Default Title' %} — {{ item.variant.title | escape }}{% endif %}</span>
+                  <span class="dcway-cof__item-price">{{ item.final_line_price | money }}</span>
+                </li>
+              {%- endfor -%}
+            </ul>
+            <div class="dcway-cof__total-row"><span>Subtotal</span><span>{{ cart.total_price | money }}</span></div>
+            <button type="submit" class="dcway-cof__btn dcway-cof__submit" data-cof-submit>Continue to Payment</button>
+            <p class="dcway-cof__err" data-cof-err hidden></p>
+            <p class="dcway-cof__secure">🔒 Secure payment by Shopify · taxes &amp; discounts calculated at checkout.</p>
+          </aside>
+        </div>
+      </form>
+
+      <script type="application/json" data-cof-children>
+        {%- if section.settings.preview_children != blank -%}
+          {{ section.settings.preview_children }}
+        {%- elsif customer and customer.metafields.dcway.children -%}
+          {{ customer.metafields.dcway.children.value | json }}
+        {%- else -%}
+          []
+        {%- endif -%}
+      </script>
+    {%- endif -%}
+  </div>
+</section>
+
+{% style %}
+  #dcway-cof-{{ section.id }} .dcway-cof { background:#fff; color:var(--dcway-dark,#2c2c2c); padding: clamp(24px,4vw,56px) clamp(16px,4vw,48px); }
+  #dcway-cof-{{ section.id }} .dcway-cof__inner { max-width:1080px; margin:0 auto; }
+  #dcway-cof-{{ section.id }} .dcway-cof__title { margin:0 0 6px; font-family:var(--font-heading-family),'Barlow Condensed',sans-serif; font-weight:800; text-transform:uppercase; font-size:clamp(30px,4vw,48px); line-height:1; }
+  #dcway-cof-{{ section.id }} .dcway-cof__sub { margin:0 0 28px; color:var(--dcway-muted,#737373); }
+  #dcway-cof-{{ section.id }} .dcway-cof__grid { display:grid; grid-template-columns: 1fr 320px; gap: clamp(20px,3vw,40px); align-items:start; }
+  #dcway-cof-{{ section.id }} .dcway-cof__block { border:0; border-top:2px solid var(--dcway-muted-bg-2,#e5e5e5); margin:0 0 8px; padding:20px 0; }
+  #dcway-cof-{{ section.id }} .dcway-cof__legend { font-family:var(--font-heading-family),'Barlow Condensed',sans-serif; font-weight:800; text-transform:uppercase; font-size:20px; padding:0; margin-bottom:14px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__field { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__field > span { font-size:14px; font-weight:600; }
+  #dcway-cof-{{ section.id }} .dcway-cof__field i { color:var(--dcway-orange,#ff7200); font-style:normal; }
+  #dcway-cof-{{ section.id }} .dcway-cof__hint2 { font-weight:400; color:var(--dcway-muted,#737373); font-size:12px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__field input,
+  #dcway-cof-{{ section.id }} .dcway-cof__field select { height:46px; border:2px solid var(--dcway-muted-bg-2,#e5e5e5); border-radius:var(--dcway-radius,12px); padding:0 12px; font-size:15px; width:100%; }
+  #dcway-cof-{{ section.id }} .dcway-cof__field input:focus,
+  #dcway-cof-{{ section.id }} .dcway-cof__field select:focus { outline:0; border-color:var(--dcway-orange,#ff7200); }
+  #dcway-cof-{{ section.id }} .dcway-cof__field input[readonly] { background:var(--dcway-muted-bg,#f2f2f2); color:var(--dcway-muted,#737373); }
+  #dcway-cof-{{ section.id }} .dcway-cof__field input.is-invalid { border-color:#c0392b; }
+  #dcway-cof-{{ section.id }} .dcway-cof__instr { margin:0 0 12px; color:var(--dcway-muted,#737373); font-size:14px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__waiver { padding:14px 0; border-bottom:1px solid var(--dcway-muted-bg-2,#e5e5e5); }
+  #dcway-cof-{{ section.id }} .dcway-cof__waiver-title { margin:0 0 4px; font-weight:700; }
+  #dcway-cof-{{ section.id }} .dcway-cof__waiver-body { margin:0 0 10px; font-size:13px; color:var(--dcway-muted,#737373); line-height:1.5; }
+  #dcway-cof-{{ section.id }} .dcway-cof__check { display:flex; gap:10px; align-items:flex-start; cursor:pointer; font-size:14px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__check input { margin-top:3px; width:18px; height:18px; accent-color:var(--dcway-orange,#ff7200); flex:0 0 auto; }
+  #dcway-cof-{{ section.id }} .dcway-cof__check.is-invalid span { color:#c0392b; }
+  #dcway-cof-{{ section.id }} .dcway-cof__summary { position:sticky; top:90px; background:var(--dcway-muted-bg,#f2f2f2); border-radius:var(--dcway-radius,12px); padding:22px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__summary-title { margin:0 0 12px; font-size:16px; font-weight:800; text-transform:uppercase; }
+  #dcway-cof-{{ section.id }} .dcway-cof__items { list-style:none; margin:0 0 12px; padding:0; display:flex; flex-direction:column; gap:8px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__item { display:flex; justify-content:space-between; gap:10px; font-size:13px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__item-price { font-weight:700; white-space:nowrap; }
+  #dcway-cof-{{ section.id }} .dcway-cof__total-row { display:flex; justify-content:space-between; border-top:2px solid var(--dcway-muted-bg-2,#e5e5e5); padding-top:12px; font-weight:800; font-size:17px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__btn { display:inline-block; border:0; cursor:pointer; border-radius:var(--dcway-radius,12px); background:var(--dcway-orange,#ff7200); color:#fff; font-weight:800; text-transform:uppercase; letter-spacing:.04em; font-size:15px; padding:15px 22px; text-decoration:none; text-align:center; }
+  #dcway-cof-{{ section.id }} .dcway-cof__submit { width:100%; margin-top:14px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__btn:hover { background:var(--dcway-orange-hover,#e66700); }
+  #dcway-cof-{{ section.id }} .dcway-cof__submit.is-loading { opacity:.7; pointer-events:none; }
+  #dcway-cof-{{ section.id }} .dcway-cof__err { margin:10px 0 0; color:#c0392b; font-size:13px; }
+  #dcway-cof-{{ section.id }} .dcway-cof__secure { margin:12px 0 0; font-size:12px; color:var(--dcway-muted,#737373); text-align:center; }
+  #dcway-cof-{{ section.id }} .dcway-cof__empty { text-align:center; padding:40px 0; }
+  @media (max-width:849px){ #dcway-cof-{{ section.id }} .dcway-cof__grid { grid-template-columns:1fr; } #dcway-cof-{{ section.id }} .dcway-cof__summary { position:static; } #dcway-cof-{{ section.id }} .dcway-cof__row { grid-template-columns:1fr; } }
+{% endstyle %}
+
+<script>
+  (function () {
+    var root = document.getElementById('dcway-cof-{{ section.id }}');
+    if (!root) return;
+    var form = root.querySelector('[data-cof-form]');
+    if (!form) return;
+    var CHECKOUT_URL = '/checkout';
+
+    function ageFromDob(dob) {
+      if (!dob) return null; var d = new Date(dob); if (isNaN(d.getTime())) return null;
+      var t = new Date(), a = t.getFullYear() - d.getFullYear(), m = t.getMonth() - d.getMonth();
+      if (m < 0 || (m === 0 && t.getDate() < d.getDate())) a--; return a >= 0 ? a : null;
+    }
+    function gradeFromStartYear(sy) {
+      sy = parseInt(sy, 10); if (!sy) return '';
+      var t = new Date(); var curStart = (t.getMonth() > 7 || (t.getMonth() === 7 && t.getDate() >= 1)) ? t.getFullYear() : t.getFullYear();
+      // school year starts Sep 1 (month index 8)
+      curStart = (t.getMonth() >= 8) ? t.getFullYear() : t.getFullYear() - 1;
+      var e = curStart - sy;
+      if (e < 0) return 'Not started';
+      if (e === 0) return 'Preschool';
+      if (e === 1) return 'Pre-K';
+      if (e === 2) return 'Kindergarten';
+      var g = e - 2; if (g > 12) g = 12;
+      var s = ['th','st','nd','rd'], v = g % 100;
+      return g + (s[(v - 20) % 10] || s[v] || s[0]) + ' Grade';
+    }
+
+    var dob = root.querySelector('[data-cof-dob]');
+    var ageOut = root.querySelector('[data-cof-age]');
+    var syIn = root.querySelector('[data-cof-sy]');
+    var gradeOut = root.querySelector('[data-cof-grade]');
+    function recalc() {
+      if (dob && ageOut) { var a = ageFromDob(dob.value); ageOut.value = a == null ? '' : a; }
+      if (syIn && gradeOut) { gradeOut.value = gradeFromStartYear(syIn.value); }
+    }
+    if (dob) dob.addEventListener('change', recalc);
+    if (syIn) syIn.addEventListener('input', recalc);
+
+    // child picker prefill
+    var kids = [];
+    try { kids = JSON.parse(root.querySelector('[data-cof-children]').textContent) || []; } catch (e) {}
+    if (kids.length) {
+      var pick = root.querySelector('[data-cof-childpick]');
+      var sel = root.querySelector('[data-cof-childselect]');
+      kids.forEach(function (c, i) { var o = document.createElement('option'); o.value = String(i); o.textContent = c.name || ('Child ' + (i + 1)); sel.appendChild(o); });
+      pick.hidden = false;
+      sel.addEventListener('change', function () {
+        var c = kids[parseInt(sel.value, 10)]; if (!c) return;
+        var set = function (n, v) { var el = root.querySelector('[name="' + n + '"]'); if (el && v != null) el.value = v; };
+        set('Child Name', c.name); set('Child DOB', c.dob); set('Child School Start Year', c.school_start_year);
+        set('Child Gender', c.gender); set('Child School', c.school); set('Child Allergies', c.allergies); set('Child Medical', c.medical);
+        recalc();
+      });
+    }
+
+    var err = root.querySelector('[data-cof-err]');
+    var submitBtn = root.querySelector('[data-cof-submit]');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var invalid = [];
+      // required inputs
+      root.querySelectorAll('[data-cof][required]').forEach(function (el) {
+        el.classList.toggle('is-invalid', !el.value.trim());
+        if (!el.value.trim()) invalid.push(el);
+      });
+      // required waivers
+      root.querySelectorAll('[data-cof-waiver][data-required="true"]').forEach(function (w) {
+        var lab = w.closest('.dcway-cof__check');
+        if (!w.checked) { lab.classList.add('is-invalid'); invalid.push(w); } else { lab.classList.remove('is-invalid'); }
+      });
+      if (invalid.length) {
+        err.hidden = false; err.textContent = 'Please complete the highlighted required fields and waivers.';
+        invalid[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+        return;
+      }
+      err.hidden = true;
+
+      var attrs = {};
+      root.querySelectorAll('[data-cof][name]').forEach(function (el) { if (el.value.trim()) attrs[el.name] = el.value.trim(); });
+      // derived
+      if (ageOut && ageOut.value) attrs['Child Age'] = ageOut.value;
+      if (gradeOut && gradeOut.value) attrs['Child Grade'] = gradeOut.value;
+      root.querySelectorAll('[data-cof-waiver]').forEach(function (w) { if (w.checked) attrs[w.name] = 'Agreed'; });
+
+      submitBtn.classList.add('is-loading'); submitBtn.textContent = 'Saving…';
+      fetch('/cart/update.js', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ attributes: attrs })
+      }).then(function (r) { if (!r.ok) throw new Error('update failed'); return r.json(); })
+        .then(function () { window.location.href = CHECKOUT_URL; })
+        .catch(function () {
+          submitBtn.classList.remove('is-loading'); submitBtn.textContent = 'Continue to Payment';
+          err.hidden = false; err.textContent = 'Something went wrong saving your details. Please try again.';
+        });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Checkout form (DC Way)",
+  "tag": "section",
+  "class": "section dcway-section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Registration Details" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "Tell us about the camper, then continue to secure payment." },
+    { "type": "textarea", "id": "preview_children", "label": "Preview children JSON (QA only)", "info": "Leave blank in production." },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" }
+  ],
+  "presets": [{ "name": "Checkout form (DC Way)" }]
+}
+{% endschema %}

@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "form": {
+      "type": "dcway-checkout-form",
+      "settings": {
+        "heading": "Registration Details",
+        "subtitle": "Tell us about the camper, then continue to secure payment.",
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": ["form"]
+}

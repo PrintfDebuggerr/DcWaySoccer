@@ -104,22 +104,43 @@
                 </small>
               </div>
             {%- else -%}
+              {%- liquid
+                assign has_reg = false
+                for item in cart.items
+                  if item.product.tags contains 'reg'
+                    assign has_reg = true
+                    break
+                  endif
+                endfor
+              -%}
               <div class="cart__ctas" {{ block.shopify_attributes }}>
-                <button
-                  type="submit"
-                  id="checkout"
-                  class="cart__checkout-button button"
-                  name="checkout"
-                  {% if cart == empty %}
-                    disabled
-                  {% endif %}
-                  form="cart"
-                >
-                  {{ 'sections.cart.checkout' | t }}
-                </button>
+                {%- if has_reg -%}
+                  {%- comment -%} Registration items → collect parent/child/waivers first (task #6) {%- endcomment -%}
+                  <a
+                    href="{{ pages['checkout-form'].url | default: '/pages/checkout-form' }}"
+                    id="checkout"
+                    class="cart__checkout-button button"
+                    {% if cart == empty %}aria-disabled="true" tabindex="-1"{% endif %}
+                  >
+                    Continue to Registration Form
+                  </a>
+                {%- else -%}
+                  <button
+                    type="submit"
+                    id="checkout"
+                    class="cart__checkout-button button"
+                    name="checkout"
+                    {% if cart == empty %}
+                      disabled
+                    {% endif %}
+                    form="cart"
+                  >
+                    {{ 'sections.cart.checkout' | t }}
+                  </button>
+                {%- endif -%}
               </div>
 
-              {%- if additional_checkout_buttons -%}
+              {%- if additional_checkout_buttons and has_reg == false -%}
                 <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
                   {{ content_for_additional_checkout_buttons }}
                 </div>
