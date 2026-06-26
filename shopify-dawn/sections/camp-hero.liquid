@@ -331,52 +331,70 @@
   }
   #shopify-section-{{ section.id }} .dcway-camp-hero__description {
     color: var(--dcway-text);
-    line-height: 1.5;
+    line-height: 1.6;
+    font-size: 1.0625rem;
   }
   #shopify-section-{{ section.id }} .dcway-camp-hero__price {
     display: flex;
     align-items: baseline;
-    gap: 8px;
-    font-size: 1.75rem;
-    font-weight: 700;
+    gap: 10px;
+    font-size: 2.25rem;
+    font-weight: 800;
     color: var(--dcway-orange);
     margin-top: 4px;
   }
   #shopify-section-{{ section.id }} .dcway-camp-hero__price-was {
     color: var(--dcway-muted);
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     text-decoration: line-through;
   }
   #shopify-section-{{ section.id }} .dcway-camp-hero__form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    max-width: 460px;
+    gap: 12px;
+    max-width: 520px;
   }
   #shopify-section-{{ section.id }} .dcway-camp-hero__body--centered .dcway-camp-hero__form {
     max-width: none;
   }
   #shopify-section-{{ section.id }} .dcway-camp-hero__label {
-    font-size: 0.8125rem;
-    font-weight: 700;
-    color: var(--dcway-text);
+    font-size: 0.9375rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--dcway-dark);
+    margin-bottom: 2px;
   }
   #shopify-section-{{ section.id }} .dcway-camp-hero__select {
     width: 100%;
-    padding: 12px 14px;
-    border: 2px solid var(--dcway-dark);
-    background: #fff;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--dcway-text);
-    border-radius: 0;
+    min-height: 60px;
+    padding: 16px 52px 16px 20px;
+    border: 2px solid var(--dcway-muted-bg-2);
+    background-color: #fff;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--dcway-dark);
+    border-radius: var(--dcway-radius);
     appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%23333' d='M6 8L0 0h12z'/></svg>");
+    cursor: pointer;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path fill='%23ff7200' d='M7 9L0 0h14z'/></svg>");
     background-repeat: no-repeat;
-    background-position: right 16px center;
+    background-position: right 20px center;
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__select:hover {
+    border-color: var(--dcway-orange);
+  }
+  #shopify-section-{{ section.id }} .dcway-camp-hero__select:focus,
+  #shopify-section-{{ section.id }} .dcway-camp-hero__select:focus-visible {
+    outline: none;
+    border-color: var(--dcway-orange);
+    box-shadow: 0 0 0 3px rgba(255, 114, 0, 0.18);
   }
   #shopify-section-{{ section.id }} .dcway-camp-hero__cta {
     margin-top: 4px;
+    min-height: 60px;
+    font-size: 1.0625rem;
+    letter-spacing: 0.04em;
   }
   #shopify-section-{{ section.id }} .dcway-camp-hero__location {
     margin: 8px 0 0;
