@@ -27,6 +27,8 @@ Legend: ✅ done & verified · 🟡 partial · ⬜ not started · 🧩 needs a S
 **Faz 3 — membership pricing (task #14, theme parts)**
 - Builder shows member pricing (tag-gated strike prices on base+care, savings line)
 - `dcway-membership-join`: $100/yr buy CTA + active-member status card
+- Member strike pricing on product pages + standard/collection/search cards via `snippets/price.liquid`
+  (eligible = `reg`/`program` tag, nil-safe vs sale); global "DC Way — Membership" theme settings. ✅ 2026-06-27
 
 **Faz 4 — account data model (task #2, foundation)**
 - `docs/ACCOUNT-DATA-MODEL.md` (children json schema + age/grade derivation)
