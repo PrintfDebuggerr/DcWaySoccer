@@ -86,7 +86,10 @@ customer-fields app (Helium Customer Fields). Pick one, then build:
   fixtures seeded; `/pages/league-boys-1-2` live. Docs: `docs/CUSTOM-TABLES.md`.
 - ✅ Search (#23) · ✅ Countdown (#24) · ✅ Newsletter (#25, footer) · ✅ 404 (#28) · ✅ Cookie (#27)
 - 🟡 SEO basics (#26): meta/alt/sitemap native; **clean URLs `/summer-camp` impossible on Shopify** (dropped)
-- ⬜ Page speed pass (#29) — image/section audit; mostly Shopify CDN auto
+- 🟡 Page speed pass (#29) — audited (home LCP 1008→840ms, CLS 0). Preloaded the LCP hero image on
+  home (`dcway-home-hero`) + camp/program pages (`camp-hero`); added responsive srcset to camp-hero
+  banner (was serving 2400px to mobile). Theme otherwise already optimized (Dawn defer/preconnect/lazy).
+  Remaining = production Lighthouse pass once live (CDN-served).
 - ⬜ GA4 (#30) 👤 · Facebook Pixel (#31) 👤 — Google/Meta channels + theme
 - ✅ Live chat / WhatsApp widget (#32) — `dcway-whatsapp` snippet (floating wa.me button, brand green),
   admin-configurable via Theme settings (number/message/tooltip/side/mobile). No app. Rendered in theme.liquid.

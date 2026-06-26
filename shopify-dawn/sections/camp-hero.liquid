@@ -24,13 +24,25 @@
   assign layout = section.settings.layout | default: 'side_by_side'
 -%}
 
+{%- comment -%}
+  Preload the full-width banner — it is the LCP element on camp landing pages. Only for the
+  banner layout (sizes 100vw) so the preload matches the <img> and the browser fetches once.
+{%- endcomment -%}
+{%- if layout == 'image_banner_overlay' and featured != blank -%}
+  {%- capture camp_hero_srcset -%}
+    {%- assign camp_hero_widths = '600,900,1200,1600,2000,2400' | split: ',' -%}
+    {%- for w in camp_hero_widths -%}{{ featured | image_url: width: w }} {{ w }}w{% unless forloop.last %}, {% endunless %}{%- endfor -%}
+  {%- endcapture -%}
+  <link rel="preload" as="image" imagesrcset="{{ camp_hero_srcset | strip }}" imagesizes="100vw" fetchpriority="high">
+{%- endif -%}
+
 <div class="dcway-camp-hero dcway-camp-hero--{{ layout }} color-{{ section.settings.color_scheme }} gradient">
 
   {%- if layout == 'image_banner_overlay' -%}
     {%- comment -%} ─── Banner: full-width image with title overlay ─── {%- endcomment -%}
     <div class="dcway-camp-hero__banner">
       {%- if featured != blank -%}
-        {{ featured | image_url: width: 2400 | image_tag: loading: 'eager', alt: product.title, width: 2400, height: 900, class: 'dcway-camp-hero__banner-img' }}
+        {{ featured | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '600, 900, 1200, 1600, 2000, 2400', sizes: '100vw', alt: product.title, width: 2400, height: 900, class: 'dcway-camp-hero__banner-img' }}
       {%- else -%}
         <div class="dcway-camp-hero__banner-img dcway-camp-hero__media-placeholder" aria-hidden="true"></div>
       {%- endif -%}
@@ -85,7 +97,7 @@
     <div class="dcway-container dcway-camp-hero__inner">
       <div class="dcway-camp-hero__media">
         {%- if featured != blank -%}
-          {{ featured | image_url: width: 1400 | image_tag: loading: 'eager', alt: product.title, width: 700, height: 525 }}
+          {{ featured | image_url: width: 1400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '350, 525, 700, 1050, 1400', sizes: '(max-width: 749px) 100vw, 700px', alt: product.title, width: 700, height: 525 }}
         {%- else -%}
           <div class="dcway-camp-hero__media-placeholder" aria-hidden="true"></div>
         {%- endif -%}
