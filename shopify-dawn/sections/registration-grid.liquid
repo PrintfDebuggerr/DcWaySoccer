@@ -304,13 +304,23 @@
     }
     root.querySelectorAll('.dcway-card-camp__form').forEach(function (form) {
       var variantSelect = form.querySelector('[data-variant-select]');
-      var priceEl = form.closest('.dcway-card-camp').querySelector('.dcway-card-camp__price-big');
+      var card = form.closest('.dcway-card-camp');
+      var priceEl = card.querySelector('.dcway-card-camp__price-big');
       if (!variantSelect || !priceEl) return;
       var currency = form.getAttribute('data-currency') || 'USD';
+      var isMember = form.getAttribute('data-member') === 'true';
+      var rate = (parseFloat(form.getAttribute('data-rate')) || 0) / 100;
+      var wasEl = card.querySelector('.dcway-card-camp__price-was');
       variantSelect.addEventListener('change', function () {
         var opt = variantSelect.options[variantSelect.selectedIndex];
         var cents = parseInt(opt.getAttribute('data-price'), 10);
-        if (!isNaN(cents)) priceEl.textContent = formatMoney(cents, currency);
+        if (isNaN(cents)) return;
+        if (isMember) {
+          priceEl.textContent = formatMoney(Math.round(cents * (1 - rate)), currency);
+          if (wasEl) wasEl.textContent = formatMoney(cents, currency);
+        } else {
+          priceEl.textContent = formatMoney(cents, currency);
+        }
       });
     });
 

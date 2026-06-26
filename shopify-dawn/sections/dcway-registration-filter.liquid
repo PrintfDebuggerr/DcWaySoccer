@@ -30,9 +30,28 @@
 {%- liquid
   assign source = section.settings.products_collection
   assign primary_orange = '#ff7200'
+
+  comment
+    Member pricing (task #14 — theme display; app enforces the discount). These are all
+    registration products, so always eligible. Mirrors the builder + card-camp detection.
+  endcomment
+  assign reg_is_member = false
+  if settings.member_price_preview
+    assign reg_is_member = true
+  elsif customer and settings.member_tag != blank and customer.tags contains settings.member_tag
+    assign reg_is_member = true
+  endif
+  assign reg_member_pct = settings.member_discount_percent | default: 10
+  assign reg_show_member = false
+  if settings.show_member_price_on_cards and reg_is_member and reg_member_pct > 0
+    assign reg_show_member = true
+  endif
+  assign reg_member_keep = 100 | minus: reg_member_pct
 -%}
 
 <div
+  data-member="{{ reg_show_member }}"
+  data-rate="{{ reg_member_pct }}"
   class="dcway-reg-filter color-{{ section.settings.color_scheme }} gradient"
   id="dcway-reg-filter-{{ section.id }}"
   data-dcway-reg-filter
@@ -118,16 +137,28 @@
           >
             <h3 class="dcway-reg-filter__card-title">{{ product.title }}</h3>
 
+            {%- liquid
+              comment
+                Use first variant as the "headline" anchor (mirrors WP behavior where
+                Full Week card shows the Full Week base price even though cheaper add-ons
+                exist in the dropdown).
+              endcomment
+              assign anchor_price = product.variants.first.price
+              assign anchor_member = anchor_price | times: reg_member_keep | divided_by: 100
+            -%}
             <div class="dcway-reg-filter__card-price">
               <span class="dcway-reg-filter__card-price-label">from</span>
-              <span class="dcway-reg-filter__card-price-amount" data-card-price>
-                {%- comment -%}
-                  Use first variant as the "headline" anchor (mirrors WP behavior
-                  where Full Week card shows the Full Week base price even though
-                  cheaper add-ons exist in the dropdown).
-                {%- endcomment -%}
-                {{- product.variants.first.price | money_without_trailing_zeros -}}
+              {%- if reg_show_member -%}
+                <span class="dcway-reg-filter__card-price-was" data-card-price-was>{{ anchor_price | money_without_trailing_zeros }}</span>
+              {%- endif -%}
+              <span class="dcway-reg-filter__card-price-amount{% if reg_show_member %} is-member{% endif %}" data-card-price>
+                {%- if reg_show_member -%}
+                  {{- anchor_member | money_without_trailing_zeros -}}
+                {%- else -%}
+                  {{- anchor_price | money_without_trailing_zeros -}}
+                {%- endif -%}
               </span>
+              {%- if reg_show_member -%}<span class="dcway-reg-filter__member-tag">Member</span>{%- endif -%}
             </div>
 
             {%- if mf.location_label -%}
@@ -320,6 +351,28 @@
     color: {{ primary_orange }};
     line-height: 1;
   }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card-price-was {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: #737373;
+    text-decoration: line-through;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__member-tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #e66700;
+    background: rgba(255, 114, 0, 0.12);
+    border-radius: 999px;
+    padding: 3px 12px;
+    line-height: 1.3;
+  }
   #dcway-reg-filter-{{ section.id }} .dcway-reg-filter__card-meta {
     font-size: 14px;
     color: #2c2c2c;
@@ -510,10 +563,19 @@
       t.addEventListener('click', function () { setWeek(t.getAttribute('data-week-num')); });
     });
 
+    // Member pricing (theme display; app enforces). Read once from the section container.
+    var isMember = root.getAttribute('data-member') === 'true';
+    var memberRate = (parseFloat(root.getAttribute('data-rate')) || 0) / 100;
+    function fmt(cents) {
+      var p = cents / 100;
+      return '$' + (p % 1 === 0 ? p.toFixed(0) : p.toFixed(2));
+    }
+
     // Wire variant selects + purchase buttons
     cards.forEach(function (card) {
       var select = card.querySelector('[data-card-variant-select]');
       var price = card.querySelector('[data-card-price]');
+      var priceWas = card.querySelector('[data-card-price-was]');
       var btn = card.querySelector('[data-card-purchase]');
       var form = card.querySelector('[data-card-form]');
       if (!select || !btn || !form) return;
@@ -523,10 +585,15 @@
         btn.disabled = !hasValue;
         if (hasValue && price) {
           var opt = select.options[select.selectedIndex];
-          // Shopify variant.price is in cents (e.g. 3000 = $30). Normalize to dollars.
-          var p = parseFloat(opt.getAttribute('data-price')) / 100;
-          if (!isNaN(p)) {
-            price.textContent = '$' + (p % 1 === 0 ? p.toFixed(0) : p.toFixed(2));
+          // Shopify variant.price is in cents (e.g. 3000 = $30).
+          var cents = parseInt(opt.getAttribute('data-price'), 10);
+          if (!isNaN(cents)) {
+            if (isMember) {
+              price.textContent = fmt(Math.round(cents * (1 - memberRate)));
+              if (priceWas) priceWas.textContent = fmt(cents);
+            } else {
+              price.textContent = fmt(cents);
+            }
           }
         }
       });

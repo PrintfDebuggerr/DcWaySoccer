@@ -39,6 +39,29 @@
   assign featured = product.featured_media
   assign price_min = product.price_min
   assign price_max = product.price_max
+
+  comment
+    Member pricing (task #14, theme display only — app enforces the actual discount).
+    Eligible products: registration (`reg`) and program (`program`) products, not merch.
+    Member detection mirrors the registration builder (customer tag, or QA preview).
+  endcomment
+  assign member_eligible = false
+  if product.tags contains 'reg' or product.tags contains 'program'
+    assign member_eligible = true
+  endif
+  assign card_is_member = false
+  if settings.member_price_preview
+    assign card_is_member = true
+  elsif customer and settings.member_tag != blank and customer.tags contains settings.member_tag
+    assign card_is_member = true
+  endif
+  assign member_pct = settings.member_discount_percent | default: 10
+  assign show_member = false
+  if settings.show_member_price_on_cards and card_is_member and member_eligible and price_min > 0 and member_pct > 0
+    assign show_member = true
+  endif
+  assign member_keep = 100 | minus: member_pct
+  assign member_min = price_min | times: member_keep | divided_by: 100
 -%}
 
 {%- if style == 'compact' -%}
@@ -60,13 +83,19 @@
       </h3>
       {%- if show_price -%}
         <span class="dcway-card-camp__from">from</span>
-        <span class="dcway-card-camp__price-big" data-base-price="{{ first_available.price }}">
+        {%- if show_member -%}
+          <span class="dcway-card-camp__price-was" data-price-was>{{ price_min | money_without_trailing_zeros | remove: '.00' }}</span>
+        {%- endif -%}
+        <span class="dcway-card-camp__price-big{% if show_member %} is-member{% endif %}" data-base-price="{{ first_available.price }}">
           {%- if price_min == 0 and price_max == 0 -%}
             Free
+          {%- elsif show_member -%}
+            {{ member_min | money_without_trailing_zeros | remove: '.00' }}
           {%- else -%}
             {{ price_min | money_without_trailing_zeros | remove: '.00' }}
           {%- endif -%}
         </span>
+        {%- if show_member -%}<span class="dcway-card-camp__member-tag">Member</span>{%- endif -%}
       {%- endif -%}
     </div>
 
@@ -92,6 +121,8 @@
       class="dcway-card-camp__form"
       data-currency="{{ cart.currency.iso_code }}"
       data-money-format="{{ shop.money_format }}"
+      data-member="{{ show_member }}"
+      data-rate="{{ member_pct }}"
     >
       <input type="hidden" name="form_type" value="product">
       <input type="hidden" name="utf8" value="✓">
@@ -207,11 +238,17 @@
         <p class="dcway-card-camp__price">
           {%- if price_min == 0 and price_max == 0 -%}
             <span class="dcway-card-camp__price-free">Free</span>
-          {%- elsif product.price_varies -%}
-            <span class="dcway-card-camp__price-prefix">From</span>
-            <span class="dcway-card-camp__price-value">{{ price_min | money_without_trailing_zeros }}</span>
           {%- else -%}
-            <span class="dcway-card-camp__price-value">{{ price_min | money_without_trailing_zeros }}</span>
+            {%- if product.price_varies -%}
+              <span class="dcway-card-camp__price-prefix">From</span>
+            {%- endif -%}
+            {%- if show_member -%}
+              <span class="dcway-card-camp__price-was">{{ price_min | money_without_trailing_zeros }}</span>
+              <span class="dcway-card-camp__price-value is-member">{{ member_min | money_without_trailing_zeros }}</span>
+              <span class="dcway-card-camp__member-tag">Member</span>
+            {%- else -%}
+              <span class="dcway-card-camp__price-value">{{ price_min | money_without_trailing_zeros }}</span>
+            {%- endif -%}
           {%- endif -%}
         </p>
       {%- endif -%}
@@ -389,6 +426,45 @@
     font-size: 64px;
     line-height: 1;
     color: var(--dcway-orange, #ff7200);
+    margin-bottom: 15px;
+  }
+
+  /* Member pricing */
+  .dcway-card-camp--compact .dcway-card-camp__price-was {
+    display: block;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--dcway-muted, #737373);
+    text-decoration: line-through;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .dcway-card-camp--compact .dcway-card-camp__price-big.is-member {
+    margin-bottom: 6px;
+  }
+  .dcway-card-camp__price-was {
+    color: var(--dcway-muted, #737373);
+    text-decoration: line-through;
+    font-weight: 600;
+  }
+  .dcway-card-camp__price-value.is-member {
+    color: var(--dcway-orange, #ff7200);
+  }
+  .dcway-card-camp__member-tag {
+    display: inline-block;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--dcway-orange-hover, #e66700);
+    background: rgba(255, 114, 0, 0.12);
+    border-radius: 999px;
+    padding: 3px 10px;
+    line-height: 1.3;
+  }
+  .dcway-card-camp--compact .dcway-card-camp__member-tag {
     margin-bottom: 15px;
   }
   .dcway-card-camp__info {

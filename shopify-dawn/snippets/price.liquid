@@ -38,6 +38,41 @@
   if target == product and product.price_varies
     assign money_price = 'products.product.price.from_price_html' | t: price: money_price
   endif
+
+  comment
+    DC Way member pricing (task #14 — theme display; membership app enforces the actual
+    discount at checkout). Shows on eligible products (registration `reg` / program `program`)
+    for member-tagged customers, or in QA preview. Additive: only renders when show_member,
+    leaving Dawn's default/sale/volume markup untouched otherwise.
+  endcomment
+  assign dcway_member_eligible = false
+  if product.tags contains 'reg' or product.tags contains 'program'
+    assign dcway_member_eligible = true
+  endif
+  assign dcway_is_member = false
+  if settings.member_price_preview
+    assign dcway_is_member = true
+  elsif customer and settings.member_tag != blank and customer.tags contains settings.member_tag
+    assign dcway_is_member = true
+  endif
+  assign dcway_member_pct = settings.member_discount_percent | default: 10
+  assign dcway_on_sale = false
+  if compare_at_price and compare_at_price > price
+    assign dcway_on_sale = true
+  endif
+  assign dcway_show_member = false
+  if settings.show_member_price_on_cards and dcway_is_member and dcway_member_eligible and dcway_member_pct > 0 and price > 0 and dcway_on_sale == false
+    assign dcway_show_member = true
+  endif
+  assign dcway_member_keep = 100 | minus: dcway_member_pct
+  assign dcway_member_price = price | times: dcway_member_keep | divided_by: 100
+  assign dcway_member_money = dcway_member_price | money
+  if settings.currency_code_enabled
+    assign dcway_member_money = dcway_member_price | money_with_currency
+  endif
+  if target == product and product.price_varies
+    assign dcway_member_money = 'products.product.price.from_price_html' | t: price: dcway_member_money
+  endif
 -%}
 
 {%- unless target == null and placeholder == null -%}
@@ -58,6 +93,14 @@
           - div.price__regular: Displayed when there are no variants on sale
           - div.price__sale: Displayed when a variant is a sale
       {%- endcomment -%}
+      {%- if dcway_show_member -%}
+        <div class="price__regular dcway-member-price">
+          <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.regular_price' | t }}</span>
+          <s class="price-item price-item--regular dcway-member-price__was">{{ money_price }}</s>
+          <span class="price-item price-item--sale dcway-member-price__now">{{ dcway_member_money }}</span>
+          <span class="dcway-member-price__badge">Member</span>
+        </div>
+      {%- else -%}
       <div class="price__regular">
         {%- if product.quantity_price_breaks_configured? -%}
           {%- if show_compare_at_price and compare_at_price -%}
@@ -108,6 +151,7 @@
           {{ money_price }}
         </span>
       </div>
+      {%- endif -%}
       {%- if product.selected_or_first_available_variant.unit_price_measurement -%}
         {% render 'unit-price', price: product.selected_or_first_available_variant.unit_price, measurement: product.selected_or_first_available_variant.unit_price_measurement %}
       {%- endif -%}

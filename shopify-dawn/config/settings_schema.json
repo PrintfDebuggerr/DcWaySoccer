@@ -1453,6 +1453,45 @@
     ]
   },
   {
+    "name": "DC Way — Membership",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Controls the member pricing shown on product cards (registration & program products). The actual discount is applied by your membership app at checkout — keep this percent in sync with the app and the registration builder."
+      },
+      {
+        "type": "checkbox",
+        "id": "show_member_price_on_cards",
+        "label": "Show member pricing on product cards",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "member_tag",
+        "label": "Member customer tag",
+        "info": "Customers with this tag see member pricing. Your membership app should apply it.",
+        "default": "member"
+      },
+      {
+        "type": "range",
+        "id": "member_discount_percent",
+        "label": "Member discount",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "%",
+        "default": 10
+      },
+      {
+        "type": "checkbox",
+        "id": "member_price_preview",
+        "label": "Preview member pricing (QA)",
+        "info": "Temporarily show member pricing to everyone, even non-members. Turn off before launch.",
+        "default": false
+      }
+    ]
+  },
+  {
     "name": "DC Way — WhatsApp / Chat",
     "settings": [
       {

@@ -77,3 +77,34 @@
   white-space: nowrap;
 }
 
+/* Member pricing (task #14) shown via snippets/price.liquid on eligible (reg/program)
+   products for member-tagged customers. Theme display only — the membership app applies
+   the real discount at checkout. */
+.dcway-member-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+.dcway-member-price__was {
+  color: var(--dcway-muted);
+  text-decoration: line-through;
+  opacity: 0.85;
+}
+.dcway-member-price__now {
+  color: var(--dcway-orange);
+  font-weight: 700;
+}
+.dcway-member-price__badge {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dcway-orange-hover);
+  background: rgba(255, 114, 0, 0.12);
+  border-radius: 999px;
+  padding: 2px 8px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
