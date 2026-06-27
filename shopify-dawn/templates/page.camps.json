@@ -9,7 +9,7 @@
             "image_fallback": "dcway-camp-summer.jpg",
             "title": "Summer Camp",
             "body": "<p>Get ready for the ultimate summer adventure! DC Way's Summer Camp is packed with action, fun, and unforgettable memories. From exciting drills to friendly competitions, your child will learn, grow, and make new friends in a vibrant, supportive atmosphere.</p>",
-            "link": "/pages/summer-camp",
+            "link": "/products/summer-camp",
             "button_label": "Learn more"
           }
         },
@@ -19,7 +19,7 @@
             "image_fallback": "dcway-camp-art-soccer-summer.jpg",
             "title": "Art & Soccer Summer Camp",
             "body": "<p>Your child will spend the summer celebrating the FIFA World Cup through art and soccer! Each week focuses on a different country – kids create art inspired by each nation and play soccer games that bring their styles to life. It's creativity, soccer, and learning about the world.</p>",
-            "link": "/pages/art-soccer-summer-camp",
+            "link": "/products/art-soccer-summer-camp",
             "button_label": "Learn more"
           }
         },
@@ -29,7 +29,7 @@
             "image_fallback": "dcway-camp-soccer-art-explore.png",
             "title": "Soccer, Art & Explore Summer Camp",
             "body": "<p>Your child will spend the summer playing soccer, creating art, and exploring the world around them. Every day has a theme, a new discovery, and something to make and take home. It's three things kids love, all in one place.</p>",
-            "link": "/pages/soccer-art-explore-summer-camp",
+            "link": "/products/soccer-art-explore-summer-camp",
             "button_label": "Learn more"
           }
         },
@@ -39,7 +39,7 @@
             "image_fallback": "dcway-camp-world-cup.jpg",
             "title": "World Cup Summer Camp",
             "body": "<p>Get ready for summer 2026 – World Cup year! Your child will celebrate the biggest soccer tournament in the world with a different country theme each week. From Team USA to Italy, they'll play soccer games, learn about different playing styles, and compete in fun challenges all summer long.</p>",
-            "link": "/pages/world-cup-summer-camp",
+            "link": "/products/world-cup-summer-camp",
             "button_label": "Learn more"
           }
         },
@@ -49,7 +49,7 @@
             "image_fallback": "dcway-camp-brazilian-way.jpg",
             "title": "Brazilian Way Summer Camp",
             "body": "<p>Your child will spend the summer learning soccer the Brazilian way – with creativity, joy, and skill. Our Brazilian Way Camp combines authentic coaching from experienced Brazilian coaches with the energy and style that makes Brazilian soccer special.</p>",
-            "link": "/pages/brazilian-way-summer-camp",
+            "link": "/products/brazilian-way-summer-camp",
             "button_label": "Learn more"
           }
         },
@@ -59,7 +59,7 @@
             "image_fallback": "dcway-camp-preschool.jpg",
             "title": "Preschool Summer Camp",
             "body": "<p>Three days of soccer, art, and active play for our youngest campers. Our Preschool Summer Camp runs August 24 to 26 and is designed for ages 3 to 5. Small groups, experienced coaches, and a whole lot of fun to close out the summer.</p>",
-            "link": "/pages/preschool-summer-camp",
+            "link": "/products/preschool-summer-camp",
             "button_label": "Learn more"
           }
         },
@@ -69,7 +69,7 @@
             "image_fallback": "dcway-camp-art-soccer-day.jpg",
             "title": "Art & Soccer Day Camp",
             "body": "<p>Experience the ultimate fusion of soccer, creativity, art, and cultural exploration at DC Way's Art & Soccer Day Camp! Our unique camp goes beyond the game, inspiring children to explore their artistic side while celebrating the global spirit of soccer.</p>",
-            "link": "/pages/art-soccer-day-camp",
+            "link": "/products/art-soccer-day-camp",
             "button_label": "Learn more"
           }
         },
@@ -79,7 +79,7 @@
             "image_fallback": "dcway-camp-one-day.jpg",
             "title": "One Day Camp",
             "body": "<p>Need a fun, action-packed day for your child? Our One Day Camp delivers all the excitement of soccer in just one day! Perfect for busy families, it's filled with fun games, exciting activities, and new friends. Join us to make the most of your child's day off!</p>",
-            "link": "/pages/one-day-camp",
+            "link": "/products/one-day-camp",
             "button_label": "Learn more"
           }
         },
@@ -89,7 +89,7 @@
             "image_fallback": "dcway-camp-seaton.jpg",
             "title": "Seaton Art & Soccer Day Camp",
             "body": "<p>Experience the ultimate fusion of soccer, creativity, art, and cultural exploration at Seaton Art & Soccer Day Camp! Our unique camp goes beyond the game, inspiring children to explore their artistic side while celebrating the global spirit of soccer.</p>",
-            "link": "/pages/seaton-art-soccer-day-camp",
+            "link": "/products/seaton-art-soccer-day-camp",
             "button_label": "Learn more"
           }
         }
