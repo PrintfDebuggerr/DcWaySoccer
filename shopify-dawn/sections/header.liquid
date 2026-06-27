@@ -596,6 +596,10 @@
     flex: 1 1 auto; min-width: 0; border: 0; outline: 0;
     font-size: 17px; background: transparent; color: inherit; height: 100%;
   }
+  /* Suppress Dawn's global *:focus-visible halo on the input — the field's orange
+     border (on :focus-within) is the accessible focus indicator instead. */
+  .dcway-header__search-input:focus,
+  .dcway-header__search-input:focus-visible { box-shadow: none; outline: 0; }
   .dcway-header__search-input::-webkit-search-cancel-button { display: none; }
   .dcway-header__search-clear {
     background: rgba(0,0,0,0.08); border: 0; cursor: pointer; color: var(--dcway-dark, #2c2c2c);
